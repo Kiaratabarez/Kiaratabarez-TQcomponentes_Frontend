@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQcomponents-Compra</title>
+    <link rel="stylesheet" href="../Frontend/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a href="javascript:history.back()" class="btn-volver">
+    <img src="../Frontend/imagenes/home.svg" alt="Volver" width="24" height="24">
+</a>
+<!-- Encabezado-->
+<header>
+        <div class="container">
+            <h1>TQComponents</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="producto.html">Producto</a></li>
+                    <li><a href="listado_box.html">Listado Box</a></li>
+                    <li><a href="listado_tabla.html">Listado Tabla</a></li>
+                    <li><a href="comprar.html">Compra</a></li>
+                </ul>
+            </nav>
+        </div>
+    <header>
+        <h1 class="titulo-principal">Completa tu Compra</h1>
+    </header>
+    <main>
+        <section class="form-container">
+            <form class="form-compra">
+                <!-- Nombre -->
+                <div class="form-group">
+                    <label for="nombre">Nombre del cliente:</label>
+                    <input type="text" id="nombre" name="nombre">
+                </div>
+
+                <!-- Dirección -->
+                <div class="form-group">
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" id="direccion" name="direccion">
+                </div>
+
+                <!-- Teléfono -->
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" id="telefono" name="telefono">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <!-- Medio de pago -->
+                <div class="form-group">
+                    <label for="pago">Medio de pago:</label>
+                    <select id="pago" name="pago" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="tarjeta">Tarjeta de crédito</option>
+                        <option value="debito">Tarjeta de débito</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia bancaria</option>
+                    </select>
+                </div>
+
+                <!-- Listado de productos -->
+                <div class="form-group">
+                    <label for="productos">Selecciona los productos:</label>
+                    <select id="productos" name="productos">
+                        <option value="arduino-uno">Arduino Uno</option>
+                        <option value="sensor-ultrasonido">Sensor Ultrasonido</option>
+                        <option value="modulo-bluetooth">Módulo Bluetooth</option>
+                        <option value="leds">Pack de LEDs</option>
+                        <option value="pantalla-lcd">Pantalla LCD</option>
+                        <option value="servo-motor">Servo Motor</option>
+                    </select>
+                </div>
+
+                <!-- Botón -->
+                <button type="submit" class="btn-comprar">Finalizar Compra</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

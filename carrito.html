@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQ components- Carrito</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <a href="javascript:history.back()" class="btn-volver">
+    <img src="../Frontend/imagenes/home.svg" alt="Volver" width="24" height="24">
+</a>
+<!-- Encabezado-->
+<header>
+        <div class="container">
+            <h1>TQComponents</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="producto.html">Producto</a></li>
+                    <li><a href="listado_box.html">Listado Box</a></li>
+                    <li><a href="listado_tabla.html">Listado Tabla</a></li>
+                    <li><a href="comprar.html">Compra</a></li>
+                </ul>
+            </nav>
+        </div>
+
+<main>
+    <h2>Carrito</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="carrito-items">
+            <!-- Filas dinámicas -->
+        </tbody>
+    </table>
+    <p id="total">Total: $0</p>
+    <button id="vaciar-carrito" class="btn">Vaciar Carrito</button>
+</main>
+
+<footer>
+    <p>&copy; 2025 TQComponents</p>
+</footer>
+
+</body>
+</html>
+<!-- <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQComponents - Carrito</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <h1>TQComponents</h1>
+            </div>
+            <button class="menu-toggle">☰</button>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li class="dropdown">
+                        <a href="#">Productos <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="listado_tabla.html?categoria=arduino">Placas Arduino</a></li>
+                            <li><a href="listado_tabla.html?categoria=sensores">Sensores</a></li>
+                            <li><a href="listado_tabla.html?categoria=modulos">Módulos</a></li>
+                            <li><a href="listado_tabla.html?categoria=actuadores">Actuadores</a></li>
+                            <li><a href="listado_tabla.html?categoria=accesorios">Accesorios</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="carrito.html">Carrito <span class="carrito-count">0</span></a></li>
+                    <li class="login-btn"><a href="login.html">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="carrito-container">
+            <h2>Tu Carrito de Compras</h2>
+            
+            <div class="carrito-vacio" id="carrito-vacio">
+                <p>No hay productos en el carrito</p>
+                <a href="listado_box.html" class="btn">Seguir Comprando</a>
+            </div>
+            
+            <div class="carrito-contenido" id="carrito-contenido">
+                <table class="tabla-carrito">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Total</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carrito-items">
+                        <!-- Filas dinámicas 
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                            <td colspan="2" id="total">$0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="carrito-acciones">
+                    <button id="vaciar-carrito" class="btn btn-peligro">Vaciar Carrito</button>
+                    <a href="listado_box.html" class="btn btn-secundario">Seguir Comprando</a>
+                    <a href="comprar.html" id="finalizar-compra" class="btn btn-primario">Finalizar Compra</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TQComponents - Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html>-->
