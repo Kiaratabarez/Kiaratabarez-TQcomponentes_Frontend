@@ -2,73 +2,68 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Productos - Box</title>
+<title>TQComponents-Productos</title>
 <link rel="stylesheet" href="css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body> 
     <a href="javascript:history.back()" class="btn-volver">
-    <img src="../Frontend/imagenes/home.svg" alt="Volver" width="24" height="24">
+    <img src="imagenes/home.svg" alt="Volver" width="24" height="24">
 </a>
 <!-- Encabezado-->
 <header>
-        <div class="container">
+        <div class="container header-container">
+            <div class="logo">
             <h1>TQComponents</h1>
+            </div>
             <nav>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li><a href="producto.html">Producto</a></li>
-                    <li><a href="listado_box.html">Listado Box</a></li>
-                    <li><a href="listado_tabla.html">Listado Tabla</a></li>
-                    <li><a href="comprar.html">Compra</a></li>
+                    <ul class="dropdown-menu">
+                            <li><a href="listado_box.html?categoria=todos">Todos los productos</a></li>
+                            <li><a href="listado_box.html?categoria=arduino">Placas Arduino</a></li>
+                            <li><a href="listado_box.html?categoria=sensores">Sensores</a></li>
+                            <li><a href="listado_box.html?categoria=modulos">Módulos</a></li>
+                            <li><a href="listado_box.html?categoria=actuadores">Actuadores</a></li>
+                            <li><a href="listado_box.html?categoria=accesorios">Accesorios</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="carrito.html">Carrito <span class="carrito-count">0</span></a></li>
+                    <li class="login-btn"><a href="login.html">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
                 </ul>
             </nav>
         </div>
 </header>
-<main class="listado-box">
-<h1>Listado de ProductosBox</h1>
-<div class="contenedor">
-    <div class="producto">
-    <img src="../Frontend/imagenes/Cables Dupont H-H 40 und.jpg" alt="Cables Dupont H-H ">
-    <h3>Cables Dupont H-H </h3>
-    <p>Set de cables con conectores hembra-hembra, ideales para prototipos y conexiones entre módulos en placas Arduino.</p>
-    <p class="precio">$1000</p>
-    </div>
 
-    <div class="producto">
-    <img src="../Frontend/imagenes/Cables Dupont M-H 40 und..jpg" alt="Cables Dupont M-H">
-    <h3>Cables Dupont M-H</h3>
-    <p>Set de cables macho-hembra, perfectos para interconectar módulos y sensores con la placa Arduino.</p>
-    <p class="precio">$1500</p>
-    </div>
+<main class="container">
+        <section class="destacados">
+            <h2>Nuestros Productos</h2>
+            <div class="filtros-categoria">
+                <a href="listado_box.html?categoria=todos" class="btn btn-secundario">Todos</a>
+                <a href="listado_box.html?categoria=placas" class="btn btn-secundario">Placas</a>
+                <a href="listado_box.html?categoria=sensores" class="btn btn-secundario">Sensores</a>
+                <a href="listado_box.html?categoria=modulos" class="btn btn-secundario">Módulos</a>
+                <a href="listado_box.html?categoria=actuadores" class="btn btn-secundario">Actuadores</a>
+                <a href="listado_box.html?categoria=accesorios" class="btn btn-secundario">Accesorios</a>
+            </div>
+            <div class="productos-grid">
+                <!-- Los productos se cargarán dinámicamente con JavaScript -->
+            </div>
+        </section>
+    </main>
 
-    <div class="producto">
-    <img src="../Frontend/imagenes/Cables Dupont M-M 40 und..jpg" alt="Cables Dupont M-M">
-    <h3>Cables Dupont M-M</h3>
-    <p>Set de cables macho-macho, diseñado para placas de pruebas (breadboards) y conexiones rápidas entre pines.</p>
-    <p class="precio">$2000</p>
-    </div>
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TQComponents - Todos los derechos reservados</p>
+        </div>
+    </footer>
 
-    <div class="producto">
-    <img src="../Frontend/imagenes/Arduino UNO REV3.jpg" alt="Arduino UNO REV3">
-    <h3>Arduino UNO REV3</h3>
-    <p>Placa original Arduino UNO Rev3, el modelo más popular para aprendizaje y proyectos electrónicos. Incluye microcontrolador ATmega328P.</p>
-    <p class="precio">$2000</p>
-    </div>
-
-    <div class="producto">
-    <img src="../Frontend/imagenes/Arduino Mega 2560.jpg" alt="Arduino Mega">
-    <h3>Arduino Mega</h3>
-    <p>Placa Arduino Mega 2560, ideal para proyectos grandes que requieren más pines digitales y memoria que el UNO.</p>
-    <p class="precio">$2000</p>
-    </div>
-
-    <div class="producto">
-    <img src="../Frontend/imagenes/Placa Nano.jpg" alt="Arduino Nano">
-    <h3>Arduino Nano</h3>
-    <p>Versión compacta del Arduino UNO, perfecta para proyectos pequeños o de espacio reducido, con la misma funcionalidad básica.</p>
-    <p class="precio">$2000</p>
-    </div>
-</div>
-</main>
+    <script src="js/scripts.js"></script>
 </body>
 </html>
