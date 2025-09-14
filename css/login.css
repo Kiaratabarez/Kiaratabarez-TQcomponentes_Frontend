@@ -36,6 +36,11 @@ body {
     max-width: 480px;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .auth-card {
     background: white;
     border-radius: 8px;
@@ -46,8 +51,19 @@ body {
     overflow: hidden;
 }
 
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-secondary);
+}
+
 .auth-card:hover {
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    transform: translateY(-5px);
 }
 
 .auth-header {
@@ -57,8 +73,9 @@ body {
 
 .auth-header h1 {
     color: var(--color-primary);
-    font-size: 1.8rem;
+    font-size: 2rem;
     margin-bottom: 10px;
+    font-weight: 700;
 }
 
 .auth-header p {
@@ -69,20 +86,22 @@ body {
 /* Selector de modo (Login/Registro) */
 .auth-mode-selector {
     display: flex;
-    margin-bottom: 20px;
-    border-radius: 5px;
+    margin-bottom: 25px;
+    border-radius: 8px;
     overflow: hidden;
     background-color: #f5f5f5;
+    border: 1px solid #eee;
 }
 
 .mode-btn {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: none;
     background: transparent;
     cursor: pointer;
     font-weight: 500;
     transition: var(--transition);
+    font-size: 0.9rem;
 }
 
 .mode-btn.active {
@@ -93,11 +112,16 @@ body {
 /* Formularios */
 .auth-form {
     display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .auth-form.active {
     display: block;
-    animation: fadeIn 0.5s ease;
+    opacity: 1;
+    transform: translateX(0);
+    animation: slideIn 0.4s ease;
 }
 
 @keyframes fadeIn {
@@ -107,6 +131,7 @@ body {
 
 .form-group {
     margin-bottom: 20px;
+    position: relative;
 }
 
 .form-group label {
@@ -114,6 +139,7 @@ body {
     margin-bottom: 8px;
     font-weight: 500;
     color: var(--color-dark);
+    font-size: 0.9rem;
 }
 
 .input-with-icon {
@@ -126,6 +152,7 @@ body {
     top: 50%;
     transform: translateY(-50%);
     color: #999;
+    font-size: 0.9rem;
 }
 
 .input-with-icon input {
@@ -135,6 +162,7 @@ body {
     border-radius: 5px;
     font-size: 1rem;
     transition: var(--transition);
+    font-family: 'Poppins', sans-serif;
 }
 
 .input-with-icon input:focus {
@@ -143,18 +171,28 @@ body {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
+.input-with-icon input.input-error {
+    border-color: var(--color-danger);
+}
+
+.input-with-icon input.input-error:focus {
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.2);
+}
+
 .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     font-size: 0.9rem;
+    flex-wrap: wrap;
 }
 
 .checkbox-container {
     display: flex;
     align-items: center;
     cursor: pointer;
+    margin-bottom: 5px;
 }
 
 .checkbox-container input {
@@ -200,6 +238,7 @@ body {
     color: var(--color-accent);
     text-decoration: none;
     transition: var(--transition);
+    font-size: 0.9rem;
 }
 
 .forgot-password:hover, .terms-link:hover {
@@ -219,17 +258,24 @@ body {
     cursor: pointer;
     transition: var(--transition);
     margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .btn-auth:hover {
     background: var(--color-danger);
     transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(231, 76, 60, 0.3);
+}
+
+.btn-auth:active {
+    transform: translateY(0);
 }
 
 .auth-footer {
     text-align: center;
     font-size: 0.9rem;
     color: #666;
+    margin-top: 10px;
 }
 
 .switch-mode {
@@ -237,6 +283,7 @@ body {
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .switch-mode:hover {
@@ -250,7 +297,10 @@ body {
     font-size: 0.8rem;
     margin-top: 5px;
     min-height: 16px;
+    display: none;
 }
+.error-message.active {
+    display: block;}
 
 .success-message {
     color: var(--color-success);
@@ -260,6 +310,7 @@ body {
     padding: 10px;
     background-color: rgba(39, 174, 96, 0.1);
     border-radius: 5px;
+    border-left: 4px solid var(--color-success);
 }
 
 .input-error {
@@ -304,12 +355,13 @@ body {
     font-size: 0.75rem;
     margin-top: 3px;
     text-align: right;
+    font-weight: 500;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
     .auth-card {
-        padding: 20px;
+        padding: 20px 15px;
     }
     
     .form-options {
@@ -319,7 +371,7 @@ body {
     }
     
     .auth-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
     
     .auth-mode-selector {
@@ -328,5 +380,8 @@ body {
     
     .mode-btn {
         padding: 12px;
+    }
+    .forgot-password {
+        margin-top: 5px;
     }
 }
