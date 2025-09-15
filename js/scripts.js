@@ -1,201 +1,307 @@
-// Función para manejar el menú desplegable en móviles
-// scripts.js - Funcionalidad para TQComponents
+// scripts.js - Funcionalidad general del sitio (sin el código del carrito)
 
-// Carrito de compras
-let carrito = [];
-let total = 0;
-
-// Productos disponibles
+// Productos disponibles con categorías
 const productos = [
-    { id: 1, nombre: "Arduino Uno R3", precio: 10000, imagen: "imagenes/arduino-uno.jpg" },
-    { id: 2, nombre: "Servo motor MG995 180 grados", precio: 3000, imagen: "imagenes/servo-motor.jpg" },
-    { id: 3, nombre: "Módulo Bluetooth HC-05", precio: 2500, imagen: "imagenes/modulo-bluetooth.jpg" },
-    { id: 4, nombre: "Arduino Mega 2560", precio: 15000, imagen: "imagenes/arduino-mega.jpg" },
-    { id: 5, nombre: "Sensor Ultrasonido", precio: 2000, imagen: "imagenes/sensor-ultrasonido.jpg" },
-    { id: 6, nombre: "Pack de LEDs", precio: 1500, imagen: "imagenes/leds.jpg" },
-    { id: 7, nombre: "Pantalla LCD", precio: 5000, imagen: "imagenes/pantalla-lcd.jpg" }
+    { id: 1, nombre: "Arduino Uno R3", precio: 10000, imagen: "imagenes/PlacaUNO-R3.jpg", categoria: "placas" },
+    { id: 2, nombre: "Servo motor MG995 180 grados", precio: 3000, imagen: "imagenes/Servomotor-MG995-180grados.jpg", categoria: "actuadores" },
+    { id: 3, nombre: "Módulo Bluetooth HC-05", precio: 2500, imagen: "imagenes/MóduloBluetooth_HC-05.jpg", categoria: "modulos" },
+    { id: 4, nombre: "Arduino Mega 2560", precio: 15000, imagen: "imagenes/PlacaMega-Compatible-2560R3.jpg", categoria: "placas" },
+    { id: 5, nombre: "Sensor Ultrasonido", precio: 2000, imagen: "imagenes/sensor-ultrasonido.jpg", categoria: "sensores" },/*Buscar imagen*/
+    { id: 6, nombre: "Pack de LEDs", precio: 1500, imagen: "imagenes/leds.jpg", categoria: "accesorios" },/*Buscar imagen*/
+    { id: 7, nombre: "Pantalla LCD", precio: 5000, imagen: "imagenes/DisplayLCD-azul-1602.jpg", categoria: "modulos" },
+    { id: 8, nombre: "Cables Dupont H-H 40 und", precio: 1000, imagen: "imagenes/CablesDupont_H-H40und.jpg", categoria: "accesorios" },
+    { id: 9, nombre: "Cables Dupont M-H 40 und", precio: 1500, imagen: "imagenes/Cables DupontM-H40_und.jpg", categoria: "accesorios" },
+    { id: 10, nombre: "Cables Dupont M-M 40 und", precio: 2000, imagen: "imagenes/CablesDupontM-M_40und.jpg", categoria: "accesorios" },
+    { id: 11, nombre: "Arduino Nano", precio: 8000, imagen: "imagenes/PlacaNano.jpg", categoria: "placas" }
 ];
-
-// Función para agregar productos al carrito
-function agregarAlCarrito(id, cantidad = 1) {
-    const producto = productos.find(p => p.id === id);
-    if (producto) {
-        const existe = carrito.find(item => item.id === id);
-        if (existe) {
-            existe.cantidad += cantidad;
-        } else {
-            carrito.push({ ...producto, cantidad });
-        }
-        actualizarCarrito();
-        guardarCarrito();
-        mostrarNotificacion(`${producto.nombre} agregado al carrito`);
-    }
-}
-
-// Función para eliminar productos del carrito
-function eliminarDelCarrito(id) {
-    carrito = carrito.filter(item => item.id !== id);
-    actualizarCarrito();
-    guardarCarrito();
-}
-
-// Función para actualizar la visualización del carrito
-function actualizarCarrito() {
-    const carritoItems = document.getElementById('carrito-items');
-    const totalElement = document.getElementById('total');
-    
-    if (carritoItems && totalElement) {
-        carritoItems.innerHTML = '';
-        total = 0;
-        
-        carrito.forEach(item => {
-            const itemTotal = item.precio * item.cantidad;
-            total += itemTotal;
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${item.nombre}</td>
-                <td>$${item.precio}</td>
-                <td>${item.cantidad}</td>
-                <td>$${itemTotal}</td>
-                <td><button class="btn-eliminar" data-id="${item.id}">Eliminar</button></td>
-            `;
-            carritoItems.appendChild(tr);
-        });
-        
-        totalElement.textContent = `Total: $${total}`;
-        
-        // Agregar event listeners a los botones de eliminar
-        document.querySelectorAll('.btn-eliminar').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(e.target.getAttribute('data-id'));
-                eliminarDelCarrito(id);
-            });
-        });
-    }
-}
-
-// Función para vaciar el carrito
-function vaciarCarrito() {
-    carrito = [];
-    actualizarCarrito();
-    guardarCarrito();
-    mostrarNotificacion('Carrito vaciado');
-}
-
-// Guardar carrito en localStorage
-function guardarCarrito() {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-}
-
-// Cargar carrito desde localStorage
-function cargarCarrito() {
-    const carritoGuardado = localStorage.getItem('carrito');
-    if (carritoGuardado) {
-        carrito = JSON.parse(carritoGuardado);
-        actualizarCarrito();
-    }
-}
-
-// Mostrar notificación
-function mostrarNotificacion(mensaje) {
-    // Crear elemento de notificación si no existe
-    let notificacion = document.getElementById('notificacion');
-    if (!notificacion) {
-        notificacion = document.createElement('div');
-        notificacion.id = 'notificacion';
-        document.body.appendChild(notificacion);
-    }
-    
-    notificacion.textContent = mensaje;
-    notificacion.classList.add('mostrar');
-    
-    // Ocultar después de 3 segundos
-    setTimeout(() => {
-        notificacion.classList.remove('mostrar');
-    }, 3000);
-}
-
-// Toggle del menú hamburguesa en móviles
-function toggleMenu() {
-    const nav = document.querySelector('nav ul');
-    nav.classList.toggle('active');
-}
-
-// Validación del formulario de compra
-function validarFormularioCompra(event) {
-    event.preventDefault();
-    
-    const nombre = document.getElementById('nombre').value;
-    const direccion = document.getElementById('direccion').value;
-    const telefono = document.getElementById('telefono').value;
-    const email = document.getElementById('email').value;
-    const pago = document.getElementById('pago').value;
-    
-    if (!nombre || !direccion || !telefono || !email || !pago) {
-        alert('Por favor, complete todos los campos obligatorios.');
-        return false;
-    }
-    
-    if (carrito.length === 0) {
-        alert('Debe agregar al menos un producto al carrito.');
-        return false;
-    }
-    
-    // Simular proceso de compra
-    alert('¡Compra realizada con éxito! Será redirigido a la página de inicio.');
-    vaciarCarrito();
-    window.location.href = 'index.html';
-    return true;
-}
 
 // Inicialización cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
-    // Cargar carrito desde localStorage
-    cargarCarrito();
-    
-    // Configurar evento para vaciar carrito
-    const btnVaciar = document.getElementById('vaciar-carrito');
-    if (btnVaciar) {
-        btnVaciar.addEventListener('click', vaciarCarrito);
+    // Cargar productos por categoría si estamos en una página de listado
+    if (document.querySelector('.productos-grid') || document.querySelector('.tabla-productos')) {
+        const categoria = obtenerCategoriaDeURL();
+        cargarProductosPorCategoria(categoria);
     }
-    
-    // Configurar evento para formulario de compra
-    const formCompra = document.querySelector('.form-compra');
-    if (formCompra) {
-        formCompra.addEventListener('submit', validarFormularioCompra);
-    }
-    
-    // Configurar botones de agregar al carrito en páginas de productos
-    document.querySelectorAll('.btn-agregar').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = parseInt(e.target.getAttribute('data-id'));
-            agregarAlCarrito(id);
-        });
-    });
     
     // Configurar menú hamburguesa para móviles
     const menuToggle = document.querySelector('.menu-toggle');
     if (menuToggle) {
         menuToggle.addEventListener('click', toggleMenu);
     }
-});
-function setupMobileDropdown() {
-    const dropdowns = document.querySelectorAll('.dropdown');
     
-    dropdowns.forEach(dropdown => {
-        const link = dropdown.querySelector('a');
+    // Configurar filtros de categoría
+    setupFiltrosCategoria();
+    
+    // Configurar dropdown para móviles
+    setupMobileDropdown();
+    
+    // Configurar botón "Ver Productos"
+    setupVerProductosBtn();
+    
+    // Configurar botones "Agregar al Carrito" en la página de inicio
+    setupBotonesAgregarCarrito();
+});
+
+// Función para cargar productos por categoría
+function cargarProductosPorCategoria(categoria) {
+    const productosGrid = document.querySelector('.productos-grid');
+    const productosTabla = document.querySelector('.tabla-productos tbody');
+    
+    let productosFiltrados = productos;
+    
+    // Filtrar por categoría si se especifica
+    if (categoria && categoria !== 'todos') {
+        productosFiltrados = productos.filter(producto => producto.categoria === categoria);
+    }
+    
+    // Cargar en grid (listado_box.html)
+    if (productosGrid) {
+        productosGrid.innerHTML = '';
         
-        link.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                dropdown.classList.toggle('active');
-            }
+        productosFiltrados.forEach(producto => {
+            const productoElement = document.createElement('div');
+            productoElement.className = 'producto';
+            productoElement.setAttribute('data-categoria', producto.categoria);
+            productoElement.innerHTML = `
+                <img src="${producto.imagen}" alt="${producto.nombre}">
+                <h3>${producto.nombre}</h3>
+                <p>${obtenerDescripcionCorta(producto.nombre)}</p>
+                <p class="precio">$${producto.precio}</p>
+                <button class="btn btn-agregar" data-id="${producto.id}">Agregar al Carrito</button>
+            `;
+            productosGrid.appendChild(productoElement);
+        });
+        
+        // Configurar botones "Agregar al Carrito"
+        setupBotonesAgregarCarrito();
+    }
+    
+    // Cargar en tabla (listado_tabla.html)
+    if (productosTabla) {
+        productosTabla.innerHTML = '';
+        
+        productosFiltrados.forEach(producto => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td><img src="${producto.imagen}" alt="${producto.nombre}"></td>
+                <td>${producto.nombre}</td>
+                <td>${obtenerDescripcionLarga(producto.nombre)}</td>
+                <td>$${producto.precio}</td>
+            `;
+            productosTabla.appendChild(fila);
+        });
+    }
+}
+
+// Configurar botones "Agregar al Carrito"
+function setupBotonesAgregarCarrito() {
+    document.querySelectorAll('.btn-agregar').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            agregarAlCarrito(id);
         });
     });
 }
 
-// Función para el botón "Ver Productos"
+// Función para agregar producto al carrito
+function agregarAlCarrito(id) {
+    // Buscar el producto en la lista de productos disponibles
+    const producto = productos.find(p => p.id === id);
+    
+    if (producto) {
+        // Cargar carrito actual
+        let carrito = [];
+        const carritoGuardado = localStorage.getItem('carrito');
+        if (carritoGuardado) {
+            carrito = JSON.parse(carritoGuardado);
+        }
+        
+        // Verificar si el producto ya está en el carrito
+        const productoExistente = carrito.findIndex(p => p.id === id);
+        
+        if (productoExistente !== -1) {
+            // Si ya existe, aumentar la cantidad
+            carrito[productoExistente].cantidad++;
+        } else {
+            // Si no existe, agregarlo al carrito
+            carrito.push({
+                id: producto.id,
+                nombre: producto.nombre,
+                precio: producto.precio,
+                imagen: producto.imagen,
+                cantidad: 1
+            });
+        }
+        
+        // Guardar carrito
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        
+        // Actualizar contador
+        actualizarContadorCarrito();
+        
+        // Mostrar notificación
+        mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+    }
+}
+
+// Actualizar contador de carrito en el header
+function actualizarContadorCarrito() {
+    const contador = document.querySelector('.carrito-count');
+    let carrito = [];
+    const carritoGuardado = localStorage.getItem('carrito');
+    
+    if (carritoGuardado) {
+        carrito = JSON.parse(carritoGuardado);
+    }
+    
+    const totalItems = carrito.reduce((sum, producto) => sum + producto.cantidad, 0);
+    
+    if (contador) {
+        if (totalItems > 0) {
+            contador.textContent = totalItems;
+            contador.style.display = 'inline-block';
+        } else {
+            contador.style.display = 'none';
+        }
+    }
+}
+
+// Mostrar notificación
+function mostrarNotificacion(mensaje, esError = false) {
+    // Eliminar notificación existente si hay una
+    const notificacionExistente = document.querySelector('.notificacion');
+    if (notificacionExistente) {
+        notificacionExistente.remove();
+    }
+    
+    // Crear nueva notificación
+    const notificacion = document.createElement('div');
+    notificacion.className = `notificacion ${esError ? 'error' : ''}`;
+    notificacion.textContent = mensaje;
+    
+    document.body.appendChild(notificacion);
+    
+    // Mostrar notificación
+    setTimeout(() => {
+        notificacion.classList.add('mostrar');
+    }, 10);
+    
+    // Ocultar y eliminar notificación después de 3 segundos
+    setTimeout(() => {
+        notificacion.classList.remove('mostrar');
+        setTimeout(() => {
+            notificacion.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Resto de funciones auxiliares (se mantienen igual)
+function obtenerDescripcionCorta(nombreProducto) {
+    const descripciones = {
+        "Arduino Uno R3": "Placa de desarrollo con microcontrolador ATmega328P",
+        "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm",
+        "Módulo Bluetooth HC-05": "Módulo Bluetooth para comunicación serial",
+        "Arduino Mega 2560": "Placa con más pines y memoria que Arduino Uno",
+        "Sensor Ultrasonido": "Sensor de distancia por ultrasonido HC-SR04",
+        "Pack de LEDs": "Set de 50 LEDs de diferentes colores",
+        "Pantalla LCD": "Pantalla LCD 16x2 con interfaz I2C",
+        "Cables Dupont H-H 40 und": "Cables hembra-hembra para prototipado",
+        "Cables Dupont M-H 40 und": "Cables macho-hembra para conexiones",
+        "Cables Dupont M-M 40 und": "Cables macho-macho para breadboard",
+        "Arduino Nano": "Versión compacta del Arduino UNO"
+    };
+    
+    return descripciones[nombreProducto] || "Producto de calidad para tus proyectos Arduino";
+}
+
+function obtenerDescripcionLarga(nombreProducto) {
+    const descripciones = {
+        "Arduino Uno R3": "Placa de desarrollo original Arduino Uno Rev3 con microcontrolador ATmega328P, ideal para principiantes y proyectos avanzados.",
+        "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm, perfecto para proyectos de robótica y automatización.",
+        "Módulo Bluetooth HC-05": "Módulo Bluetooth para comunicación serial, permite conectar dispositivos Arduino con smartphones y otros dispositivos Bluetooth.",
+    };
+    
+    return descripciones[nombreProducto] || obtenerDescripcionCorta(nombreProducto);
+}
+
+function obtenerCategoriaDeURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('categoria');
+}
+
+function toggleMenu() {
+    const nav = document.querySelector('nav ul');
+    nav.classList.toggle('active');
+}
+
+function setupFiltrosCategoria() {
+    // Implementación según sea necesario
+}
+
+function setupMobileDropdown() {
+    // Implementación según sea necesario
+}
+
+function setupVerProductosBtn() {
+    const verProductosBtn = document.getElementById('ver-productos-btn');
+    if (verProductosBtn) {
+        verProductosBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'listado_box.html';
+        });
+
+
+// Función para actualizar la interfaz según el estado de sesión
+function actualizarEstadoSesion() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const username = localStorage.getItem('username');
+    const loginBtn = document.getElementById('login-btn-item');
+    const userMenu = document.getElementById('user-menu-item');
+    const userName = document.getElementById('user-name-item');
+
+    if (isLoggedIn === 'true' && username) {
+        // Usuario logueado
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'block';
+        if (userName) userName.textContent = username;
+    } else {
+        // Usuario no logueado
+        if (loginBtn) loginBtn.style.display = 'block';
+        if (userMenu) userMenu.style.display = 'none';
+    }
+}
+
+// Función para cerrar sesión
+function cerrarSesion() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    localStorage.removeItem('loginTime');
+    actualizarEstadoSesion();
+    mostrarNotificacion('Sesión cerrada correctamente');
+    
+    // Redirigir a la página principal después de cerrar sesión
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1500);
+}
+
+/// Configurar evento para el botón de cerrar sesión
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            cerrarSesion();
+        });
+    }
+
+    // Actualizar estado de sesión al cargar la página
+    actualizarEstadoSesion();
+    }
+}
+
+
+
+/*// Función para el botón "Ver Productos"
 function setupVerProductosBtn() {
     const verProductosBtn = document.getElementById('ver-productos-btn');
     
@@ -224,4 +330,4 @@ document.addEventListener('DOMContentLoaded', function() {
             nav.classList.toggle('active');
         });
     }
-});
+});*/

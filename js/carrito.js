@@ -1,9 +1,8 @@
-// carrito.js - Funcionalidad específica para el carrito de compras
 
 // Variables globales
 let carrito = [];
 let total = 0;
-
+let justAdded = false; // Prevenir doble clic
 // Inicialización cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar carrito desde localStorage
@@ -30,7 +29,8 @@ function cargarCarrito() {
     const carritoGuardado = localStorage.getItem('carrito');
     if (carritoGuardado) {
         carrito = JSON.parse(carritoGuardado);
-        calcularTotal();
+        mostrarProductosCarrito();
+        actualizarContadorCarrito();
     }
 }
 
@@ -293,6 +293,9 @@ function mostrarNotificacion(mensaje, esError = false) {
 
 // Función para agregar producto al carrito (desde otras páginas)
 function agregarAlCarrito(id) {
+     // Evitar doble ejecución
+    if (this.justAdded) return;
+    this.justAdded = true;
     // Buscar el producto en la lista de productos disponibles
     const producto = productos.find(p => p.id === id);
     
@@ -318,5 +321,10 @@ function agregarAlCarrito(id) {
         guardarCarrito();
         calcularTotal();
         mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+    
+        // Restablecer después de un breve período
+    setTimeout(() => {
+        this.justAdded = false;
+    }, 500);
     }
 }
