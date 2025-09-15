@@ -1,3 +1,4 @@
+// NO TOCAR FUNCIONA
 // auth.js - Maneja tanto login como registro
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
