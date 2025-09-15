@@ -1,4 +1,4 @@
-// Función para manejar el menú desplegable en móviles
+// Función para manejar el menú desplegable en móviles // NO TOCAR FUNCIONA
 // scripts.js - Funcionalidad para TQComponents
 
 // Carrito de compras
