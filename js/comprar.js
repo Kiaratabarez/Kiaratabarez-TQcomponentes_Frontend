@@ -384,27 +384,4 @@ document.addEventListener('DOMContentLoaded', function() {
         const errorInputs = document.querySelectorAll('.input-error');
         errorInputs.forEach(input => input.classList.remove('input-error'));
     }
-
-    // Función para verificar si ya hay una sesión activa (MODIFICADA) NUECO
-function checkExistingSession() {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const loginTime = localStorage.getItem('loginTime');
-    
-    if (isLoggedIn && loginTime) {
-        const currentTime = new Date().getTime();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
-        
-        if (currentTime - loginTime > twentyFourHours) {
-            // Sesión expirada
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
-            localStorage.removeItem('loginTime');
-        } else {
-            // Solo redirigir si NO estamos en la página de login
-            if (!window.location.pathname.includes('login.html')) {
-                window.location.href = 'index.html';
-            }
-        }
-    }
-}
 });

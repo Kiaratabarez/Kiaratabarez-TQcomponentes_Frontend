@@ -249,53 +249,6 @@ function setupVerProductosBtn() {
             e.preventDefault();
             window.location.href = 'listado_box.html';
         });
-
-
-// Función para actualizar la interfaz según el estado de sesión
-function actualizarEstadoSesion() {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const username = localStorage.getItem('username');
-    const loginBtn = document.getElementById('login-btn-item');
-    const userMenu = document.getElementById('user-menu-item');
-    const userName = document.getElementById('user-name-item');
-
-    if (isLoggedIn === 'true' && username) {
-        // Usuario logueado
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (userMenu) userMenu.style.display = 'block';
-        if (userName) userName.textContent = username;
-    } else {
-        // Usuario no logueado
-        if (loginBtn) loginBtn.style.display = 'block';
-        if (userMenu) userMenu.style.display = 'none';
-    }
-}
-
-// Función para cerrar sesión
-function cerrarSesion() {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('username');
-    localStorage.removeItem('loginTime');
-    actualizarEstadoSesion();
-    mostrarNotificacion('Sesión cerrada correctamente');
-    
-    // Redirigir a la página principal después de cerrar sesión
-    setTimeout(() => {
-        window.location.href = 'index.html';
-    }, 1500);
-}
-
-/// Configurar evento para el botón de cerrar sesión
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            cerrarSesion();
-        });
-    }
-
-    // Actualizar estado de sesión al cargar la página
-    actualizarEstadoSesion();
     }
 }
 
