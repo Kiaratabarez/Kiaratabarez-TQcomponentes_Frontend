@@ -1,4 +1,4 @@
-// carrito.js - Funcionalidad específica para el carrito de compras
+// carrito.js - NO TOCAR FUNCIONA
 
 // Variables globales
 let carrito = [];
