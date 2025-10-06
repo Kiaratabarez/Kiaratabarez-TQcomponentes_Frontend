@@ -9,8 +9,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body> 
-    <a href="javascript:history.back()" class="btn-volver">
-    <img src="imagenes/home.svg" alt="Volver" width="24" height="24">
+<a href="javascript:history.back()" class="btn-volver">
+<img src="imagenes/iconos/home.svg" alt="Volver al inicio">
+</a>
+
 </a>
 <!-- Encabezado-->
 <header>
@@ -21,10 +23,9 @@
             <nav>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
-                    <li><a href="producto.html">Producto</a></li>
-                    <ul class="dropdown-menu">
-                            <li><a href="listado_box.html?categoria=todos">Todos los productos</a></li>
-                            <li><a href="listado_box.html?categoria=arduino">Placas Arduino</a></li>
+                    <a href="listado_box.html">Productos <i class="fas fa-chevron-down"></i></a> <!--colocar icono flecha hacia abajo-->
+                        <ul class="dropdown-menu">
+                            <li><a href="listado_box.html?categoria=placas">Placas Arduino</a></li>
                             <li><a href="listado_box.html?categoria=sensores">Sensores</a></li>
                             <li><a href="listado_box.html?categoria=modulos">Módulos</a></li>
                             <li><a href="listado_box.html?categoria=actuadores">Actuadores</a></li>
@@ -66,5 +67,14 @@
     </footer>
 
     <script src="js/scripts.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const botonVolver = document.querySelector(".btn-volver");
+    const paginaActual = window.location.pathname.split("/").pop();
+    if (paginaActual === "" || paginaActual === "index.html") {
+        botonVolver.style.display = "none";
+    }
+    });
+    </script>
 </body>
 </html>
