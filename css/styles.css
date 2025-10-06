@@ -768,3 +768,293 @@ footer {
 
     
 }
+
+/*Estilo para el catalogo*/
+#filtros {
+display: flex;
+justify-content: center;
+gap: 1rem;
+margin: 20px 0;
+flex-wrap: wrap;
+}
+
+#filtros label {
+font-weight: bold;
+}
+
+#filtros select {
+padding: 5px;
+border-radius: 5px;
+border: 1px solid #ccc;
+}
+
+.tabla-productos table {
+width: 90%;
+margin: 0 auto;
+border-collapse: collapse;
+}
+
+.tabla-productos th, .tabla-productos td {
+border: 1px solid #ccc;
+padding: 10px;
+text-align: center;
+}
+
+.tabla-productos th {
+background-color: #f4f4f4;
+}
+
+
+
+
+/* Imágenes responsive del catálogo */
+.img-producto {
+width: 80%;               /* Tamaño relativo al ancho de la celda */
+max-width: 150px;         /* Límite para pantallas grandes */
+height: auto;             /* Mantiene proporciones */
+object-fit: contain;      /* Evita deformaciones */
+border-radius: 8px;
+transition: transform 0.3s ease;
+}
+
+.img-producto:hover {
+transform: scale(1.05);
+}
+
+/* 🔹 Ajuste responsive del catálogo */
+@media (max-width: 768px) {
+.img-producto {
+width: 70%;
+max-width: 120px;
+}
+
+.tabla-productos table {
+font-size: 0.9rem;
+}
+}
+
+@media (max-width: 480px) {
+.img-producto {
+width: 60%;
+max-width: 100px;
+}
+
+.tabla-productos table {
+width: 100%;
+font-size: 0.85rem;
+}
+
+#filtros {
+flex-direction: column;
+align-items: center;
+}
+}
+
+/* 🧱 Vista tipo tarjetas para móviles */
+@media (max-width: 600px) {
+/* Oculta los encabezados de la tabla */
+.tabla-productos thead {
+display: none;
+}
+
+/* Cada fila se comporta como una tarjeta */
+.tabla-productos tr {
+display: block;
+background: white;
+margin: 10px auto;
+border-radius: 10px;
+box-shadow: var(--shadow);
+padding: 15px;
+width: 90%;
+}
+
+/* Celdas internas */
+.tabla-productos td {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px 0;
+border: none;
+border-bottom: 1px solid #eee;
+}
+
+/* Quita borde de la última fila */
+.tabla-productos td:last-child {
+border-bottom: none;
+}
+
+/* Títulos automáticos por columna */
+.tabla-productos td::before {
+content: attr(data-label);
+font-weight: bold;
+color: var(--color-primary);
+flex-basis: 40%;
+text-align: left;
+}
+
+/* Imagen centrada */
+.tabla-productos td:first-child {
+justify-content: center;
+}
+
+.tabla-productos .img-producto {
+width: 60%;
+max-width: 100px;
+}
+}
+
+/* 🔙 Botón volver */
+.btn-volver {
+position: fixed;
+top: 18px;
+left: 20px; /* posición del icono */
+z-index: 1000;
+display: flex;
+align-items: center;
+justify-content: center;
+background: transparent;
+border: none;
+}
+
+/* Imagen dentro del botón */
+.btn-volver img {
+width: 25px;
+height: 25px;
+filter: brightness(0) invert(1);
+transition: transform 0.3s ease;
+}
+
+/* Pequeña separación entre el icono y el texto del logo */
+.logo h1 {
+margin-left: 60px; 
+}
+
+/* 🛒 Enlace del carrito */
+.carrito-link {
+position: relative;
+display: inline-flex;
+align-items: center;  
+gap: 8px;
+color: white;
+text-decoration: none;
+padding: 6px 10px;
+}
+
+.carrito-link .icono-carrito,
+.carrito-link img.icono-carrito {
+width: 22px;
+height: 22px;
+display: inline-block;
+vertical-align: middle;
+filter: brightness(0) invert(1);
+transition: transform 0.15s ease;
+}
+
+.carrito-count {
+position: absolute;
+top: 50%;
+right: -8px;
+transform: translateY(-50%);
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 20px;
+height: 20px;
+font-size: 12px;
+line-height: 1;
+padding: 0;
+border-radius: 50%;
+background: var(--color-secondary);
+color: #fff;
+font-weight: 700;
+box-sizing: border-box;
+}
+@media (max-width:480px){
+.carrito-count { width: 22px; height: 22px; font-size: 13px; right: -10px; }
+.carrito-link .icono-carrito { width: 26px; height: 26px; }
+}
+
+
+/* Menú de usuario mejorado */
+.user-menu {
+    position: relative;
+    display: block;
+}
+
+.user-menu > div > a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--color-success);
+    cursor: pointer;
+}
+
+.user-menu > div > a:hover {
+    background: #219652;
+}
+
+.user-menu #user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    width: 200px;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    display: none;
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.user-menu #user-dropdown li {
+    margin: 0;
+    list-style: none;
+}
+
+.user-menu #user-dropdown a {
+    color: var(--color-dark);
+    padding: 12px 15px;
+    display: block;
+    border-bottom: 1px solid #eee;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.user-menu #user-dropdown a:hover {
+    background: #f5f5f5;
+    color: var(--color-accent);
+}
+
+.user-menu #user-dropdown li:last-child a {
+    border-bottom: none;
+    color: var(--color-danger);
+}
+
+.user-menu #user-dropdown li:last-child a:hover {
+    background: rgba(192, 57, 43, 0.1);
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+    .user-menu #user-dropdown {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border-top: 1px solid #eee;
+        margin-top: 10px;
+    }
+    
+    .user-menu {
+        width: 100%;
+    }
+    
+    .user-menu > div > a {
+        width: 100%;
+        justify-content: center;
+    }
+}

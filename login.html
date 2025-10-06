@@ -29,7 +29,7 @@
                 <div class="form-group">
                     <label for="username">Usuario</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-user"></i>
+                        <!--colocar icono persona-->
                         <input type="text" id="username" name="username" required>
                     </div>
                     <div class="error-message" id="username-error"></div>
@@ -38,7 +38,7 @@
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
+                        <!--colocar icono candado-->
                         <input type="password" id="password" name="password" required>
                     </div>
                     <div class="error-message" id="password-error"></div>
@@ -65,7 +65,7 @@
                 <div class="form-group">
                     <label for="reg-username">Usuario*</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-user"></i>
+                        <!--colocar icono usuario-->
                         <input type="text" id="reg-username" name="reg-username" required>
                     </div>
                     <div class="error-message" id="reg-username-error"></div>
@@ -74,7 +74,7 @@
                 <div class="form-group">
                     <label for="reg-email">Correo Electrónico*</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
+                    <!--colocar icono sobre o mensaje-->
                         <input type="email" id="reg-email" name="reg-email" required>
                     </div>
                     <div class="error-message" id="reg-email-error"></div>
@@ -83,7 +83,7 @@
                 <div class="form-group">
                     <label for="reg-password">Contraseña*</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
+                        <!--colocar icono candado-->
                         <input type="password" id="reg-password" name="reg-password" required>
                     </div>
                     <div class="error-message" id="reg-password-error"></div>
@@ -96,7 +96,7 @@
                 <div class="form-group">
                     <label for="reg-confirm-password">Confirmar Contraseña*</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
+                        <!--colocar icono candado-->
                         <input type="password" id="reg-confirm-password" name="reg-confirm-password" required>
                     </div>
                     <div class="error-message" id="reg-confirm-password-error"></div>
@@ -105,7 +105,7 @@
                 <div class="form-group">
                     <label for="reg-fullname">Nombre Completo</label>
                     <div class="input-with-icon">
-                        <i class="fas fa-id-card"></i>
+                        <!--colocar icono tarjeta-->
                         <input type="text" id="reg-fullname" name="reg-fullname">
                     </div>
                 </div>
@@ -129,5 +129,14 @@
     </div>
 
     <script src="js/login.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const botonVolver = document.querySelector(".btn-volver");
+    const paginaActual = window.location.pathname.split("/").pop();
+    if (paginaActual === "" || paginaActual === "index.html") {
+        botonVolver.style.display = "none";
+    }
+    });
+</script>
 </body>
 </html>

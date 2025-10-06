@@ -1,81 +1,166 @@
-<!--Funciona NOTOCAR-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Productos - Tabla</title>
+<title>Productos - Catálogo</title>
 <link rel="stylesheet" href="css/styles.css">
 </head>
-<body> <!-- botón volver al inicio-->
+<body>
+
+<!-- Botón volver -->
 <a href="javascript:history.back()" class="btn-volver">
-    <img src="imagenes/home.svg" alt="Volver" width="20" height="20">
+<img src="imagenes/iconos/home.svg" alt="Volver" width="20" height="20">
 </a>
-<!-- Encabezado-->
+
+<!-- Encabezado -->
 <header>
-        <div class="container">
-            <h1>TQComponents</h1>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="producto.html">Producto</a></li>
-                    <li><a href="listado_box.html">Listado Box</a></li>
-                    <li><a href="listado_tabla.html">Listado Tabla</a></li>
-                    <li><a href="comprar.html">Compra</a></li>
-                </ul>
-            </nav>
-        </div>
+<div class="header-container">
+<div class="logo">
+    <h1>TQComponents</h1>
+</div>
+<nav>
+    <ul>
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="#">Productos</a></li>
+    <li>
+        <a href="carrito.html" class="carrito-link">
+        <img src="imagenes/iconos/carrito.svg" alt="Carrito" class="icono-carrito">
+        <span>Carrito</span>
+        <span class="carrito-count">0</span>
+        </a>
+    </li>
+    </ul>
+</nav>
+</div>
 </header>
 
 <main class="tabla-productos">
-    <h1>Productos - Tabla</h1>
-<table>
-    <thead>
+<h1>Productos - Catálogo</h1>
+
+<!-- 🔹 Filtros -->
+<section id="filtros">
+<label for="categoria">Filtrar por categoría:</label>
+<select id="categoria">
+    <option value="todas">Todas</option>
+    <option value="Placas">Placas</option>
+    <option value="Módulos">Módulos</option>
+    <option value="Sensores">Sensores</option>
+    <option value="Actuadores">Actuadores</option>
+    <option value="Accesorios">Accesorios</option>
+</select>
+
+<label for="orden">Ordenar por:</label>
+<select id="orden">
+    <option value="nombre-asc">Nombre (A-Z)</option>
+    <option value="nombre-desc">Nombre (Z-A)</option>
+</select>
+</section>
+
+<!-- 🔹 Tabla de productos -->
+<table id="tabla-productos">
+<thead>
     <tr>
-        <th>Imagen</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Precio</th>
+    <th>Imagen</th>
+    <th>Nombre</th>
+    <th>Descripción</th>
+    <th>Precio</th>
+    <th>Categoría</th>
     </tr>
-    </thead>
-    <tbody>
+</thead>
+<tbody>
+    <!-- 🟩 PLACAS -->
     <tr>
-        <td><img src="imagenes/CablesDupont_H-H40und.jpg" alt="Cables H-H"></td>
-        <td>Cables H-H</td>
-        <td>Set de cables con conectores hembra-hembra, ideales para prototipos y conexiones entre módulos en placas Arduino.</td>
-        <td>$1000</td>
-    </tr>
-    <tr>
-        <td><img src="imagenes/Cables DupontM-H40_und.jpg" alt="Cables H-M"></td>
-        <td>Cables H-M</td>
-        <td>Set de cables macho-hembra, perfectos para interconectar módulos y sensores con la placa Arduino.</td>
-        <td>$1500</td>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Placas/PlacaUNO-R3.jpg" alt="Arduino UNO REV3"></td>
+    <td>Arduino UNO REV3</td>
+    <td>Placa original Arduino UNO Rev3, ideal para aprendizaje y proyectos electrónicos.</td>
+    <td>$2000</td>
+    <td>Placas</td>
     </tr>
     <tr>
-        <td><img src="imagenes/CablesDupontM-M_40und.jpg" alt="Cables M-M"></td>
-        <td>Cables M-M</td>
-        <td>Set de cables macho-macho, diseñado para placas de pruebas y conexiones rápidas entre pines.</td>
-        <td>$2000</td>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Placas/Arduino-mega2560.jpg" alt="Arduino Mega"></td>
+    <td>Arduino Mega 2560</td>
+    <td>Placa con mayor cantidad de pines digitales y memoria que el modelo UNO.</td>
+    <td>$2500</td>
+    <td>Placas</td>
     </tr>
     <tr>
-        <td><img src="imagenes/ArduinoUNO-REV3.jpg" alt="Arduino UNO REV3"></td>
-        <td>Arduino UNO REV3</td>
-        <td>Placa original Arduino UNO Rev3, el modelo más popular para aprendizaje y proyectos electrónicos. Incluye microcontrolador ATmega328P.</td>
-        <td>$2000</td>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Placas/PlacaNano.jpg" alt="Arduino Nano"></td>
+    <td>Arduino Nano</td>
+    <td>Versión compacta del UNO, perfecta para proyectos pequeños o portátiles.</td>
+    <td>$1800</td>
+    <td>Placas</td>
+    </tr>
+
+    <!-- 🟦 MÓDULOS -->
+    <tr>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Modulos/MóduloBluetooth_HC-05.jpg" alt="Módulo Bluetooth HC-05"></td>
+    <td>Módulo Bluetooth HC-05</td>
+    <td>Permite comunicación inalámbrica entre Arduino y otros dispositivos Bluetooth.</td>
+    <td>$1500</td>
+    <td>Módulos</td>
     </tr>
     <tr>
-        <td><img src="imagenes/Arduino-mega2560.jpg" alt="Arduino Mega"></td>
-        <td>Arduino Mega</td>
-        <td>Placa Arduino Mega 2560, ideal para proyectos grandes que requieren más pines digitales y memoria que el UNO.</td>
-        <td>$2000</td>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Modulos/MóduloRF Bluetooth_HC-06.jpg" alt="Módulo Bluetooth HC-06"></td>
+    <td>Módulo Bluetooth HC-06</td>
+    <td>Permite comunicación inalámbrica entre Arduino y otros dispositivos Bluetooth.</td>
+    <td>$1700</td>
+    <td>Módulos</td>
+    </tr>
+
+    <!-- 🟨 SENSORES -->
+    <tr>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Sensores/sensordistanciaUltrasonico-HcSr04.png" alt="Sensor Ultrasonido HC-SR04"></td>
+    <td>Sensor Ultrasonido HC-SR04</td>
+    <td>Mide distancias mediante ondas ultrasónicas, ideal para robótica y detección de obstáculos.</td>
+    <td>$1900</td>
+    <td>Sensores</td>
+    </tr>
+
+    <!-- 🟧 ACTUADORES -->
+    <tr>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Actuadores/Servomotor-SG90-9G.jpg" alt="Servo SG90"></td>
+    <td>Servo Motor SG90</td>
+    <td>Servo de 9g ideal para movimientos precisos en proyectos robóticos.</td>
+    <td>$1000</td>
+    <td>Actuadores</td>
+    </tr>
+
+    <!-- 🟪 ACCESORIOS -->
+    <tr>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Accesorios/CablesDupontM-M_40und.jpg" alt="Cables M-M"></td>
+    <td>Cables M-M</td>
+    <td>Set de cables macho-macho para conexiones rápidas entre pines.</td>
+    <td>$800</td>
+    <td>Accesorios</td>
     </tr>
     <tr>
-        <td><img src="imagenes/PlacaNano.jpg" alt="Arduino Nano"></td>
-        <td>Arduino Nano</td>
-        <td>Versión compacta del Arduino UNO, perfecta para proyectos pequeños o de espacio reducido, con la misma funcionalidad básica.</td>
-        <td>$2000</td>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Accesorios/Cables DupontM-H40_und.jpg" alt="Cables M-H"></td>
+    <td>Cables M-H</td>
+    <td>Set de cables macho-hembra, ideales para conectar sensores y módulos.</td>
+    <td>$900</td>
+    <td>Accesorios</td>
     </tr>
-    </tbody>
+    <tr>
+    <td data-label="Imagen"><img class="img-producto" src="imagenes/Accesorios/CablesDupont_H-H40und.jpg" alt="Cables H-H"></td>
+    <td>Cables H-H</td>
+    <td>Cables hembra-hembra usados en protoboards y módulos.</td>
+    <td>$950</td>
+    <td>Accesorios</td>
+    </tr>
+</tbody>
 </table>
 </main>
+
+<script src="js/catalogo.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+const botonVolver = document.querySelector(".btn-volver");
+const paginaActual = window.location.pathname.split("/").pop();
+if (paginaActual === "" || paginaActual === "index.html") {
+    botonVolver.style.display = "none";
+}
+});
+</script>
+
 </body>
 </html>

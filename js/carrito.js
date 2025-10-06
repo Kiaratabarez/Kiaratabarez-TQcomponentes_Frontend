@@ -1,5 +1,3 @@
-// carrito.js - Funcionalidad específica para el carrito de compras
-
 // Variables globales
 let carrito = [];
 let total = 0;
@@ -244,23 +242,19 @@ function finalizarCompra(e) {
             window.location.href = 'login.html';
         }, 2000);
     }
-    // Si está logueado, la redirección a comprar.html ocurre naturalmente
 }
 
 // Actualizar contador de carrito en el header
 function actualizarContadorCarrito() {
     const contador = document.querySelector('.carrito-count');
     const totalItems = carrito.reduce((sum, producto) => sum + producto.cantidad, 0);
-    
+
     if (contador) {
-        if (totalItems > 0) {
-            contador.textContent = totalItems;
-            contador.style.display = 'inline-block';
-        } else {
-            contador.style.display = 'none';
-        }
+        contador.textContent = totalItems; 
+        contador.style.display = 'inline-flex'; // Siempre visible
     }
 }
+
 
 // Mostrar notificación
 function mostrarNotificacion(mensaje, esError = false) {
@@ -269,15 +263,13 @@ function mostrarNotificacion(mensaje, esError = false) {
     if (notificacionExistente) {
         notificacionExistente.remove();
     }
-    
-    // Crear nueva notificación
+
     const notificacion = document.createElement('div');
     notificacion.className = `notificacion ${esError ? 'error' : ''}`;
     notificacion.textContent = mensaje;
     
     document.body.appendChild(notificacion);
     
-    // Mostrar notificación
     setTimeout(() => {
         notificacion.classList.add('mostrar');
     }, 10);
@@ -291,32 +283,38 @@ function mostrarNotificacion(mensaje, esError = false) {
     }, 3000);
 }
 
-// Función para agregar producto al carrito (desde otras páginas)
 function agregarAlCarrito(id) {
-    // Buscar el producto en la lista de productos disponibles
-    const producto = productos.find(p => p.id === id);
-    
-    if (producto) {
-        // Verificar si el producto ya está en el carrito
-        const productoExistente = carrito.findIndex(p => p.id === id);
-        
-        if (productoExistente !== -1) {
-            // Si ya existe, aumentar la cantidad
-            carrito[productoExistente].cantidad++;
-        } else {
-            // Si no existe, agregarlo al carrito
-            carrito.push({
-                id: producto.id,
-                nombre: producto.nombre,
-                precio: producto.precio,
-                imagen: producto.imagen,
-                cantidad: 1
-            });
-        }
-        
-        // Guardar y actualizar
-        guardarCarrito();
-        calcularTotal();
-        mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+    const now = Date.now();
+    if (!window._ultimoAdd) window._ultimoAdd = {};
+    if (window._ultimoAdd[id] && (now - window._ultimoAdd[id] < 500)) {
+        console.warn('Ignorando add doble para id', id);
+        return;
     }
+    window._ultimoAdd[id] = now;
+
+    const producto = productos.find(p => p.id === id);
+    if (!producto) {
+        console.error('Producto no encontrado para id', id);
+        return;
+    }
+
+    const productoExistenteIdx = carrito.findIndex(p => p.id === id);
+
+    if (productoExistenteIdx !== -1) {
+        // existe -> aumentar cantidad en 1
+        carrito[productoExistenteIdx].cantidad++;
+    } else {
+        // no existe -> agregar con cantidad 1
+        carrito.push({
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            imagen: producto.imagen,
+            cantidad: 1
+        });
+    }
+
+    guardarCarrito();
+    calcularTotal();
+    mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
 }

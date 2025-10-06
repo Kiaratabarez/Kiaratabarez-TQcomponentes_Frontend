@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+<a href="javascript:history.back()" class="btn-volver">
+<img src="imagenes/iconos/home.svg" alt="Volver al inicio">
+</a>
+
+
     <header>
         <div class="container header-container">
             <div class="logo">
@@ -20,7 +25,7 @@
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li class="dropdown">
-                        <a href="listado_box.html">Productos <i class="fas fa-chevron-down"></i></a>
+                        <a href="listado_box.html">Productos <i class="fas fa-chevron-down"></i></a> <!--colocar icono flecha hacia abajo-->
                         <ul class="dropdown-menu">
                             <li><a href="listado_box.html?categoria=placas">Placas Arduino</a></li>
                             <li><a href="listado_box.html?categoria=sensores">Sensores</a></li>
@@ -29,7 +34,13 @@
                             <li><a href="listado_box.html?categoria=accesorios">Accesorios</a></li>
                         </ul>
                     </li>
-                    <li><a href="carrito.html">Carrito <span class="carrito-count">0</span></a></li>
+                    <li>
+                        <a href="carrito.html" class="carrito-link">
+                        <img src="imagenes/iconos/carrito.svg" alt="Carrito" class="icono-carrito">
+                        <span>Carrito</span>
+                        <span class="carrito-count">0</span>
+                        </a>
+                    </li>
                     <li class="login-btn"><a href="login.html">Login</a></li>
                 </ul>
             </nav>
@@ -41,7 +52,7 @@
             <h2>Tu Carrito de Compras</h2>
             
             <div class="carrito-vacio" id="carrito-vacio">
-                <i class="fas fa-shopping-cart"></i>
+                <!--colocar icono carrito-->
                 <p>No hay productos en el carrito</p>
                 <a href="listado_box.html" class="btn btn-primario">Seguir Comprando</a>
             </div>
@@ -70,13 +81,13 @@
                     
                     <div class="carrito-acciones">
                         <a href="listado_box.html" class="btn btn-secundario">
-                            <i class="fas fa-arrow-left"></i> Seguir Comprando
+                            Seguir Comprando <!--colocar icono flecha izq-->
                         </a>
                         <button id="vaciar-carrito" class="btn btn-peligro">
-                            <i class="fas fa-trash"></i> Vaciar Carrito
+                            Vaciar Carrito <!--colocar icono basura-->
                         </button>
                         <a href="comprar.html" id="finalizar-compra" class="btn btn-primario">
-                            Finalizar Compra <i class="fas fa-arrow-right"></i>
+                            Finalizar Compra <!--colocar icono flecha der-->
                         </a>
                     </div>
                 </div>
@@ -92,5 +103,14 @@
 
     <script src="js/carrito.js"></script>
     <script src="js/scripts.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+const botonVolver = document.querySelector(".btn-volver");
+const paginaActual = window.location.pathname.split("/").pop();
+if (paginaActual === "" || paginaActual === "index.html") {
+    botonVolver.style.display = "none";
+}
+});
+</script>
 </body>
 </html>

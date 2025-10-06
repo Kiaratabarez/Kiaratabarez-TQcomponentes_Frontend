@@ -271,21 +271,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     }
     
-    // Función para manejar login exitoso
+    // Función para manejar login exitoso - MODIFICADO
     function handleSuccessfulLogin(username) {
+        // Guardar datos de sesión
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('username', username);
         localStorage.setItem('loginTime', new Date().getTime());
         
         showSuccess(loginForm, '¡Inicio de sesión exitoso! Redirigiendo...');
         
-        // Actualizar el estado de sesión en todas las páginas
-    if (typeof actualizarEstadoSesion !== 'undefined') {
-        actualizarEstadoSesion();
-    }
-
+        // Redirigir con parámetro de recarga forzada
         setTimeout(() => {
-            window.location.href = 'index.html';
+            window.location.href = 'index.html?login=success';
         }, 1500);
     }
     
@@ -360,18 +357,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const twentyFourHours = 24 * 60 * 60 * 1000;
             
             if (currentTime - loginTime > twentyFourHours) {
-                //sesión expirada
+                // Sesión expirada
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('username');
                 localStorage.removeItem('loginTime');
             } else {
-                //solo dirigir si está en la página de login o registro
+                // Solo dirigir si está en la página de login o registro
                 if(window.location.pathname.includes('login.html')){  
                     window.location.href = 'index.html';
+                }
             }
         }
     }
-}
-    Inicializar
+    
+    // Inicializar
     checkExistingSession();
 });

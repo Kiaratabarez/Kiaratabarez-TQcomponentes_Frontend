@@ -7,47 +7,42 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <a href="javascript:history.back()" class="btn-volver">
-    <img src="imagenes/home.svg" alt="Volver" width="24" height="24">
+<a href="javascript:history.back()" class="btn-volver">
+<img src="imagenes/iconos/home.svg" alt="Volver" width="24" height="24">
 </a>
 
-<!--<header>
-    <h1>TQComponents</h1>
-    <nav>
-        <a href="index.html">Inicio</a>
-        <a href="producto.html">Productos</a>
-        <a href="carrito.html">Carrito</a>
-        <a href="login.html">Login</a>
-    </nav>
-</header>-->
-<!-- Encabezado-->
 <header>
         <div class="container">
             <h1>TQComponents</h1>
             <nav>
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
-                    <li><a href="producto.html">Producto</a></li>
+                    <a href="#">Productos </a> <!--colocar icono flecha hacia abajo-->
+                        <ul class="dropdown-menu">
+                            <li><a href="listado_tabla.html?categoria=placas">Placas</a></li>
+                            <li><a href="listado_tabla.html?categoria=sensores">Sensores</a></li>
+                            <li><a href="listado_tabla.html?categoria=modulos">Módulos</a></li>
+                            <li><a href="listado_tabla.html?categoria=actuadores">Actuadores</a></li>
+                            <li><a href="listado_tabla.html?categoria=accesorios">Accesorios</a></li>
+                        </ul>
                     <li><a href="listado_box.html">Listado Box</a></li>
                     <li><a href="listado_tabla.html">Listado Tabla</a></li>
                     <li><a href="comprar.html">Compra</a></li>
                 </ul>
             </nav>
         </div>
-
-<main>
-    <h2>Producto</h2>
-    <section class="productos-grid">
-        <article class="producto">
-            <img src="imagenes/Arduino Mega 2560.jpg" alt="Placa Arduino Mega">
-            <h3>Arduino Mega 2560</h3>
-            <p>$15.000</p>
-            </article>
-    </section>
-</main>
-
+    </header>
 <footer>
     <p>&copy; 2025 TQComponents</p>
 </footer>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const botonVolver = document.querySelector(".btn-volver");
+    const paginaActual = window.location.pathname.split("/").pop();
+    if (paginaActual === "" || paginaActual === "index.html") {
+        botonVolver.style.display = "none";
+    }
+    });
+    </script>
 </body>
 </html>

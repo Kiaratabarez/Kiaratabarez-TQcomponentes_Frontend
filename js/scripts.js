@@ -12,11 +12,19 @@ const productos = [
     { id: 10, nombre: "Cables Dupont M-H 40 und", precio: 1500, imagen: "imagenes/Accesorios/Cables DupontM-H40_und.jpg", categoria: "accesorios" },
     { id: 11, nombre: "Sensor Infrarojo", precio:7000 , imagen: "imagenes/Sensores/sensorinfrarojo.png", categoria: "sensores" },
     { id: 12, nombre: "Arduino Nano", precio: 8000, imagen: "imagenes/Placas/PlacaNano.jpg", categoria: "placas" }
-
 ];
 
 // Inicialización cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
+    // Limpiar parámetros de URL si viene desde login
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === 'success') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Actualizar estado de sesión en el header
+    actualizarEstadoSesion();
+    
     // Cargar productos por categoría si estamos en una página de listado
     if (document.querySelector('.productos-grid') || document.querySelector('.tabla-productos')) {
         const categoria = obtenerCategoriaDeURL();
@@ -32,7 +40,95 @@ document.addEventListener('DOMContentLoaded', function() {
     setupMobileDropdown();
     setupVerProductosBtn();
     setupBotonesAgregarCarrito();
+    actualizarContadorCarrito();
 });
+
+// Función para actualizar el estado de sesión en el header
+// Función para actualizar el estado de sesión en el header
+function actualizarEstadoSesion() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const username = localStorage.getItem('username');
+    const loginBtn = document.querySelector('.login-btn');
+    if (!loginBtn) return;
+    if (isLoggedIn === 'true' && username) {
+        // Usuario está logueado
+        loginBtn.innerHTML = `
+            <div class="user-menu" style="display: block;">
+                <a href="#" id="user-menu-toggle">
+                    ¡Bienvenido/a ${username}! <i class="fas fa-chevron-down"></i>
+                </a>
+                <ul class="dropdown-menu" id="user-dropdown">
+                    <li><a href="#" id="mi-perfil">Mi Perfil</a></li>
+                    <li><a href="#" id="mis-pedidos">Mis Pedidos</a></li>
+                    <li><a href="#" id="cerrar-sesion">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        `;
+        
+        // Configurar el menú desplegable
+        const userMenuToggle = document.getElementById('user-menu-toggle');
+        const userDropdown = document.getElementById('user-dropdown');
+        
+        if (userMenuToggle && userDropdown) {
+            userMenuToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+           // Cerrar el menú al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                const dentroMenu = e.target.closest('.user-menu');
+                const botonMenu = e.target.closest('#user-menu-toggle');
+                if (!dentroMenu && !botonMenu) {
+                    userDropdown.style.display = 'none';
+                }
+            });
+
+        }
+        
+        // Configurar botón de cerrar sesión
+        const cerrarSesionBtn = document.getElementById('cerrar-sesion');
+        if (cerrarSesionBtn) {
+            cerrarSesionBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                cerrarSesion();
+            });
+        }
+        
+        // Configurar otros enlaces del menú
+        const miPerfilBtn = document.getElementById('mi-perfil');
+        if (miPerfilBtn) {
+            miPerfilBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                mostrarNotificacion('Funcionalidad de perfil en desarrollo');
+            });
+        }
+        
+        const misPedidosBtn = document.getElementById('mis-pedidos');
+        if (misPedidosBtn) {
+            misPedidosBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                mostrarNotificacion('Funcionalidad de pedidos en desarrollo');
+            });
+        }
+    } else {
+        // Usuario no está logueado
+        loginBtn.innerHTML = '<a href="login.html">Login</a>';
+    }
+}
+
+// Función para cerrar sesión
+function cerrarSesion() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    localStorage.removeItem('loginTime');
+    
+    mostrarNotificacion('Sesión cerrada correctamente');
+    
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
 
 // Función para cargar productos por categoría
 function cargarProductosPorCategoria(categoria) {
@@ -224,3 +320,11 @@ function setupVerProductosBtn() {
         });
     }
 }
+
+/*SOLO PARA PROBAR */
+// Solo para desarrollo - BORRAR en producción
+window.borrarUsuarios = function() {
+    localStorage.removeItem('users');
+    console.log('Usuarios eliminados');
+    location.reload();
+};
