@@ -1,18 +1,18 @@
-// scripts.js - Funcionalidad general del sitio (sin el código del carrito)
-
 // Productos disponibles con categorías
 const productos = [
-    { id: 1, nombre: "Arduino Uno R3", precio: 10000, imagen: "imagenes/PlacaUNO-R3.jpg", categoria: "placas" },
-    { id: 2, nombre: "Servo motor MG995 180 grados", precio: 3000, imagen: "imagenes/Servomotor-MG995-180grados.jpg", categoria: "actuadores" },
-    { id: 3, nombre: "Módulo Bluetooth HC-05", precio: 2500, imagen: "imagenes/MóduloBluetooth_HC-05.jpg", categoria: "modulos" },
-    { id: 4, nombre: "Arduino Mega 2560", precio: 15000, imagen: "imagenes/PlacaMega-Compatible-2560R3.jpg", categoria: "placas" },
-    { id: 5, nombre: "Sensor Ultrasonido", precio: 2000, imagen: "imagenes/sensor-ultrasonido.jpg", categoria: "sensores" },/*Buscar imagen*/
-    { id: 6, nombre: "Pack de LEDs", precio: 1500, imagen: "imagenes/leds.jpg", categoria: "accesorios" },/*Buscar imagen*/
-    { id: 7, nombre: "Pantalla LCD", precio: 5000, imagen: "imagenes/DisplayLCD-azul-1602.jpg", categoria: "modulos" },
-    { id: 8, nombre: "Cables Dupont H-H 40 und", precio: 1000, imagen: "imagenes/CablesDupont_H-H40und.jpg", categoria: "accesorios" },
-    { id: 9, nombre: "Cables Dupont M-H 40 und", precio: 1500, imagen: "imagenes/Cables DupontM-H40_und.jpg", categoria: "accesorios" },
-    { id: 10, nombre: "Cables Dupont M-M 40 und", precio: 2000, imagen: "imagenes/CablesDupontM-M_40und.jpg", categoria: "accesorios" },
-    { id: 11, nombre: "Arduino Nano", precio: 8000, imagen: "imagenes/PlacaNano.jpg", categoria: "placas" }
+    { id: 1, nombre: "Arduino Uno R3", precio: 10000, imagen: "imagenes/Placas/PlacaUNO-R3.jpg", categoria: "placas" },
+    { id: 2, nombre: "Servo motor MG995 180 grados", precio: 3000, imagen: "imagenes/Actuadores/Servomotor-MG995-180grados.jpg", categoria: "actuadores" },
+    { id: 3, nombre: "Módulo Bluetooth HC-05", precio: 2500, imagen: "imagenes/Modulos/MóduloBluetooth_HC-05.jpg", categoria: "modulos" },
+    { id: 4, nombre: "Cables Dupont H-H 40 und", precio: 1000, imagen: "imagenes/Accesorios/CablesDupont_H-H40und.jpg", categoria: "accesorios" },
+    { id: 5, nombre: "Sensor Ultrasonido", precio: 2000, imagen: "imagenes/Sensores/sensordistanciaUltrasonico-HcSr04.png", categoria: "sensores" },
+    { id: 6, nombre: "Arduino Mega 2560", precio: 15000, imagen: "imagenes/Placas/Arduino-mega2560.jpg", categoria: "placas" },
+    { id: 7, nombre: "Pack de LEDs Rojos", precio: 1500, imagen: "imagenes/Accesorios/LedsRojos.png", categoria: "accesorios" },
+    { id: 8, nombre: "Joystick Shield", precio:15000 , imagen: "imagenes/Actuadores/joystickshield-7Pulsadores.png", categoria: "actuadores" },
+    { id: 9, nombre: "Pantalla LCD", precio: 5000, imagen: "imagenes/Modulos/DisplayLCD-azul-1602.jpg", categoria: "modulos" },
+    { id: 10, nombre: "Cables Dupont M-H 40 und", precio: 1500, imagen: "imagenes/Accesorios/Cables DupontM-H40_und.jpg", categoria: "accesorios" },
+    { id: 11, nombre: "Sensor Infrarojo", precio:7000 , imagen: "imagenes/Sensores/sensorinfrarojo.png", categoria: "sensores" },
+    { id: 12, nombre: "Arduino Nano", precio: 8000, imagen: "imagenes/Placas/PlacaNano.jpg", categoria: "placas" }
+
 ];
 
 // Inicialización cuando el DOM esté cargado
@@ -23,22 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarProductosPorCategoria(categoria);
     }
     
-    // Configurar menú hamburguesa para móviles
     const menuToggle = document.querySelector('.menu-toggle');
     if (menuToggle) {
         menuToggle.addEventListener('click', toggleMenu);
     }
     
-    // Configurar filtros de categoría
     setupFiltrosCategoria();
-    
-    // Configurar dropdown para móviles
     setupMobileDropdown();
-    
-    // Configurar botón "Ver Productos"
     setupVerProductosBtn();
-    
-    // Configurar botones "Agregar al Carrito" en la página de inicio
     setupBotonesAgregarCarrito();
 });
 
@@ -54,7 +46,6 @@ function cargarProductosPorCategoria(categoria) {
         productosFiltrados = productos.filter(producto => producto.categoria === categoria);
     }
     
-    // Cargar en grid (listado_box.html)
     if (productosGrid) {
         productosGrid.innerHTML = '';
         
@@ -71,12 +62,8 @@ function cargarProductosPorCategoria(categoria) {
             `;
             productosGrid.appendChild(productoElement);
         });
-        
-        // Configurar botones "Agregar al Carrito"
         setupBotonesAgregarCarrito();
     }
-    
-    // Cargar en tabla (listado_tabla.html)
     if (productosTabla) {
         productosTabla.innerHTML = '';
         
@@ -93,7 +80,7 @@ function cargarProductosPorCategoria(categoria) {
     }
 }
 
-// Configurar botones "Agregar al Carrito"
+// Configura boton Agregar al Carrito
 function setupBotonesAgregarCarrito() {
     document.querySelectorAll('.btn-agregar').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -105,25 +92,19 @@ function setupBotonesAgregarCarrito() {
 
 // Función para agregar producto al carrito
 function agregarAlCarrito(id) {
-    // Buscar el producto en la lista de productos disponibles
     const producto = productos.find(p => p.id === id);
-    
     if (producto) {
-        // Cargar carrito actual
         let carrito = [];
         const carritoGuardado = localStorage.getItem('carrito');
         if (carritoGuardado) {
             carrito = JSON.parse(carritoGuardado);
         }
         
-        // Verificar si el producto ya está en el carrito
         const productoExistente = carrito.findIndex(p => p.id === id);
         
         if (productoExistente !== -1) {
-            // Si ya existe, aumentar la cantidad
             carrito[productoExistente].cantidad++;
         } else {
-            // Si no existe, agregarlo al carrito
             carrito.push({
                 id: producto.id,
                 nombre: producto.nombre,
@@ -133,13 +114,10 @@ function agregarAlCarrito(id) {
             });
         }
         
-        // Guardar carrito
         localStorage.setItem('carrito', JSON.stringify(carrito));
         
-        // Actualizar contador
         actualizarContadorCarrito();
         
-        // Mostrar notificación
         mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
     }
 }
@@ -168,25 +146,21 @@ function actualizarContadorCarrito() {
 
 // Mostrar notificación
 function mostrarNotificacion(mensaje, esError = false) {
-    // Eliminar notificación existente si hay una
     const notificacionExistente = document.querySelector('.notificacion');
     if (notificacionExistente) {
         notificacionExistente.remove();
     }
     
-    // Crear nueva notificación
     const notificacion = document.createElement('div');
     notificacion.className = `notificacion ${esError ? 'error' : ''}`;
     notificacion.textContent = mensaje;
     
     document.body.appendChild(notificacion);
     
-    // Mostrar notificación
     setTimeout(() => {
         notificacion.classList.add('mostrar');
     }, 10);
     
-    // Ocultar y eliminar notificación después de 3 segundos
     setTimeout(() => {
         notificacion.classList.remove('mostrar');
         setTimeout(() => {
@@ -195,7 +169,6 @@ function mostrarNotificacion(mensaje, esError = false) {
     }, 3000);
 }
 
-// Resto de funciones auxiliares (se mantienen igual)
 function obtenerDescripcionCorta(nombreProducto) {
     const descripciones = {
         "Arduino Uno R3": "Placa de desarrollo con microcontrolador ATmega328P",
@@ -251,36 +224,3 @@ function setupVerProductosBtn() {
         });
     }
 }
-
-
-
-/*// Función para el botón "Ver Productos"
-function setupVerProductosBtn() {
-    const verProductosBtn = document.getElementById('ver-productos-btn');
-    
-    if (verProductosBtn) {
-        verProductosBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-             // Redirigir a la página listado_box.html
-            window.location.href = 'listado_box.html';
-        });
-    }
-}
-
-// Actualizar la inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    // Código anterior...
-    
-    // Nuevas funciones
-    setupMobileDropdown();
-    setupVerProductosBtn();
-    
-    // Configurar menú hamburguesa para móviles
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            const nav = document.querySelector('nav ul');
-            nav.classList.toggle('active');
-        });
-    }
-});*/
