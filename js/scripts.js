@@ -370,6 +370,80 @@ if (paginaActual === "" || paginaActual === "index.html") {
 
 
 
+
+
+// Función para cargar productos destacados en la página de inicio
+function cargarProductosDestacados() {
+    const productosGrid = document.querySelector('.destacados .productos-grid');
+    
+    // Verificar si estamos en la página de inicio y existe el contenedor
+    if (!productosGrid) return;
+    
+    // Limpiar el contenedor
+    productosGrid.innerHTML = '';
+    
+    // Tomar solo los primeros 12 productos
+    const productosDestacados = productos.slice(0, 12);
+    
+    // Limpiar nombres de imágenes y crear elementos
+    productosDestacados.forEach(producto => {
+        let imagenLimpia = producto.imagen
+            .normalize("NFD")                   
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "")                 
+            .replace(/[°º]/g, "");
+        
+        const productoElement = document.createElement('div');
+        productoElement.className = 'producto';
+        productoElement.setAttribute('data-categoria', producto.categoria);
+        productoElement.innerHTML = `
+            <img src="${imagenLimpia}" alt="${producto.nombre}" onerror="this.src='imagenes/iconos/no-image.png'">
+            <h3>${producto.nombre}</h3>
+            <p>${obtenerDescripcionCorta(producto.nombre)}</p>
+            <p class="precio">$${producto.precio.toLocaleString()}</p>
+            <button class="btn btn-agregar" data-id="${producto.id}">Agregar al Carrito</button>
+        `;
+        productosGrid.appendChild(productoElement);
+    });
+    
+    // Configurar botones de agregar al carrito
+    setupBotonesAgregarCarrito();
+}
+
+// Modificar el DOMContentLoaded existente para incluir la carga de productos destacados
+document.addEventListener('DOMContentLoaded', function() {
+    // Limpiar parámetros de URL si viene desde login
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('login') === 'success') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Actualizar estado de sesión en el header
+    actualizarEstadoSesion();
+    
+    // Verificar si estamos en index.html y cargar productos destacados
+    const paginaActual = window.location.pathname.split("/").pop();
+    if (paginaActual === "" || paginaActual === "index.html") {
+        cargarProductosDestacados();
+    }
+    
+    // Mostrar productos si existe el contenedor .productos-grid (para listado_box.html)
+    const productosGridElement = document.querySelector('.productos-grid');
+    const destacadosSection = document.querySelector('.destacados');
+    
+    // Solo cargar productos por categoría si NO estamos en la página de inicio
+    if (productosGridElement && destacadosSection && (paginaActual !== "" && paginaActual !== "index.html")) {
+        const categoria = obtenerCategoriaDeURL();
+        cargarProductosPorCategoria(categoria || "todos");
+    }
+
+    setupFiltrosCategoria();
+    setupMobileDropdown();
+    setupVerProductosBtn();
+    setupBotonesAgregarCarrito();
+    actualizarContadorCarrito();
+});
+
 /*SOLO PARA PROBAR */
 // Solo para desarrollador o administrador
 window.borrarUsuarios = function() {

@@ -44,6 +44,10 @@ header {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+a {
+    text-decoration: none;
+}
+
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -1107,19 +1111,19 @@ transition: transform 0.15s ease;
     color: var(--color-danger);
 }
 /*iconos sector compra*/
-    .icono-titulo {
+.icono-titulo {
     width: 20px;
     height: 20px;
     vertical-align: middle;
     margin-right: 8px;
     filter: brightness(0.3);
     }
-    .icono-comprar {
+.icono-comprar {
     width: 20px;
     height: 20px;
     vertical-align: middle;
     margin-right: 8px;
-    filter: brightness(0) invert(1); /* blanco */
+    filter: brightness(0) invert(1); 
     }
 
 
