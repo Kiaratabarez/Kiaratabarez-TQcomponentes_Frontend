@@ -9,7 +9,7 @@ const productos = [
     { id: 7, nombre: "Pack de LEDs Rojos", precio: 1500, imagen: "imagenes/Accesorios/LedsRojos.png", categoria: "accesorios" },
     { id: 8, nombre: "Joystick Shield", precio: 15000, imagen: "imagenes/Actuadores/joystickshield-7Pulsadores.png", categoria: "actuadores" },
     { id: 9, nombre: "Pantalla LCD", precio: 5000, imagen: "imagenes/Modulos/DisplayLCD-azul-1602.jpg", categoria: "modulos" },
-    { id: 10, nombre: "Cables Dupont M-H 40 und", precio: 1500, imagen: "imagenes/Accesorios/Cables DupontM-H40_und.jpg", categoria: "accesorios" },
+    { id: 10, nombre: "Cables Dupont M-H 40 und", precio: 1500, imagen: "imagenes/Accesorios/CablesDupontM-H40und.jpg", categoria: "accesorios" },
     { id: 11, nombre: "Sensor Infrarojo", precio: 7000, imagen: "imagenes/Sensores/sensorinfrarojo.png", categoria: "sensores" },
     { id: 12, nombre: "Arduino Nano", precio: 8000, imagen: "imagenes/Placas/PlacaNano.jpg", categoria: "placas" },
     { id: 13, nombre: "Shield L298", precio: 25262, imagen: "imagenes/Placas/shieldparamotoresL298p.png", categoria: "placas" },
@@ -209,36 +209,40 @@ function setupBotonesAgregarCarrito() {
 
 
 // FunciÃ³n para agregar producto al carrito
+// ✅ Nueva versión: solo permite agregar si está logueado
 function agregarAlCarrito(id) {
-    const producto = productos.find(p => p.id === id);
-    if (producto) {
-        let carrito = [];
-        const carritoGuardado = localStorage.getItem('carrito');
-        if (carritoGuardado) {
-            carrito = JSON.parse(carritoGuardado);
-        }
-        
-        const productoExistente = carrito.findIndex(p => p.id === id);
-        
-        if (productoExistente !== -1) {
-            carrito[productoExistente].cantidad++;
-        } else {
-            carrito.push({
-                id: producto.id,
-                nombre: producto.nombre,
-                precio: producto.precio,
-                imagen: producto.imagen,
-                cantidad: 1
-            });
-        }
-        
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        
-        actualizarContadorCarrito();
-        
-        mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn !== 'true') {
+        mostrarNotificacion('Debes iniciar sesión para agregar productos al carrito');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1000);
+        return; // 🚫 detiene la función
     }
+
+    const producto = productos.find(p => p.id === id);
+    if (!producto) return;
+
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const productoExistente = carrito.findIndex(item => item.id === id);
+
+    if (productoExistente !== -1) {
+        carrito[productoExistente].cantidad++;
+    } else {
+        carrito.push({
+            id: producto.id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            imagen: producto.imagen,
+            cantidad: 1
+        });
+    }
+
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+    actualizarContadorCarrito();
 }
+
 
 // Actualizar contador de carrito en el header
 function actualizarContadorCarrito() {
