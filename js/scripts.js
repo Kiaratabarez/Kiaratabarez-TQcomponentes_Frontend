@@ -60,16 +60,15 @@ const productos = [
     { id: 58, nombre: "Nano ESP32", precio: 17000, imagen: "imagenes/Placas/NanoESP32.png", categoria: "placas" }
 ];
 
-
-// Inicialización cuando el DOM esté cargado
+// InicializaciÃ³n cuando el DOM estÃ© cargado
 document.addEventListener('DOMContentLoaded', function() {
-    // Limpiar parámetros de URL si viene desde login
+    // Limpiar parÃ¡metros de URL si viene desde login
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('login') === 'success') {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
-    // Actualizar estado de sesión en el header
+    // Actualizar estado de sesiÃ³n en el header
     actualizarEstadoSesion();
     
         // Mostrar productos SOLO en listado_box.html o listado_tabla.html
@@ -91,43 +90,19 @@ function actualizarEstadoSesion() {
     const username = localStorage.getItem('username');
     const loginBtn = document.querySelector('.login-btn');
     if (!loginBtn) return;
+
     if (isLoggedIn === 'true' && username) {
-        // Usuario está logueado
+        // Mostrar usuario + icono salir
         loginBtn.innerHTML = `
-            <div class="user-menu" style="display: block;">
-                <a href="#" id="user-menu-toggle">
-                    ¡Bienvenido/a ${username}! <i class="fas fa-chevron-down"></i>
+            <div class="user-simple">
+                <span class="user-name">¡Hola, ${username}!</span>
+                <a href="imagenes/iconos/cerrar-sesion.png" id="cerrar-sesion" title="Cerrar sesión">
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
-                <ul class="dropdown-menu" id="user-dropdown">
-                    <li><a href="#" id="mi-perfil">Mi Perfil</a></li>
-                    <li><a href="#" id="mis-pedidos">Mis Pedidos</a></li>
-                    <li><a href="#" id="cerrar-sesion">Cerrar Sesión</a></li>
-                </ul>
             </div>
         `;
-        
-        // Configurar el menú desplegable
-        const userMenuToggle = document.getElementById('user-menu-toggle');
-        const userDropdown = document.getElementById('user-dropdown');
-        
-        if (userMenuToggle && userDropdown) {
-            userMenuToggle.addEventListener('click', (e) => {
-                e.preventDefault();
-                userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
-            });
-            
-           // Cerrar el menú al hacer clic fuera
-            document.addEventListener('click', (e) => {
-                const dentroMenu = e.target.closest('.user-menu');
-                const botonMenu = e.target.closest('#user-menu-toggle');
-                if (!dentroMenu && !botonMenu) {
-                    userDropdown.style.display = 'none';
-                }
-            });
 
-        }
-        
-        // Configurar botón de cerrar sesión
+        // Evento de cierre de sesión
         const cerrarSesionBtn = document.getElementById('cerrar-sesion');
         if (cerrarSesionBtn) {
             cerrarSesionBtn.addEventListener('click', (e) => {
@@ -135,44 +110,23 @@ function actualizarEstadoSesion() {
                 cerrarSesion();
             });
         }
-        
-        // Configurar otros enlaces del menú
-        const miPerfilBtn = document.getElementById('mi-perfil');
-        if (miPerfilBtn) {
-            miPerfilBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                mostrarNotificacion('Funcionalidad de perfil en desarrollo');
-            });
-        }
-        
-        const misPedidosBtn = document.getElementById('mis-pedidos');
-        if (misPedidosBtn) {
-            misPedidosBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                mostrarNotificacion('Funcionalidad de pedidos en desarrollo');
-            });
-        }
+
     } else {
-        // Usuario no está logueado
         loginBtn.innerHTML = '<a href="login.html">Login</a>';
     }
 }
 
-// Función para cerrar sesión
+// Cerrar sesión
 function cerrarSesion() {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('username');
     localStorage.removeItem('loginTime');
-    
     mostrarNotificacion('Sesión cerrada correctamente');
-    
-    setTimeout(() => {
-        window.location.reload();
-    }, 1000);
+    setTimeout(() => window.location.reload(), 1000);
 }
 
-// Función para cargar productos por categoría
-// Función para cargar productos por categoría
+
+// FunciÃ³n para cargar productos por categorÃ­a
 function cargarProductosPorCategoria(categoria) {
     const productosGrid = document.querySelector('.productos-grid');
     const productosTabla = document.querySelector('.tabla-productos tbody');
@@ -180,17 +134,17 @@ function cargarProductosPorCategoria(categoria) {
     // ARREGLO: Declarar la variable correctamente
     let productosFiltrados = [...productos]; // Copiar el array
     
-    // Limpiar nombres de imágenes
+    // Limpiar nombres de imÃ¡genes
     productosFiltrados = productosFiltrados.map(p => {
         let imagenLimpia = p.imagen
             .normalize("NFD")                   
             .replace(/[\u0300-\u036f]/g, "")
             .replace(/\s+/g, "")                 
-            .replace(/[°º]/g, "");                
+            .replace(/[Â°Âº]/g, "");                
         return { ...p, imagen: imagenLimpia };
     });
     
-    // Filtrar por categoría si se especifica
+    // Filtrar por categorÃ­a si se especifica
     if (categoria && categoria !== 'todos') {
         productosFiltrados = productosFiltrados.filter(producto => producto.categoria === categoria);
     }
@@ -200,7 +154,7 @@ function cargarProductosPorCategoria(categoria) {
         productosGrid.innerHTML = '';
         
         if (productosFiltrados.length === 0) {
-            productosGrid.innerHTML = '<p style="text-align:center;width:100%;padding:40px;">No hay productos en esta categoría</p>';
+            productosGrid.innerHTML = '<p style="text-align:center;width:100%;padding:40px;">No hay productos en esta categorÃ­a</p>';
             return;
         }
         
@@ -229,7 +183,7 @@ function cargarProductosPorCategoria(categoria) {
             fila.innerHTML = `
                 <td data-label="Imagen"><img src="${producto.imagen}" alt="${producto.nombre}" class="img-producto"></td>
                 <td data-label="Nombre">${producto.nombre}</td>
-                <td data-label="Descripción">${obtenerDescripcionLarga(producto.nombre)}</td>
+                <td data-label="DescripciÃ³n">${obtenerDescripcionLarga(producto.nombre)}</td>
                 <td data-label="Precio">$${producto.precio.toLocaleString()}</td>
             `;
             productosTabla.appendChild(fila);
@@ -239,15 +193,22 @@ function cargarProductosPorCategoria(categoria) {
 
 // Configura boton Agregar al Carrito
 function setupBotonesAgregarCarrito() {
-    document.querySelectorAll('.btn-agregar').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    const botones = document.querySelectorAll('.btn-agregar');
+    
+    botones.forEach(btn => {
+        // Clonamos el botón para eliminar cualquier listener anterior
+        const nuevoBoton = btn.cloneNode(true);
+        btn.parentNode.replaceChild(nuevoBoton, btn);
+
+        nuevoBoton.addEventListener('click', (e) => {
             const id = parseInt(e.target.getAttribute('data-id'));
             agregarAlCarrito(id);
         });
     });
 }
 
-// Función para agregar producto al carrito
+
+// FunciÃ³n para agregar producto al carrito
 function agregarAlCarrito(id) {
     const producto = productos.find(p => p.id === id);
     if (producto) {
@@ -301,7 +262,7 @@ function actualizarContadorCarrito() {
     }
 }
 
-// Mostrar notificación
+// Mostrar notificaciÃ³n
 function mostrarNotificacion(mensaje, esError = false) {
     const notificacionExistente = document.querySelector('.notificacion');
     if (notificacionExistente) {
@@ -330,15 +291,15 @@ function obtenerDescripcionCorta(nombreProducto) {
     const descripciones = {
         "Arduino Uno R3": "Placa de desarrollo con microcontrolador ATmega328P",
         "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm",
-        "Módulo Bluetooth HC-05": "Módulo Bluetooth para comunicación serial",
-        "Arduino Mega 2560": "Placa con más pines y memoria que Arduino Uno",
+        "MÃ³dulo Bluetooth HC-05": "MÃ³dulo Bluetooth para comunicaciÃ³n serial",
+        "Arduino Mega 2560": "Placa con mÃ¡s pines y memoria que Arduino Uno",
         "Sensor Ultrasonido": "Sensor de distancia por ultrasonido HC-SR04",
         "Pack de LEDs": "Set de 50 LEDs de diferentes colores",
         "Pantalla LCD": "Pantalla LCD 16x2 con interfaz I2C",
         "Cables Dupont H-H 40 und": "Cables hembra-hembra para prototipado",
         "Cables Dupont M-H 40 und": "Cables macho-hembra para conexiones",
         "Cables Dupont M-M 40 und": "Cables macho-macho para breadboard",
-        "Arduino Nano": "Versión compacta del Arduino UNO"
+        "Arduino Nano": "VersiÃ³n compacta del Arduino UNO"
     };
     
     return descripciones[nombreProducto] || "Producto de calidad para tus proyectos Arduino";
@@ -347,8 +308,8 @@ function obtenerDescripcionCorta(nombreProducto) {
 function obtenerDescripcionLarga(nombreProducto) {
     const descripciones = {
         "Arduino Uno R3": "Placa de desarrollo original Arduino Uno Rev3 con microcontrolador ATmega328P, ideal para principiantes y proyectos avanzados.",
-        "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm, perfecto para proyectos de robótica y automatización.",
-        "Módulo Bluetooth HC-05": "Módulo Bluetooth para comunicación serial, permite conectar dispositivos Arduino con smartphones y otros dispositivos Bluetooth.",
+        "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm, perfecto para proyectos de robÃ³tica y automatizaciÃ³n.",
+        "MÃ³dulo Bluetooth HC-05": "MÃ³dulo Bluetooth para comunicaciÃ³n serial, permite conectar dispositivos Arduino con smartphones y otros dispositivos Bluetooth.",
     };
     
     return descripciones[nombreProducto] || obtenerDescripcionCorta(nombreProducto);
@@ -365,11 +326,11 @@ function toggleMenu() {
 }
 
 function setupFiltrosCategoria() {
-    // Implementación según sea necesario
+    // ImplementaciÃ³n segÃºn sea necesario
 }
 
 function setupMobileDropdown() {
-    // Implementación según sea necesario
+    // ImplementaciÃ³n segÃºn sea necesario
 }
 
 function setupVerProductosBtn() {
@@ -393,7 +354,7 @@ menuToggle.addEventListener("click", () => {
 });
 }
 
-// Botón Volver solo en las páginas internas
+// BotÃ³n Volver solo en las pÃ¡ginas internas
 const botonVolver = document.querySelector(".btn-volver");
 const paginaActual = window.location.pathname.split("/").pop();
 if (botonVolver) {
@@ -408,7 +369,7 @@ if (paginaActual === "" || paginaActual === "index.html") {
 
 
 /*SOLO PARA PROBAR */
-// Solo para desarrollo - BORRAR en producción
+// Solo para desarrollo - BORRAR en producciÃ³n
 window.borrarUsuarios = function() {
     localStorage.removeItem('users');
     console.log('Usuarios eliminados');
