@@ -892,7 +892,7 @@ flex-basis: 40%;
 text-align: left;
 }
 
-/* Imagen centrada */
+/* Imagen centrada*/
 .tabla-productos td:first-child {
 justify-content: center;
 }
@@ -903,11 +903,11 @@ max-width: 100px;
 }
 }
 
-/* 🔙 Botón volver */
+/*Botón volver */
 .btn-volver {
 position: fixed;
 top: 18px;
-left: 20px; /* posición del icono */
+left: 20px; 
 z-index: 1000;
 display: flex;
 align-items: center;
@@ -916,20 +916,18 @@ background: transparent;
 border: none;
 }
 
-/* Imagen dentro del botón */
+/* Imagen dentrodel botón */
 .btn-volver img {
 width: 25px;
 height: 25px;
 filter: brightness(0) invert(1);
 transition: transform 0.3s ease;
 }
-
-/* Pequeña separación entre el icono y el texto del logo */
 .logo h1 {
-margin-left: 60px; 
+margin-left: 80px; 
 }
 
-/* 🛒 Enlace del carrito */
+/* Enlace del carrito */
 .carrito-link {
 position: relative;
 display: inline-flex;
