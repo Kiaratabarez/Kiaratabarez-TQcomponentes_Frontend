@@ -71,12 +71,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Actualizar estado de sesiÃ³n en el header
     actualizarEstadoSesion();
     
-        // Mostrar productos SOLO en listado_box.html o listado_tabla.html
+        /*Mostrar productos SOLO en listado_box.html o listado_tabla.html
 const paginaActual = window.location.pathname.split("/").pop();
 if (paginaActual === "listado_box.html" || paginaActual === "listado_tabla.html") {
     const categoria = obtenerCategoriaDeURL();
     cargarProductosPorCategoria(categoria || "todos");
+}*/
+// Mostrar productos si existe el contenedor .productos-grid (funciona con .html o "pretty" URLs)
+const productosGridElement = document.querySelector('.productos-grid');
+if (productosGridElement) {
+    const categoria = obtenerCategoriaDeURL();
+    cargarProductosPorCategoria(categoria || "todos");
 }
+
 
     setupFiltrosCategoria();
     setupMobileDropdown();
