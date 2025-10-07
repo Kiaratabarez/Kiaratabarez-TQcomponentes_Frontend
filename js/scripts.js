@@ -16,11 +16,11 @@ const productos = [
     { id: 14, nombre: "Servo metálico MG90S Pro 180°", precio: 4200, imagen: "imagenes/Actuadores/Servodeengranajemetálico-MG90SPro-180grados.jpg", categoria: "actuadores" },
     { id: 15, nombre: "Módulo relé óptoacoplado 4 canales", precio: 3800, imagen: "imagenes/Modulos/modulo-releOptoacoplado-4Canales.png", categoria: "modulos" },
     { id: 16, nombre: "Sensor de luz (LDR / fotoresistor)", precio: 1200, imagen: "imagenes/Sensores/sensordeluz-conLdrFotoresistor.png", categoria: "sensores" },
-    { id: 17, nombre: "Batería LiPo 22,2 V 6S 5000 mAh", precio: 32000, imagen: "imagenes/Accesorios/BateríaLipo-Turnigy22.2v6s5000Mah.png", categoria: "accesorios" },
-    { id: 18, nombre: "Motor Shield / driver L293D (Arduino)", precio: 14500, imagen: "imagenes/Placas/arduinomotor-shieldDriverL293dStepper.png", categoria: "placas" },
+    { id: 17, nombre: "Batería LiPo 22,2 V 6S 5000 mAh", precio: 32000, imagen: "imagenes/Accesorios/BateriaLipo-Turnigy22.2v6s5000Mah.png", categoria: "accesorios" },
+    { id: 18, nombre: "Motor Shield / driver L293D (Arduino)", precio: 14500, imagen: "imagenes/Placas/Placaontrolador-L293D.jpg", categoria: "placas" },
     { id: 19, nombre: "Módulo Bluetooth HC-06 / RF", precio: 2800, imagen: "imagenes/Modulos/MóduloRF Bluetooth_HC-06.jpg", categoria: "modulos" },
     { id: 20, nombre: "Sensor infrarrojo detector de flama", precio: 4500, imagen: "imagenes/Sensores/sensorinfrarrojo-Detectorflama.png", categoria: "sensores" },
-    { id: 21, nombre: "Batería LiPo 4000 mAh 4S", precio: 19000, imagen: "imagenes/Accesorios/BateríaLipo-Turnigy4000mah4s30c.png", categoria: "accesorios" },
+    { id: 21, nombre: "Batería LiPo 4000 mAh 4S", precio: 19000, imagen: "imagenes/Accesorios/BateriaLipo-Turnigy4000mah4s30c.png", categoria: "accesorios" },
     { id: 22, nombre: "Controlador de motor L298N", precio: 9900, imagen: "imagenes/Placas/ControladordeMotor-L298NDriver.jpg", categoria: "placas" },
     { id: 23, nombre: "Servo metálico MG90S 360°", precio: 5000, imagen: "imagenes/Actuadores/Servometálico-MG90S-360°.jpg", categoria: "actuadores" },
     { id: 24, nombre: "Sensor PIR (detector de movimiento) SR501", precio: 5300, imagen: "imagenes/Sensores/SensorDetectorMovimineto-PirSr501.png", categoria: "sensores" },
@@ -33,7 +33,7 @@ const productos = [
     { id: 31, nombre: "Módulo sensor MQ-2 / gas / humo / CO", precio: 4800, imagen: "imagenes/Modulos/modulosensormq2-DetectorGasHumoMonoxido.png", categoria: "modulos" },
     { id: 32, nombre: "Cámara / módulo cámara para Arduino", precio: 12000, imagen: "imagenes/Sensores/Arduinocamara.png", categoria: "sensores" },
     { id: 33, nombre: "Display LED 3 dígitos", precio: 2500, imagen: "imagenes/Accesorios/DisplayLed-3Digitos.jpg", categoria: "accesorios" },
-    { id: 34, nombre: "Arduino Nano RP2040", precio: 11000, imagen: "imagenes/Placas/Arduino Nano RP2040 .png", categoria: "placas" },
+    { id: 34, nombre: "Arduino Nano RP2040", precio: 11000, imagen: "imagenes/Placas/ArduinoNanoRP2040.png", categoria: "placas" },
     { id: 35, nombre: "Módulo sensor de luz / fotodiodo LM393", precio: 1700, imagen: "imagenes/Modulos/modulosensordeluz-FotodiodoLm393.png", categoria: "modulos" },
     { id: 36, nombre: "Sensor de lluvia / lluvia Arduino", precio: 1600, imagen: "imagenes/Sensores/sensorarduino-Rain.png", categoria: "sensores" },
     { id: 37, nombre: "LEDs amarillos (pack)", precio: 1200, imagen: "imagenes/Accesorios/LedsAmarillo.png", categoria: "accesorios" },
@@ -48,8 +48,8 @@ const productos = [
     { id: 46, nombre: "Motor DC 3 V-6 V caja de cambios 50 rpm", precio: 3800, imagen: "imagenes/Accesorios/Motordecajacambiosengranajes-3Va6V50rpmDC.jpg", categoria: "accesorios" },
     { id: 47, nombre: "Conector de alimentación / jack 9 V", precio: 800, imagen: "imagenes/Accesorios/PlugAlimentación-JackConectorBatería9v.png", categoria: "accesorios" },
     { id: 48, nombre: "Porta pilas 4 × 18650 + cables", precio: 1700, imagen: "imagenes/Accesorios/Portapila4Pila-Bateria18650 SalidaCablesArduino.png", categoria: "accesorios" },
-    { id: 49, nombre: "Porta 1 pila 18650", precio: 900, imagen: "imagenes/Accesorios/PortapilasPortaPilas- 1PilaBateria18650.png", categoria: "accesorios" },
-    { id: 50, nombre: "Potenciómetro lineal 10 k", precio: 500, imagen: "imagenes/Accesorios/potenciometroLineal10k .png", categoria: "accesorios" },
+    { id: 49, nombre: "Porta 1 pila 18650", precio: 900, imagen: "imagenes/Accesorios/PortapilasPortaPilas-1PilaBateria18650.png", categoria: "accesorios" },
+    { id: 50, nombre: "Potenciómetro lineal 10 k", precio: 500, imagen: "imagenes/Accesorios/potenciometroLineal10k.png", categoria: "accesorios" },
     { id: 51, nombre: "Protoboard 400 puntos", precio: 1400, imagen: "imagenes/Accesorios/Protoboard-400Puntos.jpg", categoria: "accesorios" },
     { id: 52, nombre: "Protoboard 830 puntos", precio: 2200, imagen: "imagenes/Accesorios/Protoboard-830Puntos.jpg", categoria: "accesorios" },
     { id: 53, nombre: "Resistencias (10k, 220Ω, etc.) pack", precio: 1200, imagen: "imagenes/Accesorios/Resistencias-10k-220ohm.png", categoria: "accesorios" },
@@ -57,7 +57,7 @@ const productos = [
     { id: 55, nombre: "Arduino MKR GSM 1400", precio: 25000, imagen: "imagenes/Placas/ArduinoMKR-GSM1400.png", categoria: "placas" },
     { id: 56, nombre: "Arduino MKR Vidor 4000", precio: 28000, imagen: "imagenes/Placas/ArduinoMKR-Vidor4000.png", categoria: "placas" },
     { id: 57, nombre: "Arduino Nano con Carrier Motor", precio: 15000, imagen: "imagenes/Placas/Arduinonano-MotorCarrier.png", categoria: "placas" },
-    { id: 58, nombre: "Nano ESP32", precio: 17000, imagen: "imagenes/Placas/Nano ESP32.png", categoria: "placas" }
+    { id: 58, nombre: "Nano ESP32", precio: 17000, imagen: "imagenes/Placas/NanoESP32.png", categoria: "placas" }
 ];
 
 
@@ -71,17 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Actualizar estado de sesión en el header
     actualizarEstadoSesion();
-    
-    /* Cargar productos por categoría si estamos en una página de listado
-    if (document.querySelector('.productos-grid') || document.querySelector('.tabla-productos')) {
-        const categoria = obtenerCategoriaDeURL();
-        cargarProductosPorCategoria(categoria);
-    }
-    
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleMenu);
-    }*/
     
         // Mostrar productos SOLO en listado_box.html o listado_tabla.html
 const paginaActual = window.location.pathname.split("/").pop();
@@ -97,8 +86,6 @@ if (paginaActual === "listado_box.html" || paginaActual === "listado_tabla.html"
     actualizarContadorCarrito();
 });
 
-// Función para actualizar el estado de sesión en el header
-// Función para actualizar el estado de sesión en el header
 function actualizarEstadoSesion() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const username = localStorage.getItem('username');
@@ -189,7 +176,16 @@ function cargarProductosPorCategoria(categoria) {
     const productosGrid = document.querySelector('.productos-grid');
     const productosTabla = document.querySelector('.tabla-productos tbody');
     
-    let productosFiltrados = productos;
+    /*let productosFiltrados = productos;*/
+productosFiltrados = productosFiltrados.map(p => {
+    let imagenLimpia = p.imagen
+        .normalize("NFD")                   
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "")                 
+        .replace(/[°º]/g, "");                
+    return { ...p, imagen: imagenLimpia };
+});
+
     
     // Filtrar por categoría si se especifica
     if (categoria && categoria !== 'todos') {
