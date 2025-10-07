@@ -1,6 +1,7 @@
 # TQComponents - Tienda de Componentes Arduino
  Demo en vivo: https://tqcomponents.netlify.app/
-Sistema de e-commerce desarrollado para la venta de componentes electrónicos Arduino, con gestión completa de usuarios, carrito de compras y proceso de checkout.
+
+Es un Sistema de e-commerce desarrollado para la venta de componentes electrónicos Arduino, con gestión completa de usuarios, carrito de compras y proceso de checkout.
 
 ##Descripción
 TQComponents es una tienda online especializada en componentes Arduino que ofrece una experiencia de compra completa, desde la navegación de productos hasta la finalización de la compra. El proyecto está desarrollado con tecnologías web estándar sin el uso de frameworks externos.
