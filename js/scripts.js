@@ -28,7 +28,7 @@ const productos = [
     { id: 26, nombre: "Placa microcontrolador genérica", precio: 6000, imagen: "imagenes/Placas/placademicrocontrolador.png", categoria: "placas" },
     { id: 27, nombre: "Módulo Ethernet ENC28J60", precio: 8800, imagen: "imagenes/Modulos/modulodeRedEthernetLan-Enc28j60 .png", categoria: "modulos" },
     { id: 28, nombre: "Sensor de sonido KY-037", precio: 1500, imagen: "imagenes/Sensores/Arduino-Ky037.png", categoria: "sensores" },
-    { id: 29, nombre: "Cable USB A-B 30 cm", precio: 900, imagen: "imagenes/Accesorios/CableUsbAUsbB_ TipoA-B_30cm_ArduinoUnoMega.jpg", categoria: "accesorios" },
+    { id: 29, nombre: "Cable USB A-B 30 cm", precio: 900, imagen: "imagenes/Accesorios/CableUsbAUsbB_30cm.jpg", categoria: "accesorios" },
     { id: 30, nombre: "Placa Mega compatible 2560 R3", precio: 14000, imagen: "imagenes/Placas/PlacaMega-Compatible-2560R3.jpg", categoria: "placas" },
     { id: 31, nombre: "Módulo sensor MQ-2 / gas / humo / CO", precio: 4800, imagen: "imagenes/Modulos/modulosensormq2-DetectorGasHumoMonoxido.png", categoria: "modulos" },
     { id: 32, nombre: "Cámara / módulo cámara para Arduino", precio: 12000, imagen: "imagenes/Sensores/Arduinocamara.png", categoria: "sensores" },
@@ -37,16 +37,16 @@ const productos = [
     { id: 35, nombre: "Módulo sensor de luz / fotodiodo LM393", precio: 1700, imagen: "imagenes/Modulos/modulosensordeluz-FotodiodoLm393.png", categoria: "modulos" },
     { id: 36, nombre: "Sensor de lluvia / lluvia Arduino", precio: 1600, imagen: "imagenes/Sensores/sensorarduino-Rain.png", categoria: "sensores" },
     { id: 37, nombre: "LEDs amarillos (pack)", precio: 1200, imagen: "imagenes/Accesorios/LedsAmarillo.png", categoria: "accesorios" },
-    { id: 38, nombre: "Placa NodeMCU / ESP8266", precio: 13500, imagen: "imagenes/Placas/placanodemcu-Esp8266Wifi .png", categoria: "placas" },
+    { id: 38, nombre: "Placa NodeMCU / ESP8266", precio: 13500, imagen: "imagenes/Placas/placanodemcu-Esp8266Wifi.png", categoria: "placas" },
     { id: 39, nombre: "Pantalla táctil 2.8″", precio: 9500, imagen: "imagenes/Modulos/pantalladisplay-Tactil2.8p.png", categoria: "modulos" },
     { id: 40, nombre: "Sensor de tierra / humedad de suelo", precio: 2200, imagen: "imagenes/Sensores/sensorarduino-Tierra.png", categoria: "sensores" },
     { id: 41, nombre: "LEDs azules (pack)", precio: 1200, imagen: "imagenes/Accesorios/LedsAzul.png", categoria: "accesorios" },
-    { id: 42, nombre: "Placa Pro Mini ATmega328", precio: 7000, imagen: "imagenes/Placas/placapromini-Atmega328  .png", categoria: "placas" },
+    { id: 42, nombre: "Placa Pro Mini ATmega328", precio: 7000, imagen: "imagenes/Placas/placapromini-Atmega328.png", categoria: "placas" },
     { id: 43, nombre: "Módulo RFID / NFC PN532", precio: 8500, imagen: "imagenes/Modulos/modulolector-RfidNfcPn532 .png", categoria: "modulos" },
     { id: 44, nombre: "LEDs verdes (pack)", precio: 1200, imagen: "imagenes/Accesorios/LedsVerdes.png", categoria: "accesorios" },
-    { id: 45, nombre: "Pinzas de prueba electrónica", precio: 3500, imagen: "imagenes/Accesorios/Pinzasdepruebaelectrónica.jpg", categoria: "accesorios" },
+    { id: 45, nombre: "Pinzas de prueba electrónica", precio: 3500, imagen: "imagenes/Accesorios/Pinzasdepruebaelectronica.jpg", categoria: "accesorios" },
     { id: 46, nombre: "Motor DC 3 V-6 V caja de cambios 50 rpm", precio: 3800, imagen: "imagenes/Accesorios/Motordecajacambiosengranajes-3Va6V50rpmDC.jpg", categoria: "accesorios" },
-    { id: 47, nombre: "Conector de alimentación / jack 9 V", precio: 800, imagen: "imagenes/Accesorios/PlugAlimentación-JackConectorBatería9v.png", categoria: "accesorios" },
+    { id: 47, nombre: "Conector de alimentación / jack 9 V", precio: 800, imagen: "imagenes/Accesorios/PlugAlimentacion-JackConectorBatería9v.png", categoria: "accesorios" },
     { id: 48, nombre: "Porta pilas 4 × 18650 + cables", precio: 1700, imagen: "imagenes/Accesorios/Portapila4Pila-Bateria18650 SalidaCablesArduino.png", categoria: "accesorios" },
     { id: 49, nombre: "Porta 1 pila 18650", precio: 900, imagen: "imagenes/Accesorios/PortapilasPortaPilas-1PilaBateria18650.png", categoria: "accesorios" },
     { id: 50, nombre: "Potenciómetro lineal 10 k", precio: 500, imagen: "imagenes/Accesorios/potenciometroLineal10k.png", categoria: "accesorios" },
@@ -172,54 +172,65 @@ function cerrarSesion() {
 }
 
 // Función para cargar productos por categoría
+// Función para cargar productos por categoría
 function cargarProductosPorCategoria(categoria) {
     const productosGrid = document.querySelector('.productos-grid');
     const productosTabla = document.querySelector('.tabla-productos tbody');
     
-    /*let productosFiltrados = productos;*/
-productosFiltrados = productosFiltrados.map(p => {
-    let imagenLimpia = p.imagen
-        .normalize("NFD")                   
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, "")                 
-        .replace(/[°º]/g, "");                
-    return { ...p, imagen: imagenLimpia };
-});
-
+    // ARREGLO: Declarar la variable correctamente
+    let productosFiltrados = [...productos]; // Copiar el array
+    
+    // Limpiar nombres de imágenes
+    productosFiltrados = productosFiltrados.map(p => {
+        let imagenLimpia = p.imagen
+            .normalize("NFD")                   
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "")                 
+            .replace(/[°º]/g, "");                
+        return { ...p, imagen: imagenLimpia };
+    });
     
     // Filtrar por categoría si se especifica
     if (categoria && categoria !== 'todos') {
-        productosFiltrados = productos.filter(producto => producto.categoria === categoria);
+        productosFiltrados = productosFiltrados.filter(producto => producto.categoria === categoria);
     }
     
+    // MOSTRAR EN GRID (listado_box.html)
     if (productosGrid) {
         productosGrid.innerHTML = '';
+        
+        if (productosFiltrados.length === 0) {
+            productosGrid.innerHTML = '<p style="text-align:center;width:100%;padding:40px;">No hay productos en esta categoría</p>';
+            return;
+        }
         
         productosFiltrados.forEach(producto => {
             const productoElement = document.createElement('div');
             productoElement.className = 'producto';
             productoElement.setAttribute('data-categoria', producto.categoria);
             productoElement.innerHTML = `
-                <img src="${producto.imagen}" alt="${producto.nombre}">
+                <img src="${producto.imagen}" alt="${producto.nombre}" onerror="this.src='imagenes/iconos/no-image.png'">
                 <h3>${producto.nombre}</h3>
                 <p>${obtenerDescripcionCorta(producto.nombre)}</p>
-                <p class="precio">$${producto.precio}</p>
+                <p class="precio">$${producto.precio.toLocaleString()}</p>
                 <button class="btn btn-agregar" data-id="${producto.id}">Agregar al Carrito</button>
             `;
             productosGrid.appendChild(productoElement);
         });
         setupBotonesAgregarCarrito();
     }
+    
+    // MOSTRAR EN TABLA (listado_tabla.html)
     if (productosTabla) {
         productosTabla.innerHTML = '';
         
         productosFiltrados.forEach(producto => {
             const fila = document.createElement('tr');
             fila.innerHTML = `
-                <td><img src="${producto.imagen}" alt="${producto.nombre}"></td>
-                <td>${producto.nombre}</td>
-                <td>${obtenerDescripcionLarga(producto.nombre)}</td>
-                <td>$${producto.precio}</td>
+                <td data-label="Imagen"><img src="${producto.imagen}" alt="${producto.nombre}" class="img-producto"></td>
+                <td data-label="Nombre">${producto.nombre}</td>
+                <td data-label="Descripción">${obtenerDescripcionLarga(producto.nombre)}</td>
+                <td data-label="Precio">$${producto.precio.toLocaleString()}</td>
             `;
             productosTabla.appendChild(fila);
         });
