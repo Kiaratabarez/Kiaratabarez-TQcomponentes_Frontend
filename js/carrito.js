@@ -1,8 +1,6 @@
-// Variables globales
 let carrito = [];
 let total = 0;
 
-// Inicialización cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar carrito desde localStorage
     cargarCarrito();
@@ -13,17 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
         btnVaciar.addEventListener('click', mostrarModalVaciarCarrito);
     }
     
-    // Configurar evento para finalizar compra
     const btnFinalizar = document.getElementById('finalizar-compra');
     if (btnFinalizar) {
         btnFinalizar.addEventListener('click', finalizarCompra);
     }
     
-    // Actualizar interfaz
     actualizarInterfazCarrito();
 });
 
-// Cargar carrito desde localStorage
+// Carga carrito desde el localStorage
 function cargarCarrito() {
     const carritoGuardado = localStorage.getItem('carrito');
     if (carritoGuardado) {
@@ -32,20 +28,19 @@ function cargarCarrito() {
     }
 }
 
-// Guardar carrito en localStorage
+// Guarda carrito en localStorage
 function guardarCarrito() {
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarContadorCarrito();
 }
 
-// Calcular el total del carrito
+// Calcula el total del carrito
 function calcularTotal() {
     total = carrito.reduce((sum, producto) => {
         return sum + (producto.precio * producto.cantidad);
     }, 0);
 }
 
-// Actualizar la interfaz del carrito
 function actualizarInterfazCarrito() {
     const carritoVacio = document.getElementById('carrito-vacio');
     const carritoContenido = document.getElementById('carrito-contenido');
@@ -54,18 +49,15 @@ function actualizarInterfazCarrito() {
     const envioElement = document.getElementById('envio');
     const totalElement = document.getElementById('total-general');
     
-    // Mostrar estado vacío o con productos
     if (carrito.length === 0) {
         carritoVacio.style.display = 'block';
         carritoContenido.style.display = 'none';
     } else {
         carritoVacio.style.display = 'none';
         carritoContenido.style.display = 'block';
-        
-        // Limpiar productos existentes
         carritoProductos.innerHTML = '';
         
-        // Agregar productos al carrito
+        // Agrega productos al carrito
         carrito.forEach((producto, index) => {
             const productoElement = document.createElement('div');
             productoElement.className = 'producto-carrito';
@@ -88,26 +80,21 @@ function actualizarInterfazCarrito() {
             carritoProductos.appendChild(productoElement);
         });
         
-        // Calcular envío (ejemplo: gratis sobre $5000, sino $500)
+        // Calcula envío (ejemplo: gratis sobre $5000, sino $500)
         const costoEnvio = total > 5000 ? 0 : 500;
         const totalConEnvio = total + costoEnvio;
         
-        // Actualizar totales
+        // Actualiza totales
         subtotalElement.textContent = `$${total}`;
         envioElement.textContent = costoEnvio === 0 ? 'Gratis' : `$${costoEnvio}`;
         totalElement.textContent = `$${totalConEnvio}`;
         
-        // Agregar event listeners a los botones de los productos
         agregarEventListenersProductos();
     }
-    
-    // Actualizar contador en el header
     actualizarContadorCarrito();
 }
 
-// Agregar event listeners a los botones de los productos
 function agregarEventListenersProductos() {
-    // Botones de aumentar cantidad
     document.querySelectorAll('.aumentar').forEach(btn => {
         btn.addEventListener('click', function() {
             const index = parseInt(this.getAttribute('data-index'));
@@ -115,7 +102,6 @@ function agregarEventListenersProductos() {
         });
     });
     
-    // Botones de disminuir cantidad
     document.querySelectorAll('.disminuir').forEach(btn => {
         btn.addEventListener('click', function() {
             const index = parseInt(this.getAttribute('data-index'));
@@ -123,7 +109,6 @@ function agregarEventListenersProductos() {
         });
     });
     
-    // Inputs de cantidad
     document.querySelectorAll('.contador-cantidad input').forEach(input => {
         input.addEventListener('change', function() {
             const index = parseInt(this.getAttribute('data-index'));
@@ -137,7 +122,6 @@ function agregarEventListenersProductos() {
         });
     });
     
-    // Botones de eliminar producto
     document.querySelectorAll('.eliminar-producto').forEach(btn => {
         btn.addEventListener('click', function() {
             const index = parseInt(this.getAttribute('data-index'));
@@ -146,7 +130,7 @@ function agregarEventListenersProductos() {
     });
 }
 
-// Aumentar cantidad de un producto
+// Aumenta cantidad de un producto
 function aumentarCantidad(index) {
     carrito[index].cantidad++;
     guardarCarrito();
@@ -155,7 +139,7 @@ function aumentarCantidad(index) {
     mostrarNotificacion('Cantidad actualizada');
 }
 
-// Disminuir cantidad de un producto
+// Disminuye cantidad de un producto
 function disminuirCantidad(index) {
     if (carrito[index].cantidad > 1) {
         carrito[index].cantidad--;
@@ -166,7 +150,7 @@ function disminuirCantidad(index) {
     }
 }
 
-// Cambiar cantidad de un producto
+// Cambia cantidad de un producto
 function cambiarCantidad(index, nuevaCantidad) {
     carrito[index].cantidad = nuevaCantidad;
     guardarCarrito();
@@ -175,7 +159,7 @@ function cambiarCantidad(index, nuevaCantidad) {
     mostrarNotificacion('Cantidad actualizada');
 }
 
-// Eliminar producto del carrito
+// Elimina producto 
 function eliminarProducto(index) {
     const productoEliminado = carrito[index].nombre;
     carrito.splice(index, 1);
@@ -185,9 +169,7 @@ function eliminarProducto(index) {
     mostrarNotificacion(`"${productoEliminado}" eliminado del carrito`);
 }
 
-// Mostrar modal de confirmación para vaciar carrito
 function mostrarModalVaciarCarrito() {
-    // Crear modal si no existe
     if (!document.getElementById('modal-vaciar-carrito')) {
         const modal = document.createElement('div');
         modal.id = 'modal-vaciar-carrito';
@@ -204,14 +186,12 @@ function mostrarModalVaciarCarrito() {
         `;
         document.body.appendChild(modal);
         
-        // Event listeners para los botones del modal
         document.getElementById('confirmar-vaciar').addEventListener('click', vaciarCarrito);
         document.getElementById('cancelar-vaciar').addEventListener('click', function() {
             document.getElementById('modal-vaciar-carrito').style.display = 'none';
         });
     }
     
-    // Mostrar modal
     document.getElementById('modal-vaciar-carrito').style.display = 'flex';
 }
 
@@ -228,7 +208,6 @@ function vaciarCarrito() {
     mostrarNotificacion('Carrito vaciado');
 }
 
-// Finalizar compra
 function finalizarCompra(e) {
     // Verificar si el usuario está logueado
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -258,7 +237,6 @@ function actualizarContadorCarrito() {
 
 // Mostrar notificación
 function mostrarNotificacion(mensaje, esError = false) {
-    // Eliminar notificación existente si hay una
     const notificacionExistente = document.querySelector('.notificacion');
     if (notificacionExistente) {
         notificacionExistente.remove();
@@ -274,7 +252,6 @@ function mostrarNotificacion(mensaje, esError = false) {
         notificacion.classList.add('mostrar');
     }, 10);
     
-    // Ocultar y eliminar notificación después de 3 segundos
     setTimeout(() => {
         notificacion.classList.remove('mostrar');
         setTimeout(() => {

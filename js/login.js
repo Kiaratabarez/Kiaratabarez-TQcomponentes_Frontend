@@ -1,5 +1,4 @@
-// NO TOCAR FUNCIONA
-// auth.js - Maneja tanto login como registro
+// NO TOCAR FUNCIONA BIEN
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const loginForm = document.getElementById('login-form');
@@ -254,15 +253,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const newUser = {
             username,
             email,
-            password, // En un caso real, esto debería estar encriptado
+            password, 
             fullname,
             registerDate: new Date().toISOString()
         };
         
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
-        
-        // Mostrar mensaje de éxito
         showSuccess(registerForm, '¡Cuenta creada con éxito! Redirigiendo...');
         
         // Iniciar sesión automáticamente después del registro
@@ -271,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     }
     
-    // Función para manejar login exitoso - MODIFICADO
+    // Función para manejar login
     function handleSuccessfulLogin(username) {
         // Guardar datos de sesión
         localStorage.setItem('isLoggedIn', 'true');
@@ -347,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorInputs.forEach(input => input.classList.remove('input-error'));
     }
     
-    // Verificar si ya hay una sesión activa
+    // Verifica si ya hay una sesión activa
     function checkExistingSession() {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         const loginTime = localStorage.getItem('loginTime');
@@ -372,4 +369,31 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar
     checkExistingSession();
+
+    // Recordar usuario y contraseña 
+const rememberCheckbox = document.getElementById('remember');
+
+// Si había datos guardados, rellenar automáticamente
+const savedUsername = localStorage.getItem('rememberedUsername');
+const savedPassword = localStorage.getItem('rememberedPassword');
+
+if (savedUsername && savedPassword) {
+    usernameInput.value = savedUsername;
+    passwordInput.value = savedPassword;
+    rememberCheckbox.checked = true;
+}
+
+// Guardar datos al iniciar sesión 
+const originalHandleSuccessfulLogin = handleSuccessfulLogin;
+handleSuccessfulLogin = function(username) {
+    if (rememberCheckbox && rememberCheckbox.checked) {
+        localStorage.setItem('rememberedUsername', usernameInput.value);
+        localStorage.setItem('rememberedPassword', passwordInput.value);
+    } else {
+        localStorage.removeItem('rememberedUsername');
+        localStorage.removeItem('rememberedPassword');
+    }
+    originalHandleSuccessfulLogin(username);
+};
+
 });

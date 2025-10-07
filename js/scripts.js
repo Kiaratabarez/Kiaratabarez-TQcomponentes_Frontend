@@ -60,9 +60,9 @@ const productos = [
     { id: 58, nombre: "Nano ESP32", precio: 17000, imagen: "imagenes/Placas/NanoESP32.png", categoria: "placas" }
 ];
 
-// InicializaciÃ³n cuando el DOM estÃ© cargado
+// Inicializacion cuando el DOM estÃ© cargado
 document.addEventListener('DOMContentLoaded', function() {
-    // Limpiar parÃ¡metros de URL si viene desde login
+    // Limpiar parametros de URL si viene desde login
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('login') === 'success') {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -133,15 +133,13 @@ function cerrarSesion() {
 }
 
 
-// FunciÃ³n para cargar productos por categorÃ­a
+// Funcion para cargar productos por categoria
 function cargarProductosPorCategoria(categoria) {
     const productosGrid = document.querySelector('.productos-grid');
     const productosTabla = document.querySelector('.tabla-productos tbody');
-    
-    // ARREGLO: Declarar la variable correctamente
     let productosFiltrados = [...productos]; // Copiar el array
     
-    // Limpiar nombres de imÃ¡genes
+    // Limpiar nombres de imagenes
     productosFiltrados = productosFiltrados.map(p => {
         let imagenLimpia = p.imagen
             .normalize("NFD")                   
@@ -151,7 +149,7 @@ function cargarProductosPorCategoria(categoria) {
         return { ...p, imagen: imagenLimpia };
     });
     
-    // Filtrar por categorÃ­a si se especifica
+    // Filtrar por categoria si se especifica
     if (categoria && categoria !== 'todos') {
         productosFiltrados = productosFiltrados.filter(producto => producto.categoria === categoria);
     }
@@ -181,7 +179,7 @@ function cargarProductosPorCategoria(categoria) {
         setupBotonesAgregarCarrito();
     }
     
-    // MOSTRAR EN TABLA (listado_tabla.html)
+    // MOSTRAR TABLA (listado_tabla.html)
     if (productosTabla) {
         productosTabla.innerHTML = '';
         
@@ -190,7 +188,7 @@ function cargarProductosPorCategoria(categoria) {
             fila.innerHTML = `
                 <td data-label="Imagen"><img src="${producto.imagen}" alt="${producto.nombre}" class="img-producto"></td>
                 <td data-label="Nombre">${producto.nombre}</td>
-                <td data-label="DescripciÃ³n">${obtenerDescripcionLarga(producto.nombre)}</td>
+                <td data-label="Descripcion">${obtenerDescripcionLarga(producto.nombre)}</td>
                 <td data-label="Precio">$${producto.precio.toLocaleString()}</td>
             `;
             productosTabla.appendChild(fila);
@@ -215,8 +213,7 @@ function setupBotonesAgregarCarrito() {
 }
 
 
-// FunciÃ³n para agregar producto al carrito
-// ✅ Nueva versión: solo permite agregar si está logueado
+// Funcion para agregar producto al carrito
 function agregarAlCarrito(id) {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     if (isLoggedIn !== 'true') {
@@ -224,7 +221,7 @@ function agregarAlCarrito(id) {
         setTimeout(() => {
             window.location.href = 'login.html';
         }, 1000);
-        return; // 🚫 detiene la función
+        return; 
     }
 
     const producto = productos.find(p => p.id === id);
@@ -273,7 +270,7 @@ function actualizarContadorCarrito() {
     }
 }
 
-// Mostrar notificaciÃ³n
+// Mostrar notificacion
 function mostrarNotificacion(mensaje, esError = false) {
     const notificacionExistente = document.querySelector('.notificacion');
     if (notificacionExistente) {
@@ -302,15 +299,15 @@ function obtenerDescripcionCorta(nombreProducto) {
     const descripciones = {
         "Arduino Uno R3": "Placa de desarrollo con microcontrolador ATmega328P",
         "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm",
-        "MÃ³dulo Bluetooth HC-05": "MÃ³dulo Bluetooth para comunicaciÃ³n serial",
-        "Arduino Mega 2560": "Placa con mÃ¡s pines y memoria que Arduino Uno",
+        "Modulo Bluetooth HC-05": "Modulo Bluetooth para comunicacion serial",
+        "Arduino Mega 2560": "Placa con mas pines y memoria que Arduino Uno",
         "Sensor Ultrasonido": "Sensor de distancia por ultrasonido HC-SR04",
         "Pack de LEDs": "Set de 50 LEDs de diferentes colores",
         "Pantalla LCD": "Pantalla LCD 16x2 con interfaz I2C",
         "Cables Dupont H-H 40 und": "Cables hembra-hembra para prototipado",
         "Cables Dupont M-H 40 und": "Cables macho-hembra para conexiones",
         "Cables Dupont M-M 40 und": "Cables macho-macho para breadboard",
-        "Arduino Nano": "VersiÃ³n compacta del Arduino UNO"
+        "Arduino Nano": "Version compacta del Arduino UNO"
     };
     
     return descripciones[nombreProducto] || "Producto de calidad para tus proyectos Arduino";
@@ -319,29 +316,23 @@ function obtenerDescripcionCorta(nombreProducto) {
 function obtenerDescripcionLarga(nombreProducto) {
     const descripciones = {
         "Arduino Uno R3": "Placa de desarrollo original Arduino Uno Rev3 con microcontrolador ATmega328P, ideal para principiantes y proyectos avanzados.",
-        "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm, perfecto para proyectos de robÃ³tica y automatizaciÃ³n.",
-        "MÃ³dulo Bluetooth HC-05": "MÃ³dulo Bluetooth para comunicaciÃ³n serial, permite conectar dispositivos Arduino con smartphones y otros dispositivos Bluetooth.",
+        "Servo motor MG995 180 grados": "Servomotor de alta calidad con torque de 10kg/cm, perfecto para proyectos de robotica y automatizacin.",
+        "Modulo Bluetooth HC-05": "Modulo Bluetooth para comunicacion serial, permite conectar dispositivos Arduino con smartphones y otros dispositivos Bluetooth.",
     };
     
     return descripciones[nombreProducto] || obtenerDescripcionCorta(nombreProducto);
 }
-
 function obtenerCategoriaDeURL() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('categoria');
 }
-
 function toggleMenu() {
     const nav = document.querySelector('nav ul');
     nav.classList.toggle('active');
 }
-
 function setupFiltrosCategoria() {
-    // ImplementaciÃ³n segÃºn sea necesario
 }
-
 function setupMobileDropdown() {
-    // ImplementaciÃ³n segÃºn sea necesario
 }
 
 function setupVerProductosBtn() {
@@ -365,7 +356,7 @@ menuToggle.addEventListener("click", () => {
 });
 }
 
-// BotÃ³n Volver solo en las pÃ¡ginas internas
+// Boton Volver en las paginas internas
 const botonVolver = document.querySelector(".btn-volver");
 const paginaActual = window.location.pathname.split("/").pop();
 if (botonVolver) {
@@ -380,9 +371,11 @@ if (paginaActual === "" || paginaActual === "index.html") {
 
 
 /*SOLO PARA PROBAR */
-// Solo para desarrollo - BORRAR en producciÃ³n
+// Solo para desarrollador o administrador
 window.borrarUsuarios = function() {
     localStorage.removeItem('users');
     console.log('Usuarios eliminados');
     location.reload();
 };
+/*No olvidarme que tengo que poner en la consola de inspeccionar:
+borrarUsuarios(); */ 

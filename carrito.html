@@ -26,7 +26,7 @@
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li class="dropdown">
-                        <a href="listado_box.html">Productos <i class="fas fa-chevron-down"></i></a> <!--colocar icono flecha hacia abajo-->
+                        <a href="listado_box.html">Productos <i class="fas fa-chevron-down"></i></a>
                         <ul class="dropdown-menu">
                             <li><a href="listado_box.html?categoria=placas">Placas Arduino</a></li>
                             <li><a href="listado_box.html?categoria=sensores">Sensores</a></li>
@@ -53,14 +53,13 @@
             <h2>Tu Carrito de Compras</h2>
             
             <div class="carrito-vacio" id="carrito-vacio">
-                <!--colocar icono carrito-->
+                <img src="imagenes/iconos/carritovacio.png" alt="Carrito Vacío" class="icono-titulo">
                 <p>No hay productos en el carrito</p>
                 <a href="listado_box.html" class="btn btn-primario">Seguir Comprando</a>
             </div>
             
             <div class="carrito-contenido" id="carrito-contenido">
                 <div class="carrito-productos" id="carrito-productos">
-                    <!-- Los productos se cargarán dinámicamente con JavaScript -->
                 </div>
                 
                 <div class="carrito-resumen">
@@ -82,13 +81,15 @@
                     
                     <div class="carrito-acciones">
                         <a href="listado_box.html" class="btn btn-secundario">
-                            Seguir Comprando <!--colocar icono flecha izq-->
+                            <img src="imagenes/iconos/flechaizqcirculo.svg" alt="flechaizq" class="icono-comprar">
+                            Seguir Comprando 
                         </a>
                         <button id="vaciar-carrito" class="btn btn-peligro">
-                            Vaciar Carrito <!--colocar icono basura-->
+                            Vaciar Carrito
                         </button>
                         <a href="comprar.html" id="finalizar-compra" class="btn btn-primario">
-                            Finalizar Compra <!--colocar icono flecha der-->
+                            <img src="imagenes/iconos/flechadercirculo.svg" alt="flechader" class="icono-comprar">
+                            Finalizar Compra 
                         </a>
                     </div>
                 </div>

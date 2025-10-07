@@ -1,12 +1,8 @@
-/* carrito.css - Estilos específicos para el carrito de compras */
-
-/* Contenedor principal del carrito */
 .carrito-container {
     padding: 30px 0;
     min-height: 60vh;
 }
 
-/* Estado cuando el carrito está vacío */
 .carrito-vacio {
     text-align: center;
     padding: 40px;
@@ -29,12 +25,11 @@
     color: #666;
 }
 
-/* Contenido del carrito cuando tiene productos */
 .carrito-contenido {
     display: none;
 }
 
-/* Lista de productos en el carrito */
+/* Lista de productos el carrito*/
 .carrito-productos {
     background: white;
     border-radius: 8px;
@@ -43,7 +38,7 @@
     overflow: hidden;
 }
 
-/* Producto individual en el carrito */
+/* Producto individual en carrito*/
 .producto-carrito {
     display: flex;
     padding: 15px;
@@ -83,7 +78,7 @@
     font-size: 0.9rem;
 }
 
-/* Contador de cantidad */
+/* Contador*/
 .contador-cantidad {
     display: flex;
     align-items: center;
@@ -114,7 +109,7 @@
     border-radius: 4px;
 }
 
-/* Precio total por producto */
+/* Precio total por produc */
 .producto-total {
     font-weight: bold;
     margin: 10px 0;
@@ -122,7 +117,7 @@
     font-size: 1.1rem;
 }
 
-/* Botón para eliminar producto */
+/* eliminar producto */
 .eliminar-producto {
     background: none;
     border: none;
@@ -137,7 +132,7 @@
     color: var(--color-danger);
 }
 
-/* Resumen de la compra */
+/* Resumen*/
 .carrito-resumen {
     background: white;
     border-radius: 8px;
@@ -166,7 +161,7 @@
     color: var(--color-secondary);
 }
 
-/* Acciones del carrito */
+/* Accioness*/
 .carrito-acciones {
     display: flex;
     justify-content: space-between;
@@ -184,7 +179,7 @@
     justify-content: center;
 }
 
-/* Modal de confirmación para vaciar carrito */
+/* Modal de confirmación vacia carrito */
 .modal {
     display: none;
     position: fixed;

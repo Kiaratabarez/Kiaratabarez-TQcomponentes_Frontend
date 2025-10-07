@@ -1,4 +1,3 @@
-// comprar.js - Funcionalidad para la página de compra
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const formularioCompra = document.getElementById('formulario-compra');
@@ -11,13 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnFinalizarCompra = document.getElementById('btn-finalizar-compra');
     const modalConfirmacion = document.getElementById('modal-confirmacion');
     
-    // Variables
     let carrito = [];
     let subtotal = 0;
     let envio = 0;
     let total = 0;
     
-    // Inicializar
     inicializarCompra();
     configurarEventos();
     
@@ -33,12 +30,10 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'carrito.html';
         }
         
-        // Verificar si el usuario está logueado
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         if (!isLoggedIn || isLoggedIn !== 'true') {
             window.location.href = 'login.html';
         } else {
-            // Cargar datos del usuario si existen
             cargarDatosUsuario();
         }
     }
@@ -73,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const numeroTarjeta = document.getElementById('numero-tarjeta');
         if (numeroTarjeta) {
             numeroTarjeta.addEventListener('input', function(e) {
-                // Formatear número de tarjeta (agregar espacios cada 4 dígitos)
+                // Formatear número de tarjeta (XXXX XXXX XXXX XXXX)
                 let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
                 let formattedValue = '';
                 
@@ -136,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Calcular envío (gratis sobre $5000, sino $500)
         envio = subtotal > 5000 ? 0 : 500;
         
-        // Calcular total
         total = subtotal + envio;
         
         // Actualizar UI
@@ -179,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Validar información de tarjeta si es necesario
         if (metodoPagoSelect.value === 'tarjeta' || metodoPagoSelect.value === 'debito') {
             if (!validarInfoTarjeta()) {
                 isValid = false;
@@ -198,7 +191,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // Validaciones específicas por tipo de campo
         switch (campo.type) {
             case 'email':
                 if (!isValidEmail(value)) {
@@ -264,11 +256,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function finalizarCompra() {
-        // Deshabilitar botón para evitar múltiples clics
         btnFinalizarCompra.disabled = true;
         btnFinalizarCompra.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         
-        // Simular procesamiento de pago
+        // Simula procesamiento de pago
         setTimeout(() => {
             // Crear objeto con información de la compra
             const compra = {

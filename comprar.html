@@ -54,7 +54,6 @@
             <div class="resumen-pedido">
                 <h3>Resumen de tu pedido</h3>
                 <div class="productos-resumen" id="productos-resumen">
-                    <!-- Los productos se cargarán dinámicamente -->
                 </div>
                 <div class="resumen-total">
                     <div class="resumen-linea">
@@ -74,7 +73,8 @@
             
             <form class="formulario-compra" id="formulario-compra">
                 <div class="form-seccion">
-                    <h3> Información Personal</h3> <!--Colocar icono personita-->
+                    <h3> <img src="imagenes/iconos/bx-user.svg" alt="Icono usuario" class="icono-titulo">
+                        Información Personal</h3> 
                     
                     <div class="form-group doble">
                         <div class="input-group">
@@ -103,7 +103,8 @@
                 </div>
                 
                 <div class="form-seccion">
-                    <h3> Dirección de Envío</h3><!--Colocar icono de camioncito-->
+                    <h3> <img src="imagenes/iconos/camion.png" alt="Camión" class="icono-titulo">
+                        Dirección de Envío</h3>
                     
                     <div class="form-group">
                         <label for="direccion">Dirección *</label>
@@ -141,7 +142,8 @@
                 </div>
                 
                 <div class="form-seccion">
-                    <h3> Información de Pago</h3><!--Colocoar icono de tarjeta-->
+                    <h3> <img src="imagenes/iconos/tarjeta.png" alt="Tarjeta" class="icono-titulo">
+                        Información de Pago</h3>
                     
                     <div class="form-group">
                         <label for="metodo-pago">Método de Pago *</label>
@@ -185,10 +187,12 @@
                 
                 <div class="form-acciones">
                     <a href="carrito.html" class="btn btn-secundario">
-                        Volver al Carrito <!--colocar icono flecha izquierda-->
+                        <img src="imagenes/iconos/flechaizqcirculo.svg" alt="Volver" class="icono-comprar">
+                        Volver al Carrito 
                     </a>
                     <button type="submit" class="btn btn-primario" id="btn-finalizar-compra">
-                        Finalizar Compra <!--colocar icono chack-->
+                        <img src="imagenes/iconos/check.png" alt="Listo" class="icono-comprar">
+                        Finalizar Compra 
                     </button>
                 </div>
             </form>
@@ -201,11 +205,11 @@
         </div>
     </footer>
 
-    <!-- Modal de confirmación -->
+    <!--confirmación -->
     <div class="modal" id="modal-confirmacion">
         <div class="modal-contenido">
             <div class="modal-icono">
-                <i class="fas fa-check-circle"></i> <!--Colocar icono de check redondo del recibo-->
+                <i class="fas fa-check-circle"></i>
             </div>
             <h3>¡Compra Realizada con Éxito!</h3>
             <p id="modal-mensaje">Tu pedido ha sido procesado correctamente. Recibirás un correo con los detalles.</p>

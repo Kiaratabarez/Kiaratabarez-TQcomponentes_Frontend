@@ -4,7 +4,7 @@ const filas = Array.from(tabla.querySelectorAll("tr"));
 const filtro = document.getElementById("categoria");
 const orden = document.getElementById("orden");
 
-// 🔹 Filtrar por categoría
+//Filtra por categoría
 filtro.addEventListener("change", () => {
 const categoria = filtro.value;
 filas.forEach(fila => {
@@ -13,7 +13,7 @@ filas.forEach(fila => {
 });
 });
 
-// 🔹 Ordenar alfabéticamente por nombre
+// Ordena alfabéticamente por nombre
 orden.addEventListener("change", () => {
 const tipo = orden.value;
 const ordenadas = [...filas].sort((a, b) => {

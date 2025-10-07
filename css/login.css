@@ -1,5 +1,4 @@
-/* NO TOCAR FUNCIONA*/
-/* login.css - Versión ampliada para incluir registro */
+/* NO TOCAR FUNCIONA :)*/
 :root {
     --color-primary: #2c3e50;
     --color-secondary: #e74c3c;
@@ -83,7 +82,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* Selector de modo (Login/Registro) */
+/* Selector de modo (Login o Registro)*/
 .auth-mode-selector {
     display: flex;
     margin-bottom: 25px;
@@ -109,7 +108,6 @@ body {
     color: white;
 }
 
-/* Formularios */
 .auth-form {
     display: none;
     opacity: 0;
@@ -291,7 +289,7 @@ body {
     text-decoration: underline;
 }
 
-/* Mensajes de error y éxito */
+/* Mensaje de error o exito*/
 .error-message {
     color: var(--color-danger);
     font-size: 0.8rem;
@@ -321,7 +319,6 @@ body {
     box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.2) !important;
 }
 
-/* Indicador de fortaleza de contraseña */
 .password-strength {
     margin-top: 5px;
     height: 5px;
@@ -408,7 +405,7 @@ body {
 .btn-volver img {
     width: 22px !important;
     height: 22px !important;
-    filter: brightness(0) !important; /* oscuro sobre fondo claro */
+    filter: brightness(0) !important; 
     transition: transform 0.18s ease !important;
 }
 

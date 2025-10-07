@@ -1,4 +1,3 @@
-/* Estilo general mejorado y responsive */
 * {
     margin: 0;
     padding: 0;
@@ -35,7 +34,6 @@ body {
     padding: 0 15px;
 }
 
-/* Encabezado mejorado */
 header {
     background: var(--color-primary);
     color: white;
@@ -197,7 +195,6 @@ nav > ul > li > a:hover {
     align-items: center;
     gap: 8px;
 }
-/* Modal de confirmación */
 .modal {
     display: none;
     position: fixed;
@@ -228,8 +225,6 @@ nav > ul > li > a:hover {
     margin-top: 20px;
 }
 
-
-/* Notificación */
 #notificacion {
     position: fixed;
     top: 20px;
@@ -248,7 +243,6 @@ nav > ul > li > a:hover {
     transform: translateX(0);
 }
 
-/* Dropdown menu */
 .dropdown {
     position: relative;
 }
@@ -295,7 +289,7 @@ nav > ul > li > a:hover {
     border-bottom: none;
 }
 
-/* Hero section mejorada */
+/* Hero section*/
 .hero {
     background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../imagenes/imagenfondo3.JPG");
     background-size: cover;
@@ -374,7 +368,7 @@ nav > ul > li > a:hover {
     background: #a33226;
 }
 
-/* Productos destacados */
+/* Productos destacado*/
 .destacados {
     padding: 40px 0;
     background: var(--color-light);
@@ -449,7 +443,6 @@ nav > ul > li > a:hover {
     margin: 10px 0;
 }
 
-/* Footer */
 footer {
     background: var(--color-primary);
     color: white;
@@ -457,8 +450,6 @@ footer {
     padding: 20px 0;
     margin-top: auto;
 }
-
-/* Dropdown menu - VERSIÓN CORREGIDA */
 .dropdown {
     position: relative;
 }
@@ -508,8 +499,6 @@ footer {
     border-bottom: none;
 }
 
-/* Estilos para el menú de usuario */
-/* Menú de usuario mejorado - VERSIÓN CORREGIDA */
 .user-menu {
     position: relative;
     display: block;
@@ -536,7 +525,6 @@ footer {
     background: #219652;
 }
 
-/* Dropdown del menú de usuario - CORREGIDO */
 .user-menu #user-dropdown {
     position: absolute;
     top: 100%;
@@ -578,8 +566,6 @@ footer {
 .user-menu #user-dropdown li:last-child a:hover {
     background: rgba(192, 57, 43, 0.1);
 }
-
-/* Responsive para móvil */
 @media (max-width: 768px) {
     .user-menu #user-dropdown {
         position: static;
@@ -598,7 +584,6 @@ footer {
         justify-content: center;
     }
 }
-/* Notificaciones */
 .notificacion {
     position: fixed;
     top: 20px;
@@ -621,9 +606,7 @@ footer {
     background: var(--color-danger);
 }
 
-/* Media Queries para Responsive Design */
-
-/* Versión móvil (hasta 480px) */
+/* Versión celu*/
 @media (max-width: 480px) {
     .container {
         width: 95%;
@@ -702,7 +685,7 @@ footer {
     }
 }
 
-/* Versión tablet (481px a 768px) */
+/* Versión tablets*/
 @media (min-width: 481px) and (max-width: 768px) {
     .container {
         width: 90%;
@@ -779,7 +762,7 @@ footer {
     }
 }
 
-/* Versión desktop (769px en adelante) */
+/* Versión escritorio*/
 @media (min-width: 769px) {
     .container {
         width: 90%;
@@ -807,7 +790,7 @@ footer {
     
 }
 
-/*Estilo para el catalogo*/
+/*Estilo del catalogo*/
 #filtros {
 display: flex;
 justify-content: center;
@@ -843,14 +826,12 @@ background-color: #f4f4f4;
 }
 
 
-
-
-/* Imágenes responsive del catálogo */
+/* Imágenes del catálogop*/
 .img-producto {
-width: 80%;               /* Tamaño relativo al ancho de la celda */
-max-width: 150px;         /* Límite para pantallas grandes */
-height: auto;             /* Mantiene proporciones */
-object-fit: contain;      /* Evita deformaciones */
+width: 80%;               
+max-width: 150px;         
+height: auto;             
+object-fit: contain;      
 border-radius: 8px;
 transition: transform 0.3s ease;
 }
@@ -859,7 +840,7 @@ transition: transform 0.3s ease;
 transform: scale(1.05);
 }
 
-/* Ajuste responsive del catálogo */
+/* responsive del catálogo*/
 @media (max-width: 768px) {
 .img-producto {
 width: 70%;
@@ -888,14 +869,12 @@ align-items: center;
 }
 }
 
-/* Vista tipo tarjetas para móviles */
+/* Vista tarjetas para celu*/
 @media (max-width: 600px) {
-/* Oculta los encabezados de la tabla */
 .tabla-productos thead {
 display: none;
 }
 
-/* Cada fila se comporta como una tarjeta */
 .tabla-productos tr {
 display: block;
 background: white;
@@ -906,7 +885,6 @@ padding: 15px;
 width: 90%;
 }
 
-/* Celdas internas */
 .tabla-productos td {
 display: flex;
 justify-content: space-between;
@@ -916,12 +894,10 @@ border: none;
 border-bottom: 1px solid #eee;
 }
 
-/* Quita borde de la última fila */
 .tabla-productos td:last-child {
 border-bottom: none;
 }
 
-/* Títulos automáticos por columna */
 .tabla-productos td::before {
 content: attr(data-label);
 font-weight: bold;
@@ -930,7 +906,6 @@ flex-basis: 40%;
 text-align: left;
 }
 
-/* Imagen centrada*/
 .tabla-productos td:first-child {
 justify-content: center;
 }
@@ -941,7 +916,7 @@ max-width: 100px;
 }
 }
 
-/*Botón volver */
+/*Botón volver*/
 .btn-volver {
 position: fixed;
 top: 18px;
@@ -954,14 +929,13 @@ background: transparent;
 border: none;
 }
 
-/* Imagen dentrodel botón */
 .btn-volver img {
 width: 25px;
 height: 25px;
 filter: brightness(0) invert(1);
 transition: transform 0.3s ease;
 }
-/*El login fondo claro*/
+
 body.login-page .btn-volver img {
 filter: brightness(0);
 }
@@ -1019,7 +993,6 @@ transition: transform 0.15s ease;
 }
 
 
-/* Menú de usuario mejorado */
 .user-menu {
     position: relative;
     display: block;
@@ -1083,7 +1056,6 @@ transition: transform 0.15s ease;
     background: rgba(192, 57, 43, 0.1);
 }
 
-/* Responsive para móvil */
 @media (max-width: 768px) {
     .user-menu #user-dropdown {
         position: static;
@@ -1104,12 +1076,12 @@ transition: transform 0.15s ease;
 
 /*arreglo del login*/
 .user-menu #user-dropdown {
-    display: none; /* Oculto por defecto */
+    display: none; 
 }
 .user-menu #user-dropdown.mostrar {
-    display: block; /* Se muestra al abrir */
+    display: block; 
 }
-/* --- NUEVO: estilo simple con icono de salir --- */
+/* icono de salir */
 .user-simple {
     display: flex;
     align-items: center;
@@ -1134,5 +1106,22 @@ transition: transform 0.15s ease;
     transform: scale(1.1);
     color: var(--color-danger);
 }
+/*iconos sector compra*/
+    .icono-titulo {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
+    filter: brightness(0.3);
+    }
+    .icono-comprar {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
+    filter: brightness(0) invert(1); /* blanco */
+    }
+
+
 
 }
