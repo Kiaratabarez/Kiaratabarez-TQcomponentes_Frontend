@@ -3,17 +3,20 @@
 
 Es un Sistema de e-commerce desarrollado para la venta de componentes electrónicos Arduino, con gestión completa de usuarios, carrito de compras y proceso de checkout.
 
-##Descripción
+Descripción
 TQComponents es una tienda online especializada en componentes Arduino que ofrece una experiencia de compra completa, desde la navegación de productos hasta la finalización de la compra. El proyecto está desarrollado con tecnologías web estándar sin el uso de frameworks externos.
 
-##Características Principales
-  ###Sistema de Usuarios
+Características Principales
+
+  Sistema de Usuarios
+  
     - **Registro e inicio de sesión** con validación de datos
     - **Persistencia de sesión** mediante localStorage
     - **Validación de contraseñas** con indicador de fortaleza
     - **Opción "Recordarme"** para facilitar el acceso
     - **Protección de rutas**: acceso restringido al carrito y checkout para usuarios autenticados
-  ###Catálogo de Productos
+  Catálogo de Productos
+  
     - **58 productos** organizados en 5 categorías:
       - Placas Arduino
       - Sensores
@@ -25,7 +28,8 @@ TQComponents es una tienda online especializada en componentes Arduino que ofrec
       - Vista en tabla con filtros
     - **Filtrado por categoría** mediante URL params
     - **Sistema de navegación** intuitivo con menú dropdown
-  ### Carrito de Compras
+  Carrito de Compras
+  
     - **Gestión completa del carrito** con localStorage
     - **Contador dinámico** de productos en el header
     - **Modificación de cantidades** (aumentar/disminuir)
@@ -47,7 +51,8 @@ TQComponents es una tienda online especializada en componentes Arduino que ofrec
     - **Modal de confirmación** al finalizar compra
     - **Historial de compras** guardado en localStorage
 
-###Interfaz de Usuario
+Interfaz de Usuario
+
   - **Diseño responsive** adaptado a móviles, tablets y desktop
   - **Navegación consistente** en todas las páginas
   - **Botón "Volver"** contextual (oculto en index)
@@ -56,6 +61,7 @@ TQComponents es una tienda online especializada en componentes Arduino que ofrec
   - **Efectos hover** y transiciones suaves
 
 ##Tecnologías Utilizadas
+
   - **HTML5**: Estructura semántica
   - **CSS3**: Estilos personalizados con variables CSS
   - **JavaScript Vanilla**: Lógica de negocio sin frameworks
@@ -96,7 +102,8 @@ TQComponents es una tienda online especializada en componentes Arduino que ofrec
       └── iconos/             # Iconos del sitio
   ```
 
-## Almacenamiento de Datos
+Almacenamiento de Datos
+
   El proyecto utiliza **localStorage** para persistir:
   - `users`: Array de usuarios registrados
   - `isLoggedIn`: Estado de sesión activa
@@ -106,13 +113,15 @@ TQComponents es una tienda online especializada en componentes Arduino que ofrec
   - `historialCompras`: Registro de compras realizadas
   - `rememberedUsername/Password`: Datos para función "Recordarme"
 
-##Seguridad
+Seguridad 
+
   - Validación de formularios en el cliente
   - Protección de rutas sensibles (carrito/checkout)
   - Sesiones con expiración de 24 horas
   - Contraseñas almacenadas en localStorage 
 
-##Responsive Design
+Responsive Design
+
   El sitio está optimizado para:
   - **Móviles**: < 480px
   - **Tablets**: 481px - 768px
@@ -123,7 +132,8 @@ TQComponents es una tienda online especializada en componentes Arduino que ofrec
   - Tablas convertidas en cards en móviles
   - Formularios de una columna en pantallas pequeñas
 
-## Funcionalidades Destacadas
+Funcionalidades Destacadas
+
   Sistema Anti-doble Click: Implementado en `agregarAlCarrito()` para evitar duplicados accidentales al agregar productos.
   Normalización de Imágenes: Limpieza automática de nombres de archivos para compatibilidad con diferentes sistemas operativos.
   Validación Inteligente:
