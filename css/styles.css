@@ -1126,29 +1126,34 @@ transition: transform 0.15s ease;
     filter: brightness(0) invert(1); 
     }
 
-/* NO FUNCIONAAA ASH*(Error del scroll horizontal)/ 
-/* Evita que cualquier contenedor fuerce overflow */
+/*Intento de solucion del scroll horizontal*/
+
 html, body {
-overflow-x: hidden;
+width: 100%;
+max-width: 100%;
+overflow-x: hidden !important;
 margin: 0;
 padding: 0;
-width: 100%;
 }
 
-/* Evita el bug del 100vw + scrollbar */
-header, nav, main, footer, section, table, .header-container {
+header, nav, main, footer, section, table, .header-container, .container {
 max-width: 100%;
-overflow-x: clip;
+overflow-x: hidden;
 box-sizing: border-box;
 }
 
-@media (min-width: 769px) {
-.menu-toggle {
-display: none !important;
-}
+.logo h1 {
+margin-left: 0 !important;
+padding-left: 10px;
 }
 
-/* Asegura que la tabla no se desborde horizontalmente */
+.btn-volver {
+left: 1rem;
+top: 1rem;
+position: fixed;
+z-index: 9999;
+}
+
 .tabla-productos {
 width: 100%;
 overflow-x: auto;
@@ -1156,35 +1161,17 @@ margin: 0 auto;
 box-sizing: border-box;
 }
 
-#tabla-productos {
-width: 100%;
-border-collapse: collapse;
-table-layout: auto;
-margin: 0 auto;
-}
-
-#tabla-productos img {
-max-width: 120px;
+img, video, iframe {
+max-width: 100%;
 height: auto;
 display: block;
-margin: 0 auto;
 }
-
-/* Corrige posible desbordamiento del botón volver */
-.btn-volver {
-position: fixed;
-top: 1rem;
-left: 1rem;
-z-index: 999;
+/*Oculta el menú hamburguesa en pantalla de pc*/
+@media (min-width: 769px) {
+.menu-toggle {
+display: none !important;
 }
-
-main {
-margin-top: 5rem;
-padding: 1rem;
 }
-
-
-
 
 
 /*Estilo Responsive para listado_tabla*/
