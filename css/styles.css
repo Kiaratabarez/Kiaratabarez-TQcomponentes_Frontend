@@ -1236,11 +1236,11 @@ display: block;
 }
 }
 
-/* ====== AJUSTES HEADER ====== */
+/*AJUSTES HEADER */
 
 header {
     width: 100%;
-    background: #2c3e50; /* Color blanco completo como querés */
+    background: #2c3e50; 
     color: var(--color-primary);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
@@ -1256,7 +1256,7 @@ header {
 }
 
 .logo h1 {
-    color: var(--color-primary);
+    color: white;
     margin: 0;
     font-size: 1.8rem;
 }
@@ -1269,7 +1269,7 @@ nav ul {
 }
 
 nav ul li a {
-    color: var(--color-primary);
+    color: white;
     font-weight: 500;
     text-decoration: none;
     padding: 8px 12px;
@@ -1277,7 +1277,7 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    background: var(--color-light);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Botón menú hamburguesa */
@@ -1289,7 +1289,7 @@ nav ul li a:hover {
     font-size: 1.8rem;
     background: none;
     border: none;
-    color: var(--color-primary);
+    color: white;
     cursor: pointer;
     z-index: 9999;
 }
