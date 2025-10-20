@@ -1126,9 +1126,7 @@ transition: transform 0.15s ease;
     filter: brightness(0) invert(1); 
     }
 
-/* Evita scroll horizontal en el catalogo (overflow inesperado)*/
-/* === FIX SCROLL HORIZONTAL EN ESCRITORIO === */
-
+/* NO FUNCIONAAA ASH*(Error del scroll horizontal)/ 
 /* Evita que cualquier contenedor fuerce overflow */
 html, body {
 overflow-x: hidden;
@@ -1144,7 +1142,6 @@ overflow-x: clip;
 box-sizing: border-box;
 }
 
-/* Oculta el botón hamburguesa en PC */
 @media (min-width: 769px) {
 .menu-toggle {
 display: none !important;

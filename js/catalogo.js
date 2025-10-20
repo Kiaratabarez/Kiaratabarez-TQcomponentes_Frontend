@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
 const tabla = document.querySelector("#tabla-productos tbody");
-const filas = Array.from(tabla.querySelectorAll("tr"));
 const filtro = document.getElementById("categoria");
 const orden = document.getElementById("orden");
+
+//si no aparece una tabla se sale 
+if (!tabla) return;
+const filas = Array.from(tabla.querySelectorAll("tr"));
 
 //Filtra por categoría
 filtro.addEventListener("change", () => {
