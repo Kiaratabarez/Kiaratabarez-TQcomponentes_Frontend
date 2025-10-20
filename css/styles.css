@@ -1126,6 +1126,24 @@ transition: transform 0.15s ease;
     filter: brightness(0) invert(1); 
     }
 
+/* Evita scroll horizontal en el catalogo*/
+.tabla-productos {
+overflow-x: auto;
+width: 100%;
+}
 
+#tabla-productos {
+width: 100%;
+border-collapse: collapse;
+}
 
+#tabla-productos img {
+max-width: 100px;
+height: auto;
+display: block;
+}
+
+body {
+overflow-x: hidden;
+}
 }
