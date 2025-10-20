@@ -1127,51 +1127,56 @@ transition: transform 0.15s ease;
     }
 
 /*Intento de solucion del scroll horizontal*/
-
 html, body {
-width: 100%;
-max-width: 100%;
 overflow-x: hidden !important;
+width: 100%;
 margin: 0;
 padding: 0;
 }
 
-header, nav, main, footer, section, table, .header-container, .container {
-max-width: 100%;
+body {
+position: relative;
+}
+
+header, .header-container, nav, main, footer, section {
+max-width: 100vw;
 overflow-x: hidden;
-box-sizing: border-box;
-}
-
-.logo h1 {
-margin-left: 0 !important;
-padding-left: 10px;
-}
-
-.btn-volver {
-left: 1rem;
-top: 1rem;
-position: fixed;
-z-index: 9999;
-}
-
-.tabla-productos {
-width: 100%;
-overflow-x: auto;
 margin: 0 auto;
 box-sizing: border-box;
 }
 
-img, video, iframe {
+#tabla-productos, table, img {
 max-width: 100%;
+width: 100%;
 height: auto;
-display: block;
+box-sizing: border-box;
 }
-/*Oculta el menú hamburguesa en pantalla de pc*/
-@media (min-width: 769px) {
-.menu-toggle {
-display: none !important;
+
+.logo h1 {
+margin: 0 !important;
+padding-left: 10px;
 }
+
+.dropdown-menu {
+right: auto;
+left: 0;
+max-width: 100vw;
+overflow-x: hidden;
 }
+
+.btn-volver {
+position: fixed;
+left: 10px;
+top: 10px;
+z-index: 9999;
+pointer-events: auto;
+}
+
+*, *::before, *::after {
+box-sizing: border-box;
+}
+
+
 
 
 /*Estilo Responsive para listado_tabla*/
