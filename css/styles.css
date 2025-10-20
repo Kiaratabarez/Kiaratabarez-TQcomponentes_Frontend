@@ -922,7 +922,7 @@ max-width: 100px;
 
 /*Botón volver*/
 .btn-volver {
-position: fixed;
+position: absolute;
 top: 18px;
 left: 20px; 
 z-index: 9999;
@@ -1267,6 +1267,19 @@ header {
     color: white;
     font-size: 1.5rem;
     cursor: pointer;
+}
+.menu-toggle {
+    color: white;
+    z-index: 2000;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
 }
 
 
