@@ -423,8 +423,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Verificar si estamos en index.html y cargar productos destacados
     const paginaActual = window.location.pathname.split("/").pop();
+    /*if (paginaActual === "" || paginaActual === "index.html") {
+        cargarProductosDestacados();*/
     if (paginaActual === "" || paginaActual === "index.html") {
-        cargarProductosDestacados();
+    cargarProductosDestacadosCarousel(); // AA19
     }
     
     // Mostrar productos si existe el contenedor .productos-grid (para listado_box.html)
@@ -453,3 +455,63 @@ window.borrarUsuarios = function() {
 };
 /*No olvidarme que tengo que poner en la consola de inspeccionar:
 borrarUsuarios(); */ 
+
+/*AA19 */
+function cargarProductosDestacadosCarousel() {
+    const carousel = $('.productos-carousel');
+    
+    if (!carousel.length) return;
+    
+    carousel.html('');
+    
+    const productosDestacados = productos.slice(0, 12);
+    
+    productosDestacados.forEach(producto => {
+        let imagenLimpia = producto.imagen
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "")
+            .replace(/[°º]/g, "");
+        
+        const productoHTML = `
+            <div class="producto-item">
+                <div class="producto">
+                    <img src="${imagenLimpia}" alt="${producto.nombre}" onerror="this.src='imagenes/iconos/no-image.png'">
+                    <h3>${producto.nombre}</h3>
+                    <p>${obtenerDescripcionCorta(producto.nombre)}</p>
+                    <p class="precio">$${producto.precio.toLocaleString()}</p>
+                    <button class="btn btn-agregar" data-id="${producto.id}">Agregar al Carrito</button>
+                </div>
+            </div>
+        `;
+        
+        carousel.append(productoHTML);
+    });
+    
+    carousel.owlCarousel({
+        loop: true,
+        margin: 25,
+        nav: true,
+        dots: true,
+        autoplay: true,
+        autoplayTimeout: 3000,
+        autoplayHoverPause: true,
+        navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: 2
+            },
+            900: {
+                items: 3
+            },
+            1200: {
+                items: 4
+            }
+        }
+    });
+    
+    setupBotonesAgregarCarrito();
+}
