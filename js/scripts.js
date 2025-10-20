@@ -453,3 +453,25 @@ window.borrarUsuarios = function() {
 };
 /*No olvidarme que tengo que poner en la consola de inspeccionar:
 borrarUsuarios(); */ 
+
+// Garantiza que funciona bein el menu 
+(function () {
+const menuToggle = document.querySelector('.menu-toggle');
+const navMenu = document.querySelector('nav ul');
+
+if (!menuToggle || !navMenu) return;
+
+// Evitar múltiples bindings
+menuToggle.removeEventListener?.('click', () => {});
+menuToggle.addEventListener('click', (e) => {
+e.preventDefault();
+navMenu.classList.toggle('active');
+});
+
+// Cerrar menu al hacer click en un link (mejora UX)
+navMenu.querySelectorAll('a').forEach(a => {
+a.addEventListener('click', () => {
+    if (navMenu.classList.contains('active')) navMenu.classList.remove('active');
+});
+});
+})();

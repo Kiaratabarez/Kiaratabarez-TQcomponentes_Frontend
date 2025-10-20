@@ -1238,93 +1238,73 @@ display: block;
 
 /*AJUSTES HEADER */
 
+/* Asegurar header por encima de todo */
 header {
-    width: 100%;
-    background: #2c3e50; 
-    color: var(--color-primary);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+position: sticky;     
+top: 0;
+z-index: 9999;        
 }
 
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px 20px;
+/* Botón hamburguesa: visible y encima de tood*/
+.menu-toggle {
+display: none;        
+position: absolute;
+right: 18px;
+top: 14px;
+font-size: 1.9rem;
+background: transparent;
+border: none;
+color: white;
+z-index: 10010;        
+cursor: pointer;
 }
 
-.logo h1 {
-    color: white;
-    margin: 0;
-    font-size: 1.8rem;
-}
-
-/* Menú de navegación */
+/* Menu (oculto por defecto en mobile) */
 nav ul {
-    display: flex;
-    align-items: center;
-    list-style: none;
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+@media (max-width: 768px) {
+.menu-toggle {
+display: block;
+}
+
+nav ul {
+display: none;               /* oculto por defecto */
+position: absolute;
+left: 0;
+top: 100%;                   /* justo debajo del header */
+width: 100%;
+background: var(--color-primary);
+box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+padding: 10px 0;
+flex-direction: column;
+gap: 8px;
+z-index: 10005;
+}
+
+nav ul.active {
+display: flex;
+}
+
+nav ul li {
+width: 100%;
+text-align: center;
+margin: 6px 0;
 }
 
 nav ul li a {
-    color: white;
-    font-weight: 500;
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 4px;
+color: white;
+display: block;
+padding: 10px 16px;
 }
 
-nav ul li a:hover {
-    background: rgba(255, 255, 255, 0.1);
+/* Asegura que el hero no tape el menu (si hero tiene z-index) */
+.hero {
+z-index: 1;
 }
-
-/* Botón menú hamburguesa */
-.menu-toggle {
-    display: none;
-    position: absolute;
-    right: 20px;
-    top: 18px;
-    font-size: 1.8rem;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    z-index: 9999;
-}
-
-/* RESPONSIVE*/
-@media (max-width: 768px) {
-    .menu-toggle {
-        display: block;
-    }
-
-    nav ul {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background: white;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        border-top: 1px solid #ddd;
-    }
-
-    nav ul.active {
-        display: flex;
-    }
-
-    nav ul li {
-        width: 100%;
-        text-align: center;
-    }
-
-    nav ul li a {
-        display: block;
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-    }
 }
 
 
