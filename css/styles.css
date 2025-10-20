@@ -1127,103 +1127,54 @@ transition: transform 0.15s ease;
     }
 
 /* Evita scroll horizontal en el catalogo (overflow inesperado)*/
+/* --- FIX SCROLL HORIZONTAL EN ESCRITORIO --- */
+
+/* Asegura que nada sobrepase los límites */
 html, body {
-box-sizing: border-box;
+overflow-x: hidden;
 width: 100%;
+}
+
+/* Evita el bug del 100vw (por scrollbar vertical) */
+header, nav, main, footer, .container, section {
 max-width: 100%;
-margin: 0;
-padding: 0;
--webkit-overflow-scrolling: touch;
+overflow-x: clip;
 }
 
-/* Asegura que todos los elementos usen box-sizing */
-*, *::before, *::after {
-box-sizing: inherit;
-}
-
-/* Contenedor central estándar (evita que padding provoque overflow) */
-.container {
+/* Corrige menús o desplegables que se salen */
+.dropdown-menu {
+position: absolute;
+left: 0;
+right: 0;
 width: 100%;
-max-width: 1200px;
-margin: 0 auto;
-padding-left: 1rem;
-padding-right: 1rem;
-overflow: visible;
+box-sizing: border-box;
 }
 
-/* Evita que imágenes o tablas se salgan */
-img, svg, iframe {
+/* Limita la tabla en escritorio también */
+.tabla-productos {
+max-width: 100%;
+overflow-x: auto;
+}
+
+#tabla-productos {
+table-layout: fixed;
+width: 100%;
+}
+
+/* Evita que el botón ☰ o iconos provoquen desplazamiento */
+.menu-toggle {
+margin-right: 0;
+position: relative;
+right: 0;
+}
+
+/* Imágenes dentro de tabla o cards */
+img {
 max-width: 100%;
 height: auto;
 display: block;
 }
 
-/* Tabla: evitar que su contenido obligue a hacer scroll horizontal global */
-.tabla-productos {
-width: 100%;
-overflow-x: auto; /* scroll solo en el contenedor de la tabla si hace falta */
-}
-
-/* Fuerza layout de tabla para que no crezca más del contenedor */
-#tabla-productos {
-width: 100%;
-max-width: 100%;
-table-layout: fixed; /* importante: reparte el ancho entre columnas */
-word-wrap: break-word;
-border-collapse: collapse;
-}
-
-/* Celdas responsivas */
-#tabla-productos td, #tabla-productos th {
-overflow-wrap: break-word;
-word-break: break-word;
-padding: 0.6rem 0.8rem;
-}
-
-/* Opcional: si aún hay cosas que sobresalen, ocultar overflow global (último recurso) */
-body.force-no-scroll-x {
-overflow-x: hidden !important;
-}
-
-/* --- Estilos móviles para presentar tipo tarjeta centrada --- */
-@media (max-width: 768px) {
-.tabla-productos { padding: 1rem 0; }
-
-/* Ocultamos thead y convertimos filas en cards centradas */
-#tabla-productos thead { display: none; }
-
-#tabla-productos tbody {
-display: flex;
-flex-direction: column;
-gap: 1rem;
-align-items: center;
-}
-
-#tabla-productos tr {
-display: flex;
-flex-direction: column;
-align-items: center;
-width: 100%;
-max-width: 420px; /* ancho máximo de la tarjeta */
-background: #fff;
-border-radius: 12px;
-box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-padding: 1rem;
-margin: 0 auto;
-box-sizing: border-box;
-}
-
-#tabla-productos td {
-display: block;
-width: 100%;
-text-align: center;
-}
-
-#tabla-productos img {
-max-width: 150px;
-margin: 0 auto 0.6rem;
-}
-}
 
 /*Estilo Responsive para listado_tabla*/
 @media (max-width: 768px) {
