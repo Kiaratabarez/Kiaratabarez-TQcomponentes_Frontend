@@ -1146,4 +1146,58 @@ display: block;
 body {
 overflow-x: hidden;
 }
+/*Estilo Responsive para listado_tabla*/
+@media (max-width: 768px) {
+.tabla-productos {
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 1rem;
+}
+
+table#tabla-productos {
+border-collapse: separate;
+border-spacing: 0;
+width: 100%;
+max-width: 600px;
+}
+
+#tabla-productos thead {
+display: none; /* Ocultamos encabezados para vista tipo “tarjeta” */
+}
+
+#tabla-productos tbody {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+align-items: center;
+}
+
+#tabla-productos tr {
+display: flex;
+flex-direction: column;
+align-items: center;
+background: #fff;
+border-radius: 12px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+padding: 1rem;
+width: 90%;
+max-width: 400px;
+text-align: center;
+}
+
+#tabla-productos td {
+display: block;
+width: 100%;
+margin: 0.3rem 0;
+}
+
+#tabla-productos img {
+max-width: 150px;
+height: auto;
+margin: 0 auto 0.5rem;
+display: block;
+}
+}
+
 }
