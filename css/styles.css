@@ -1128,52 +1128,55 @@ transition: transform 0.15s ease;
 
 /*Intento de solucion del scroll horizontal*/
 html, body {
-overflow-x: hidden !important;
-width: 100%;
-margin: 0;
-padding: 0;
-}
-
-body {
-position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 header, .header-container, nav, main, footer, section {
-max-width: 100vw;
-overflow-x: hidden;
-margin: 0 auto;
-box-sizing: border-box;
-}
-
-#tabla-productos, table, img {
-max-width: 100%;
-width: 100%;
-height: auto;
-box-sizing: border-box;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    margin: 0 auto;
 }
 
 .logo h1 {
-margin: 0 !important;
-padding-left: 10px;
+    margin-left: 0 !important;
+    padding-left: 10px;
+}
+
+#tabla-productos, table {
+    display: block;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+img, .img-producto {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 .dropdown-menu {
-right: auto;
-left: 0;
-max-width: 100vw;
-overflow-x: hidden;
+    right: auto;
+    left: 0;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .btn-volver {
-position: fixed;
-left: 10px;
-top: 10px;
-z-index: 9999;
-pointer-events: auto;
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    z-index: 9999;
+    pointer-events: auto;
 }
 
 *, *::before, *::after {
-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 
