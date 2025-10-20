@@ -1127,53 +1127,67 @@ transition: transform 0.15s ease;
     }
 
 /* Evita scroll horizontal en el catalogo (overflow inesperado)*/
-/* --- FIX SCROLL HORIZONTAL EN ESCRITORIO --- */
+/* === FIX SCROLL HORIZONTAL EN ESCRITORIO === */
 
-/* Asegura que nada sobrepase los límites */
+/* Evita que cualquier contenedor fuerce overflow */
 html, body {
 overflow-x: hidden;
+margin: 0;
+padding: 0;
 width: 100%;
 }
 
-/* Evita el bug del 100vw (por scrollbar vertical) */
-header, nav, main, footer, .container, section {
+/* Evita el bug del 100vw + scrollbar */
+header, nav, main, footer, section, table, .header-container {
 max-width: 100%;
 overflow-x: clip;
-}
-
-/* Corrige menús o desplegables que se salen */
-.dropdown-menu {
-position: absolute;
-left: 0;
-right: 0;
-width: 100%;
 box-sizing: border-box;
 }
 
-/* Limita la tabla en escritorio también */
+/* Oculta el botón hamburguesa en PC */
+@media (min-width: 769px) {
+.menu-toggle {
+display: none !important;
+}
+}
+
+/* Asegura que la tabla no se desborde horizontalmente */
 .tabla-productos {
-max-width: 100%;
+width: 100%;
 overflow-x: auto;
+margin: 0 auto;
+box-sizing: border-box;
 }
 
 #tabla-productos {
-table-layout: fixed;
 width: 100%;
+border-collapse: collapse;
+table-layout: auto;
+margin: 0 auto;
 }
 
-/* Evita que el botón ☰ o iconos provoquen desplazamiento */
-.menu-toggle {
-margin-right: 0;
-position: relative;
-right: 0;
-}
-
-/* Imágenes dentro de tabla o cards */
-img {
-max-width: 100%;
+#tabla-productos img {
+max-width: 120px;
 height: auto;
 display: block;
+margin: 0 auto;
 }
+
+/* Corrige posible desbordamiento del botón volver */
+.btn-volver {
+position: fixed;
+top: 1rem;
+left: 1rem;
+z-index: 999;
+}
+
+main {
+margin-top: 5rem;
+padding: 1rem;
+}
+
+
+
 
 
 /*Estilo Responsive para listado_tabla*/
