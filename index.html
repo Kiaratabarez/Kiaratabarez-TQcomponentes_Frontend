@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!--arrelo paara la AA19 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 </head>
 <body>
     <header>
@@ -55,7 +58,8 @@
         <section class="destacados">
             <div class="container">
                 <h2>Productos Destacados</h2>
-                <div class="productos-grid"></div>
+                <!--<div class="productos-grid"></div> -->
+                <div class="owl-carousel owl-theme productos-carousel"></div><!--AA19-->
             </div>
         </section>
     </main>
@@ -69,5 +73,8 @@
     <script src="js/scripts.js"></script>
     <script src="js/catalogo.js"></script>
 
+    <!--AA19-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 </body>
 </html>
