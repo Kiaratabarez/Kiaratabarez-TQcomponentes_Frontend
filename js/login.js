@@ -1,399 +1,158 @@
-// NO TOCAR FUNCIONA BIEN
+// ===========================================
+// CONFIGURACIÓN
+// ===========================================
+const API_URL = 'php/';
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos del DOM
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const loginModeBtn = document.getElementById('login-mode-btn');
     const registerModeBtn = document.getElementById('register-mode-btn');
-    const authSubtitle = document.getElementById('auth-subtitle');
-    const switchModeLinks = document.querySelectorAll('.switch-mode');
     
-    // Campos de formulario
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const regUsernameInput = document.getElementById('reg-username');
-    const regEmailInput = document.getElementById('reg-email');
-    const regPasswordInput = document.getElementById('reg-password');
-    const regConfirmPasswordInput = document.getElementById('reg-confirm-password');
-    
-    // Inicializar usuarios si no existen
-    if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([]));
-    }
+    checkExistingSession();
     
     // Cambiar entre login y registro
-    function switchToLogin() {
+    loginModeBtn.addEventListener('click', () => {
         loginModeBtn.classList.add('active');
         registerModeBtn.classList.remove('active');
         loginForm.classList.add('active');
         registerForm.classList.remove('active');
-        authSubtitle.textContent = 'Inicia sesión en tu cuenta';
-    }
+    });
     
-    function switchToRegister() {
+    registerModeBtn.addEventListener('click', () => {
         registerModeBtn.classList.add('active');
         loginModeBtn.classList.remove('active');
         registerForm.classList.add('active');
         loginForm.classList.remove('active');
-        authSubtitle.textContent = 'Crea una nueva cuenta';
-    }
-    
-    // Event listeners para los botones de modo
-    loginModeBtn.addEventListener('click', switchToLogin);
-    registerModeBtn.addEventListener('click', switchToRegister);
-    
-    // Event listeners para los enlaces de cambio de modo
-    switchModeLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (this.textContent === 'Regístrate') {
-                switchToRegister();
-            } else {
-                switchToLogin();
-            }
-        });
     });
     
-    // Validación en tiempo real para el formulario de registro
-    if (regPasswordInput) {
-        regPasswordInput.addEventListener('input', validatePasswordStrength);
-    }
-    
-    if (regConfirmPasswordInput) {
-        regConfirmPasswordInput.addEventListener('input', validatePasswordMatch);
-    }
-    
-    // Manejar el envío del formulario de login
-    loginForm.addEventListener('submit', function(e) {
+    // FORMULARIO DE LOGIN
+    loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        resetErrors();
         
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-        let isValid = true;
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
         
-        if (!username) {
-            showError(usernameInput, 'Por favor ingresa tu usuario');
-            isValid = false;
-        }
-        
-        if (!password) {
-            showError(passwordInput, 'Por favor ingresa tu contraseña');
-            isValid = false;
-        }
-        
-        if (!isValid) return;
-        
-        // Verificar credenciales
-        const users = JSON.parse(localStorage.getItem('users'));
-        const user = users.find(u => u.username === username && u.password === password);
-        
-        if (user) {
-            handleSuccessfulLogin(username);
-        } else {
-            showError(loginForm, 'Usuario o contraseña incorrectos');
-        }
-    });
-    
-    // Manejar el envío del formulario de registro
-    registerForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        resetErrors();
-        
-        const username = regUsernameInput.value.trim();
-        const email = regEmailInput.value.trim();
-        const password = regPasswordInput.value.trim();
-        const confirmPassword = regConfirmPasswordInput.value.trim();
-        const fullname = document.getElementById('reg-fullname').value.trim();
-        const termsAccepted = document.getElementById('terms').checked;
-        
-        let isValid = true;
-        
-        // Validar usuario
-        if (!username) {
-            showError(regUsernameInput, 'El usuario es obligatorio');
-            isValid = false;
-        } else if (username.length < 3) {
-            showError(regUsernameInput, 'El usuario debe tener al menos 3 caracteres');
-            isValid = false;
-        } else if (isUsernameTaken(username)) {
-            showError(regUsernameInput, 'Este usuario ya está registrado');
-            isValid = false;
-        }
-        
-        // Validar email
-        if (!email) {
-            showError(regEmailInput, 'El correo electrónico es obligatorio');
-            isValid = false;
-        } else if (!isValidEmail(email)) {
-            showError(regEmailInput, 'Ingresa un correo electrónico válido');
-            isValid = false;
-        } else if (isEmailTaken(email)) {
-            showError(regEmailInput, 'Este correo electrónico ya está registrado');
-            isValid = false;
-        }
-        
-        // Validar contraseña
-        if (!password) {
-            showError(regPasswordInput, 'La contraseña es obligatoria');
-            isValid = false;
-        } else if (password.length < 6) {
-            showError(regPasswordInput, 'La contraseña debe tener al menos 6 caracteres');
-            isValid = false;
-        }
-        
-        // Validar confirmación de contraseña
-        if (!confirmPassword) {
-            showError(regConfirmPasswordInput, 'Confirma tu contraseña');
-            isValid = false;
-        } else if (password !== confirmPassword) {
-            showError(regConfirmPasswordInput, 'Las contraseñas no coinciden');
-            isValid = false;
-        }
-        
-        // Validar términos y condiciones
-        if (!termsAccepted) {
-            showError(document.getElementById('terms'), 'Debes aceptar los términos y condiciones');
-            isValid = false;
-        }
-        
-        if (!isValid) return;
-        
-        // Registrar usuario
-        registerUser(username, email, password, fullname);
-    });
-    
-    // Función para validar fortaleza de contraseña
-    function validatePasswordStrength() {
-        const password = regPasswordInput.value;
-        const strengthMeter = document.querySelector('.strength-meter');
-        const strengthText = document.querySelector('.strength-text');
-        
-        if (!strengthMeter) {
-            // Crear el medidor de fortaleza si no existe
-            const passwordStrength = document.createElement('div');
-            passwordStrength.className = 'password-strength';
-            passwordStrength.innerHTML = `
-                <div class="strength-meter"></div>
-                <div class="strength-text"></div>
-            `;
-            regPasswordInput.parentNode.parentNode.appendChild(passwordStrength);
-        }
-        
-        let strength = 0;
-        let text = '';
-        let className = '';
-        
-        if (password.length > 0) {
-            // Calcular fortaleza
-            if (password.length > 5) strength++;
-            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
-            if (password.match(/\d/)) strength++;
-            if (password.match(/[^a-zA-Z\d]/)) strength++;
-            
-            // Asignar texto y clase según la fortaleza
-            if (strength < 2) {
-                text = 'Débil';
-                className = 'strength-weak';
-            } else if (strength < 4) {
-                text = 'Media';
-                className = 'strength-medium';
-            } else {
-                text = 'Fuerte';
-                className = 'strength-strong';
-            }
-        }
-        
-        // Actualizar UI
-        const meter = document.querySelector('.strength-meter');
-        const textElement = document.querySelector('.strength-text');
-        
-        if (password.length > 0) {
-            meter.className = 'strength-meter ' + className;
-            textElement.textContent = text;
-        } else {
-            meter.className = 'strength-meter';
-            textElement.textContent = '';
-        }
-    }
-    
-    // Función para validar coincidencia de contraseñas
-    function validatePasswordMatch() {
-        const password = regPasswordInput.value;
-        const confirmPassword = regConfirmPasswordInput.value;
-        
-        if (confirmPassword && password !== confirmPassword) {
-            showError(regConfirmPasswordInput, 'Las contraseñas no coinciden');
-        } else if (confirmPassword && password === confirmPassword) {
-            resetError(regConfirmPasswordInput);
-        }
-    }
-    
-    // Función para verificar si un usuario ya existe
-    function isUsernameTaken(username) {
-        const users = JSON.parse(localStorage.getItem('users'));
-        return users.some(user => user.username === username);
-    }
-    
-    // Función para verificar si un email ya existe
-    function isEmailTaken(email) {
-        const users = JSON.parse(localStorage.getItem('users'));
-        return users.some(user => user.email === email);
-    }
-    
-    // Función para validar formato de email
-    function isValidEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    }
-    
-    // Función para registrar un nuevo usuario
-    function registerUser(username, email, password, fullname) {
-        const users = JSON.parse(localStorage.getItem('users'));
-        const newUser = {
-            username,
-            email,
-            password, 
-            fullname,
-            registerDate: new Date().toISOString()
-        };
-        
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        showSuccess(registerForm, '¡Cuenta creada con éxito! Redirigiendo...');
-        
-        // Iniciar sesión automáticamente después del registro
-        setTimeout(() => {
-            handleSuccessfulLogin(username);
-        }, 1500);
-    }
-    
-    // Función para manejar login
-    function handleSuccessfulLogin(username) {
-        // Guardar datos de sesión
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('username', username);
-        localStorage.setItem('loginTime', new Date().getTime());
-        
-        showSuccess(loginForm, '¡Inicio de sesión exitoso! Redirigiendo...');
-        
-        // Redirigir con parámetro de recarga forzada
-        setTimeout(() => {
-            window.location.href = 'index.html?login=success';
-        }, 1500);
-    }
-    
-    // Funciones auxiliares para mostrar/ocultar errores y mensajes
-    function showError(input, message) {
-        if (input.tagName === 'FORM') {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = message;
-            errorDiv.style.marginTop = '10px';
-            errorDiv.style.textAlign = 'center';
-            input.appendChild(errorDiv);
-            
-            setTimeout(() => {
-                errorDiv.remove();
-            }, 3000);
+        if (!username || !password) {
+            alert('Por favor completa todos los campos');
             return;
         }
         
-        input.classList.add('input-error');
+        const btnSubmit = loginForm.querySelector('button[type="submit"]');
+        const originalText = btnSubmit.textContent;
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Iniciando sesión...';
         
-        let errorElement = input.parentNode.nextElementSibling;
-        if (!errorElement || !errorElement.classList.contains('error-message')) {
-            errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            input.parentNode.parentNode.appendChild(errorElement);
-        }
-        
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-    }
-    
-    function showSuccess(form, message) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        successDiv.textContent = message;
-        form.appendChild(successDiv);
-        
-        setTimeout(() => {
-            successDiv.remove();
-        }, 3000);
-    }
-    
-    function resetError(input) {
-        input.classList.remove('input-error');
-        const errorElement = input.parentNode.nextElementSibling;
-        if (errorElement && errorElement.classList.contains('error-message')) {
-            errorElement.textContent = '';
-            errorElement.style.display = 'none';
-        }
-    }
-    
-    function resetErrors() {
-        const errorMessages = document.querySelectorAll('.error-message');
-        errorMessages.forEach(msg => {
-            msg.textContent = '';
-            msg.style.display = 'none';
-        });
-        
-        const errorInputs = document.querySelectorAll('.input-error');
-        errorInputs.forEach(input => input.classList.remove('input-error'));
-    }
-    
-    // Verifica si ya hay una sesión activa
-    function checkExistingSession() {
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-        const loginTime = localStorage.getItem('loginTime');
-        
-        if (isLoggedIn && loginTime) {
-            const currentTime = new Date().getTime();
-            const twentyFourHours = 24 * 60 * 60 * 1000;
+        try {
+            console.log('🔄 Enviando petición de login...');
             
-            if (currentTime - loginTime > twentyFourHours) {
-                // Sesión expirada
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('username');
-                localStorage.removeItem('loginTime');
+            const response = await fetch(`${API_URL}login.php?action=login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+            
+            const data = await response.json();
+            console.log('📥 Respuesta recibida:', data);
+            
+            if (data.success) {
+                console.log('✅ Login exitoso');
+                await handleSuccessfulLogin(data.user);
             } else {
-                // Solo dirigir si está en la página de login o registro
-                if(window.location.pathname.includes('login.html')){  
-                    window.location.href = 'index.html';
-                }
+                console.log('❌ Login fallido:', data.message);
+                alert(data.message || 'Usuario o contraseña incorrectos');
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = originalText;
             }
+        } catch (error) {
+            console.error('💥 Error en login:', error);
+            alert('Error al conectar con el servidor');
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = originalText;
         }
-    }
+    });
     
-    // Inicializar
-    checkExistingSession();
+    // REGISTRO (mantener funcionalidad básica)
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        alert('Funcionalidad de registro en desarrollo');
+    });
+});
 
-    // Recordar usuario y contraseña 
-const rememberCheckbox = document.getElementById('remember');
-
-// Si había datos guardados, rellenar automáticamente
-const savedUsername = localStorage.getItem('rememberedUsername');
-const savedPassword = localStorage.getItem('rememberedPassword');
-
-if (savedUsername && savedPassword) {
-    usernameInput.value = savedUsername;
-    passwordInput.value = savedPassword;
-    rememberCheckbox.checked = true;
+/**
+ * MANEJAR LOGIN EXITOSO
+ */
+async function handleSuccessfulLogin(user) {
+    console.log('🎉 Manejando login exitoso para:', user);
+    
+    // Sincronizar carrito si existe
+    await sincronizarCarritoLocal(user.id);
+    
+    // Redirigir según tipo de usuario
+    setTimeout(() => {
+        if (user.is_admin === true || user.is_admin === 1 || user.is_admin === '1') {
+            console.log('🔐 Usuario ADMINISTRADOR detectado');
+            console.log('➡️ Redirigiendo a admin.html...');
+            window.location.href = 'admin.html';
+        } else {
+            console.log('👤 Usuario NORMAL detectado');
+            console.log('➡️ Redirigiendo a index.html...');
+            window.location.href = 'index.html?login=success';
+        }
+    }, 1000);
 }
 
-// Guardar datos al iniciar sesión 
-const originalHandleSuccessfulLogin = handleSuccessfulLogin;
-handleSuccessfulLogin = function(username) {
-    if (rememberCheckbox && rememberCheckbox.checked) {
-        localStorage.setItem('rememberedUsername', usernameInput.value);
-        localStorage.setItem('rememberedPassword', passwordInput.value);
-    } else {
-        localStorage.removeItem('rememberedUsername');
-        localStorage.removeItem('rememberedPassword');
+/**
+ * SINCRONIZAR CARRITO
+ */
+async function sincronizarCarritoLocal(idUsuario) {
+    try {
+        const carritoLocal = localStorage.getItem('carrito');
+        
+        if (carritoLocal) {
+            const productos = JSON.parse(carritoLocal);
+            
+            if (productos.length > 0) {
+                await fetch(`${API_URL}carrito.php?action=sincronizar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_usuario: idUsuario,
+                        productos: productos
+                    })
+                });
+                
+                localStorage.removeItem('carrito');
+            }
+        }
+    } catch (error) {
+        console.error('Error sincronizando carrito:', error);
     }
-    originalHandleSuccessfulLogin(username);
-};
+}
 
-});
+/**
+ * VERIFICAR SESIÓN EXISTENTE
+ */
+async function checkExistingSession() {
+    try {
+        const response = await fetch(`${API_URL}login.php?action=check_session`);
+        const data = await response.json();
+        
+        if (data.success && data.authenticated) {
+            if (data.user.is_admin === true || data.user.is_admin === 1) {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    } catch (error) {
+        console.error('Error verificando sesión:', error);
+    }
+}

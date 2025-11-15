@@ -1,4 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+// ===========================================
+// CONFIGURACIÓN
+// ===========================================
+const API_URL = 'php/';
+
+document.addEventListener('DOMContentLoaded', async function() {
     // Elementos del DOM
     const formularioCompra = document.getElementById('formulario-compra');
     const metodoPagoSelect = document.getElementById('metodo-pago');
@@ -14,47 +19,128 @@ document.addEventListener('DOMContentLoaded', function() {
     let subtotal = 0;
     let envio = 0;
     let total = 0;
+    let usuarioActual = null;
     
-    inicializarCompra();
+    await inicializarCompra();
     configurarEventos();
     
-    function inicializarCompra() {
-        // Cargar carrito desde localStorage
-        const carritoGuardado = localStorage.getItem('carrito');
-        if (carritoGuardado) {
-            carrito = JSON.parse(carritoGuardado);
-            mostrarResumenProductos();
-            calcularTotales();
-        } else {
-            // Si no hay carrito, redirigir
-            window.location.href = 'carrito.html';
+    // ===========================================
+    // INICIALIZACIÓN
+    // ===========================================
+    
+    async function inicializarCompra() {
+        // Verificar usuario logueado
+        usuarioActual = await obtenerUsuarioActual();
+        
+        if (!usuarioActual) {
+            mostrarNotificacion('Debes iniciar sesión para continuar', true);
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+            return;
         }
         
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-        if (!isLoggedIn || isLoggedIn !== 'true') {
-            window.location.href = 'login.html';
-        } else {
-            cargarDatosUsuario();
+        // Cargar carrito desde el backend
+        await cargarCarritoDesdeAPI();
+        
+        if (carrito.length === 0) {
+            mostrarNotificacion('Tu carrito está vacío', true);
+            setTimeout(() => {
+                window.location.href = 'carrito.html';
+            }, 2000);
+            return;
+        }
+        
+        mostrarResumenProductos();
+        calcularTotales();
+        cargarDatosUsuario();
+    }
+    
+    // ===========================================
+    // FUNCIONES DE API
+    // ===========================================
+    
+    async function obtenerUsuarioActual() {
+        try {
+            const response = await fetch(`${API_URL}login.php?action=check_session`);
+            const data = await response.json();
+            
+            if (data.success && data.authenticated) {
+                return data.user;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error verificando sesión:', error);
+            return null;
         }
     }
     
-    function configurarEventos() {
-        // Cambiar visibilidad de información de tarjeta según método de pago
-        metodoPagoSelect.addEventListener('change', function() {
-            if (this.value === 'tarjeta' || this.value === 'debito') {
-                infoTarjeta.style.display = 'block';
-            } else {
-                infoTarjeta.style.display = 'none';
+    async function cargarCarritoDesdeAPI() {
+        try {
+            const response = await fetch(`${API_URL}carrito.php?id_usuario=${usuarioActual.id}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                carrito = data.carrito.map(item => ({
+                    id: item.id_producto,
+                    nombre: item.nombre,
+                    precio: parseFloat(item.precio),
+                    imagen: item.imagen,
+                    cantidad: parseInt(item.cantidad)
+                }));
             }
-        });
+        } catch (error) {
+            console.error('Error cargando carrito:', error);
+            carrito = [];
+        }
+    }
+    
+    async function crearPedido(datosCompra) {
+        try {
+            const response = await fetch(`${API_URL}pedidos.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datosCompra)
+            });
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error creando pedido:', error);
+            return {
+                success: false,
+                message: 'Error al conectar con el servidor'
+            };
+        }
+    }
+    
+    // ===========================================
+    // CONFIGURACIÓN DE EVENTOS
+    // ===========================================
+    
+    function configurarEventos() {
+        // Cambiar visibilidad de información de tarjeta
+        if (metodoPagoSelect) {
+            metodoPagoSelect.addEventListener('change', function() {
+                if (this.value === 'tarjeta' || this.value === 'debito') {
+                    infoTarjeta.style.display = 'block';
+                } else {
+                    infoTarjeta.style.display = 'none';
+                }
+            });
+        }
         
         // Validar formulario al enviar
-        formularioCompra.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (validarFormulario()) {
-                finalizarCompra();
-            }
-        });
+        if (formularioCompra) {
+            formularioCompra.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validarFormulario()) {
+                    finalizarCompra();
+                }
+            });
+        }
         
         // Validar campos en tiempo real
         const camposRequeridos = formularioCompra.querySelectorAll('[required]');
@@ -64,11 +150,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Validar formato de tarjeta
+        // Formatear número de tarjeta
         const numeroTarjeta = document.getElementById('numero-tarjeta');
         if (numeroTarjeta) {
             numeroTarjeta.addEventListener('input', function(e) {
-                // Formatear número de tarjeta (XXXX XXXX XXXX XXXX)
                 let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
                 let formattedValue = '';
                 
@@ -83,11 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Validar fecha de expiración
+        // Formatear fecha de expiración
         const fechaExpiracion = document.getElementById('fecha-expiracion');
         if (fechaExpiracion) {
             fechaExpiracion.addEventListener('input', function(e) {
-                // Formatear fecha (MM/AA)
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 0) {
                     value = value.match(new RegExp('.{1,2}', 'g')).join('/');
@@ -97,7 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // ===========================================
+    // MOSTRAR RESUMEN
+    // ===========================================
+    
     function mostrarResumenProductos() {
+        if (!productosResumen) return;
+        
         productosResumen.innerHTML = '';
         
         if (carrito.length === 0) {
@@ -109,13 +199,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const productoElement = document.createElement('div');
             productoElement.className = 'producto-resumen';
             productoElement.innerHTML = `
-                <img src="${producto.imagen}" alt="${producto.nombre}">
+                <img src="${producto.imagen}" alt="${producto.nombre}" onerror="this.src='imagenes/iconos/no-image.png'">
                 <div class="producto-resumen-info">
                     <h4>${producto.nombre}</h4>
-                    <p>Cantidad: ${producto.cantidad} x $${producto.precio}</p>
+                    <p>Cantidad: ${producto.cantidad} x $${producto.precio.toLocaleString('es-AR')}</p>
                 </div>
                 <div class="producto-resumen-total">
-                    $${producto.precio * producto.cantidad}
+                    $${(producto.precio * producto.cantidad).toLocaleString('es-AR')}
                 </div>
             `;
             productosResumen.appendChild(productoElement);
@@ -123,49 +213,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function calcularTotales() {
-        // Calcular subtotal
         subtotal = carrito.reduce((sum, producto) => {
             return sum + (producto.precio * producto.cantidad);
         }, 0);
         
-        // Calcular envío (gratis sobre $5000, sino $500)
         envio = subtotal > 5000 ? 0 : 500;
-        
         total = subtotal + envio;
         
-        // Actualizar UI
-        resumenSubtotal.textContent = `$${subtotal}`;
-        resumenEnvio.textContent = envio === 0 ? 'Gratis' : `$${envio}`;
-        resumenTotal.textContent = `$${total}`;
+        if (resumenSubtotal) resumenSubtotal.textContent = `$${subtotal.toLocaleString('es-AR')}`;
+        if (resumenEnvio) resumenEnvio.textContent = envio === 0 ? 'Gratis' : `$${envio.toLocaleString('es-AR')}`;
+        if (resumenTotal) resumenTotal.textContent = `$${total.toLocaleString('es-AR')}`;
     }
     
     function cargarDatosUsuario() {
-        const username = localStorage.getItem('username');
-        if (username) {
-            // Intentar cargar datos del usuario si existen
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.username === username);
+        if (usuarioActual) {
+            const emailInput = document.getElementById('email');
+            if (emailInput && usuarioActual.email) {
+                emailInput.value = usuarioActual.email;
+            }
             
-            if (user) {
-                // Rellenar campos con datos del usuario
-                document.getElementById('email').value = user.email || '';
+            if (usuarioActual.nombre_completo) {
+                const nombres = usuarioActual.nombre_completo.split(' ');
+                const nombreInput = document.getElementById('nombre');
+                const apellidoInput = document.getElementById('apellido');
                 
-                if (user.fullname) {
-                    const names = user.fullname.split(' ');
-                    document.getElementById('nombre').value = names[0] || '';
-                    if (names.length > 1) {
-                        document.getElementById('apellido').value = names.slice(1).join(' ');
-                    }
+                if (nombreInput) nombreInput.value = nombres[0] || '';
+                if (apellidoInput && nombres.length > 1) {
+                    apellidoInput.value = nombres.slice(1).join(' ');
                 }
             }
         }
     }
     
+    // ===========================================
+    // VALIDACIONES
+    // ===========================================
+    
     function validarFormulario() {
         let isValid = true;
         resetErrors();
         
-        // Validar campos requeridos
         const camposRequeridos = formularioCompra.querySelectorAll('[required]');
         camposRequeridos.forEach(campo => {
             if (!validarCampo(campo)) {
@@ -184,9 +271,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function validarCampo(campo) {
         const value = campo.value.trim();
-        const errorElement = document.getElementById(`${campo.id}-error`);
         
-        if (!value) {
+        if (!value && campo.hasAttribute('required')) {
             mostrarError(campo, 'Este campo es obligatorio');
             return false;
         }
@@ -207,24 +293,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
         }
         
-        // Validaciones por ID
         switch (campo.id) {
             case 'numero-tarjeta':
-                if (!isValidCardNumber(value)) {
+                if (infoTarjeta.style.display !== 'none' && !isValidCardNumber(value)) {
                     mostrarError(campo, 'Número de tarjeta inválido');
                     return false;
                 }
                 break;
                 
             case 'fecha-expiracion':
-                if (!isValidExpiryDate(value)) {
+                if (infoTarjeta.style.display !== 'none' && !isValidExpiryDate(value)) {
                     mostrarError(campo, 'Fecha de expiración inválida');
                     return false;
                 }
                 break;
                 
             case 'cvv':
-                if (!isValidCVV(value)) {
+                if (infoTarjeta.style.display !== 'none' && !isValidCVV(value)) {
                     mostrarError(campo, 'CVV inválido');
                     return false;
                 }
@@ -238,12 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function validarInfoTarjeta() {
         let isValid = true;
         
-        const camposTarjeta = [
-            'numero-tarjeta',
-            'fecha-expiracion',
-            'cvv',
-            'nombre-tarjeta'
-        ];
+        const camposTarjeta = ['numero-tarjeta', 'fecha-expiracion', 'cvv', 'nombre-tarjeta'];
         
         camposTarjeta.forEach(id => {
             const campo = document.getElementById(id);
@@ -255,63 +335,61 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
     
-    function finalizarCompra() {
+    // ===========================================
+    // FINALIZAR COMPRA
+    // ===========================================
+    
+    async function finalizarCompra() {
+        if (!btnFinalizarCompra) return;
+        
         btnFinalizarCompra.disabled = true;
         btnFinalizarCompra.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         
-        // Simula procesamiento de pago
-        setTimeout(() => {
-            // Crear objeto con información de la compra
-            const compra = {
-                fecha: new Date().toISOString(),
-                productos: carrito,
-                subtotal: subtotal,
-                envio: envio,
-                total: total,
-                cliente: {
-                    nombre: document.getElementById('nombre').value,
-                    apellido: document.getElementById('apellido').value,
-                    email: document.getElementById('email').value,
-                    telefono: document.getElementById('telefono').value,
-                    direccion: document.getElementById('direccion').value,
-                    ciudad: document.getElementById('ciudad').value,
-                    codigoPostal: document.getElementById('codigo-postal').value,
-                    pais: document.getElementById('pais').value
-                },
-                pago: {
-                    metodo: document.getElementById('metodo-pago').value
-                }
-            };
-            
-            // Guardar historial de compras
-            guardarHistorialCompra(compra);
-            
-            // Vaciar carrito
-            localStorage.removeItem('carrito');
-            
-            // Mostrar modal de confirmación
-            mostrarModalConfirmacion(compra);
-            
-            // Restaurar botón
-            btnFinalizarCompra.disabled = false;
-            btnFinalizarCompra.innerHTML = '<i class="fas fa-check"></i> Finalizar Compra';
-        }, 2000);
-    }
-    
-    function guardarHistorialCompra(compra) {
-        let historial = JSON.parse(localStorage.getItem('historialCompras')) || [];
-        historial.push(compra);
-        localStorage.setItem('historialCompras', JSON.stringify(historial));
-    }
-    
-    function mostrarModalConfirmacion(compra) {
-        const modalMensaje = document.getElementById('modal-mensaje');
-        modalMensaje.textContent = `Tu pedido #${Math.floor(100000 + Math.random() * 900000)} ha sido procesado correctamente. Se envió un resumen a ${compra.cliente.email}.`;
+        // Preparar datos de la compra
+        const datosCompra = {
+            id_usuario: usuarioActual.id,
+            productos: carrito,
+            nombre_cliente: document.getElementById('nombre').value.trim(),
+            apellido_cliente: document.getElementById('apellido').value.trim(),
+            email_cliente: document.getElementById('email').value.trim(),
+            telefono_cliente: document.getElementById('telefono').value.trim(),
+            direccion: document.getElementById('direccion').value.trim(),
+            ciudad: document.getElementById('ciudad').value.trim(),
+            codigo_postal: document.getElementById('codigo-postal').value.trim(),
+            pais: document.getElementById('pais').value,
+            metodo_pago: document.getElementById('metodo-pago').value,
+            subtotal: subtotal,
+            envio: envio,
+            total: total
+        };
         
-        modalConfirmacion.style.display = 'flex';
+        // Enviar pedido al backend
+        const resultado = await crearPedido(datosCompra);
+        
+        if (resultado.success) {
+            mostrarModalConfirmacion(resultado.pedido);
+        } else {
+            mostrarNotificacion(resultado.message || 'Error al procesar el pedido', true);
+            btnFinalizarCompra.disabled = false;
+            btnFinalizarCompra.innerHTML = '<img src="imagenes/iconos/check2.png" alt="Listo" class="icono-comprar"> Finalizar Compra';
+        }
     }
     
-    // Funciones de utilidad
+    function mostrarModalConfirmacion(pedido) {
+        const modalMensaje = document.getElementById('modal-mensaje');
+        if (modalMensaje) {
+            modalMensaje.textContent = `Tu pedido #${pedido.numero_pedido} ha sido procesado correctamente. Total: $${pedido.total.toLocaleString('es-AR')}`;
+        }
+        
+        if (modalConfirmacion) {
+            modalConfirmacion.style.display = 'flex';
+        }
+    }
+    
+    // ===========================================
+    // FUNCIONES DE UTILIDAD
+    // ===========================================
+    
     function isValidEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
@@ -374,5 +452,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const errorInputs = document.querySelectorAll('.input-error');
         errorInputs.forEach(input => input.classList.remove('input-error'));
+    }
+    
+    function mostrarNotificacion(mensaje, esError = false) {
+        const notificacionExistente = document.querySelector('.notificacion');
+        if (notificacionExistente) {
+            notificacionExistente.remove();
+        }
+
+        const notificacion = document.createElement('div');
+        notificacion.className = `notificacion ${esError ? 'error' : ''}`;
+        notificacion.textContent = mensaje;
+        
+        document.body.appendChild(notificacion);
+        
+        setTimeout(() => {
+            notificacion.classList.add('mostrar');
+        }, 10);
+        
+        setTimeout(() => {
+            notificacion.classList.remove('mostrar');
+            setTimeout(() => {
+                notificacion.remove();
+            }, 300);
+        }, 3000);
     }
 });
