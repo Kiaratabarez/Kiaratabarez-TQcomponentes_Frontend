@@ -1,13 +1,26 @@
-// admin.js - Panel de Administración TQComponents
-const API_URL = '../php/'; // Ajusta según estructura
+// ===========================================
+// PANEL DE ADMINISTRACIÓN TQCOMPONENTS
+// Sistema completo de gestión
+// ===========================================
 
+const API_URL = 'php/';
 let categoriasCache = [];
+let productoActualId = null;
+let categoriaActualId = null;
 
 // ===========================================
 // INICIALIZACIÓN
 // ===========================================
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🔧 Iniciando Panel de Administración...');
+    
+    // CRÍTICO: Verificar acceso de administrador ANTES de cargar
+    const tieneAcceso = await verificarAccesoAdmin();
+    if (!tieneAcceso) {
+        alert('Acceso denegado. Solo administradores pueden acceder.');
+        window.location.href = 'login.html';
+        return;
+    }
     
     // Cargar datos iniciales
     await cargarEstadisticas();
@@ -17,7 +30,40 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Configurar formularios
     document.getElementById('form-producto').addEventListener('submit', guardarProducto);
     document.getElementById('form-categoria').addEventListener('submit', guardarCategoria);
+    
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+    
+    console.log('✅ Panel iniciado correctamente');
 });
+
+// ===========================================
+// VERIFICACIÓN DE ACCESO
+// ===========================================
+async function verificarAccesoAdmin() {
+    try {
+        const response = await fetch(`${API_URL}login.php?action=check_admin`);
+        const data = await response.json();
+        
+        if (!data.success || !data.is_admin) {
+            return false;
+        }
+        
+        // Mostrar nombre de usuario
+        if (data.user && data.user.username) {
+            document.getElementById('admin-username').textContent = data.user.username;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error verificando acceso:', error);
+        return false;
+    }
+}
 
 // ===========================================
 // NAVEGACIÓN TABS
@@ -68,66 +114,78 @@ async function cargarEstadisticas() {
 }
 
 // ===========================================
-// PRODUCTOS
+// GESTIÓN DE PRODUCTOS
 // ===========================================
+/**
+ * PRODUCTOS - Tabla corregida
+ */
 async function cargarProductos() {
     const contenedor = document.getElementById('productos-lista');
-    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Cargando...</p></div>';
+    contenedor.innerHTML = '<div class="loading"><img src="imagenes/iconos/loading.svg" alt="" class="loading-icon"><p>Cargando productos...</p></div>';
     
     try {
         const response = await fetch(`${API_URL}productos.php`);
         const data = await response.json();
         
         if (!data.success || !data.productos || data.productos.length === 0) {
-            contenedor.innerHTML = '<p>No hay productos.</p>';
+            contenedor.innerHTML = '<p style="text-align:center;padding:40px;color:#666;">No hay productos registrados.</p>';
             return;
         }
         
+        // ✅ SOLUCIÓN: Envolver tabla en wrapper
         let html = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
-                        <th>Categoría</th>
-                        <th>Destacado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Categoría</th>
+                            <th>Destacado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
         
         data.productos.forEach(producto => {
+            const nombreEscapado = producto.nombre.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+            
             html += `
                 <tr>
                     <td>${producto.id_producto}</td>
-                    <td><img src="../${producto.imagen}" alt="${producto.nombre}"></td>
+                    <td><img src="${producto.imagen}" alt="${producto.nombre}" onerror="this.src='imagenes/iconos/no-image.png'"></td>
                     <td>${producto.nombre}</td>
                     <td>$${parseFloat(producto.precio).toLocaleString('es-AR')}</td>
                     <td>${producto.stock}</td>
                     <td>${producto.nombre_categoria || '-'}</td>
                     <td>${producto.destacado ? '⭐ Sí' : 'No'}</td>
-                    <td class="action-buttons">
-                        <button class="action-btn edit" onclick="editarProducto(${producto.id_producto})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn delete" onclick="eliminarProducto(${producto.id_producto}, '${producto.nombre}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <td
+                    <button class="action-btn edit" onclick="editarProducto(${producto.id_producto})" title="Editar">
+                        <img src="imagenes/iconos/editar.svg" alt="Editar">
+                    </button>
+                    <button class="action-btn delete" onclick="eliminarProducto(${producto.id_producto}, '${nombreEscapado}')" title="Eliminar">
+                        <img src="imagenes/iconos/eliminar.svg" alt="Eliminar">
+                    </button>
                     </td>
                 </tr>
             `;
         });
         
-        html += '</tbody></table>';
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
         contenedor.innerHTML = html;
         
     } catch (error) {
         console.error('Error cargando productos:', error);
-        contenedor.innerHTML = '<p class="error">Error al cargar productos</p>';
+        contenedor.innerHTML = '<p class="error" style="text-align:center;padding:40px;color:#e74c3c;">Error al cargar productos. Intenta recargar la página.</p>';
     }
 }
 
@@ -137,7 +195,7 @@ function abrirModalProducto(id = null) {
     
     // Cargar categorías en select
     const select = document.getElementById('producto-categoria');
-    select.innerHTML = '<option value="">Seleccione...</option>';
+    select.innerHTML = '<option value="">Seleccione una categoría...</option>';
     categoriasCache.forEach(cat => {
         select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre_categoria}</option>`;
     });
@@ -145,11 +203,13 @@ function abrirModalProducto(id = null) {
     if (id) {
         // Modo edición
         document.getElementById('modal-producto-title').textContent = 'Editar Producto';
+        productoActualId = id;
         cargarDatosProducto(id);
     } else {
         // Modo nuevo
         document.getElementById('modal-producto-title').textContent = 'Nuevo Producto';
         form.reset();
+        productoActualId = null;
         document.getElementById('producto-id').value = '';
     }
     
@@ -158,6 +218,7 @@ function abrirModalProducto(id = null) {
 
 function cerrarModalProducto() {
     document.getElementById('modal-producto').style.display = 'none';
+    productoActualId = null;
 }
 
 async function cargarDatosProducto(id) {
@@ -185,16 +246,22 @@ async function cargarDatosProducto(id) {
 async function guardarProducto(e) {
     e.preventDefault();
     
-    const id = document.getElementById('producto-id').value;
+    const id = productoActualId;
     const datos = {
-        nombre: document.getElementById('producto-nombre').value,
-        descripcion: document.getElementById('producto-descripcion').value,
+        nombre: document.getElementById('producto-nombre').value.trim(),
+        descripcion: document.getElementById('producto-descripcion').value.trim(),
         precio: parseFloat(document.getElementById('producto-precio').value),
         id_categoria: parseInt(document.getElementById('producto-categoria').value),
         stock: parseInt(document.getElementById('producto-stock').value),
-        imagen: document.getElementById('producto-imagen').value,
+        imagen: document.getElementById('producto-imagen').value.trim(),
         destacado: document.getElementById('producto-destacado').checked
     };
+    
+    // Validaciones
+    if (!datos.nombre || !datos.precio || !datos.id_categoria) {
+        mostrarNotificacion('Por favor completa los campos obligatorios', true);
+        return;
+    }
     
     try {
         let response;
@@ -217,12 +284,12 @@ async function guardarProducto(e) {
         const data = await response.json();
         
         if (data.success) {
-            mostrarNotificacion(id ? 'Producto actualizado' : 'Producto creado');
+            mostrarNotificacion(id ? 'Producto actualizado correctamente' : 'Producto creado correctamente');
             cerrarModalProducto();
             cargarProductos();
             cargarEstadisticas();
         } else {
-            mostrarNotificacion(data.message || 'Error al guardar', true);
+            mostrarNotificacion(data.message || 'Error al guardar producto', true);
         }
     } catch (error) {
         console.error('Error guardando producto:', error);
@@ -235,7 +302,9 @@ async function editarProducto(id) {
 }
 
 async function eliminarProducto(id, nombre) {
-    if (!confirm(`¿Eliminar producto "${nombre}"?`)) return;
+    if (!confirm(`¿Estás seguro de eliminar el producto "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+        return;
+    }
     
     try {
         const response = await fetch(`${API_URL}productos.php?id=${id}`, {
@@ -245,11 +314,11 @@ async function eliminarProducto(id, nombre) {
         const data = await response.json();
         
         if (data.success) {
-            mostrarNotificacion('Producto eliminado');
+            mostrarNotificacion('Producto eliminado correctamente');
             cargarProductos();
             cargarEstadisticas();
         } else {
-            mostrarNotificacion(data.message || 'Error al eliminar', true);
+            mostrarNotificacion(data.message || 'Error al eliminar producto', true);
         }
     } catch (error) {
         console.error('Error eliminando producto:', error);
@@ -258,50 +327,52 @@ async function eliminarProducto(id, nombre) {
 }
 
 // ===========================================
-// CATEGORÍAS
+// GESTIÓN DE CATEGORÍAS
 // ===========================================
 async function cargarCategorias() {
     const contenedor = document.getElementById('categorias-lista');
-    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Cargando...</p></div>';
+    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Cargando categorías...</p></div>';
     
     try {
         const response = await fetch(`${API_URL}categorias.php`);
         const data = await response.json();
         
         if (!data.success || !data.categorias) {
-            contenedor.innerHTML = '<p>No hay categorías.</p>';
+            contenedor.innerHTML = '<p style="text-align:center;padding:40px;color:#666;">No hay categorías registradas.</p>';
             return;
         }
         
-        // Guardar en caché
         categoriasCache = data.categorias;
         
         let html = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Productos</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Productos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
         
         data.categorias.forEach(cat => {
+            const nombreEscapado = cat.nombre_categoria.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+            
             html += `
                 <tr>
                     <td>${cat.id_categoria}</td>
-                    <td>${cat.nombre_categoria}</td>
+                    <td><strong>${cat.nombre_categoria}</strong></td>
                     <td>${cat.descripcion || '-'}</td>
                     <td>${cat.total_productos || 0}</td>
                     <td class="action-buttons">
-                        <button class="action-btn edit" onclick="editarCategoria(${cat.id_categoria})">
+                        <button class="action-btn edit" onclick="editarCategoria(${cat.id_categoria})" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="action-btn delete" onclick="eliminarCategoria(${cat.id_categoria}, '${cat.nombre_categoria}')">
+                        <button class="action-btn delete" onclick="eliminarCategoria(${cat.id_categoria}, '${nombreEscapado}')" title="Eliminar">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -309,12 +380,17 @@ async function cargarCategorias() {
             `;
         });
         
-        html += '</tbody></table>';
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
         contenedor.innerHTML = html;
         
     } catch (error) {
         console.error('Error cargando categorías:', error);
-        contenedor.innerHTML = '<p class="error">Error al cargar categorías</p>';
+        contenedor.innerHTML = '<p class="error" style="text-align:center;padding:40px;color:#e74c3c;">Error al cargar categorías.</p>';
     }
 }
 
@@ -323,9 +399,11 @@ function abrirModalCategoria(id = null) {
     const form = document.getElementById('form-categoria');
     
     if (id) {
+        categoriaActualId = id;
         cargarDatosCategoria(id);
     } else {
         form.reset();
+        categoriaActualId = null;
         document.getElementById('categoria-id').value = '';
     }
     
@@ -334,6 +412,7 @@ function abrirModalCategoria(id = null) {
 
 function cerrarModalCategoria() {
     document.getElementById('modal-categoria').style.display = 'none';
+    categoriaActualId = null;
 }
 
 async function cargarDatosCategoria(id) {
@@ -355,11 +434,16 @@ async function cargarDatosCategoria(id) {
 async function guardarCategoria(e) {
     e.preventDefault();
     
-    const id = document.getElementById('categoria-id').value;
+    const id = categoriaActualId;
     const datos = {
-        nombre_categoria: document.getElementById('categoria-nombre').value,
-        descripcion: document.getElementById('categoria-descripcion').value
+        nombre_categoria: document.getElementById('categoria-nombre').value.trim(),
+        descripcion: document.getElementById('categoria-descripcion').value.trim()
     };
+    
+    if (!datos.nombre_categoria) {
+        mostrarNotificacion('El nombre de la categoría es obligatorio', true);
+        return;
+    }
     
     try {
         let response;
@@ -421,41 +505,42 @@ async function eliminarCategoria(id, nombre) {
 }
 
 // ===========================================
-// USUARIOS
+// GESTIÓN DE USUARIOS
 // ===========================================
 async function cargarUsuarios() {
     const contenedor = document.getElementById('usuarios-lista');
-    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Cargando...</p></div>';
+    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Cargando usuarios...</p></div>';
     
     try {
         const response = await fetch(`${API_URL}usuarios.php`);
         const data = await response.json();
         
         if (!data.success || !data.usuarios || data.usuarios.length === 0) {
-            contenedor.innerHTML = '<p>No hay usuarios.</p>';
+            contenedor.innerHTML = '<p style="text-align:center;padding:40px;">No hay usuarios.</p>';
             return;
         }
         
         let html = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Email</th>
-                        <th>Nombre</th>
-                        <th>Registro</th>
-                        <th>Último Login</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Nombre</th>
+                            <th>Registro</th>
+                            <th>Último Login</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
         
         data.usuarios.forEach(user => {
             html += `
                 <tr>
                     <td>${user.id_usuario}</td>
-                    <td>${user.username}</td>
+                    <td><strong>${user.username}</strong></td>
                     <td>${user.email}</td>
                     <td>${user.nombre_completo || '-'}</td>
                     <td>${new Date(user.fecha_registro).toLocaleDateString('es-AR')}</td>
@@ -464,7 +549,12 @@ async function cargarUsuarios() {
             `;
         });
         
-        html += '</tbody></table>';
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
         contenedor.innerHTML = html;
         
     } catch (error) {
@@ -473,35 +563,37 @@ async function cargarUsuarios() {
     }
 }
 
+
 // ===========================================
-// PEDIDOS
+// GESTIÓN DE PEDIDOS
 // ===========================================
 async function cargarPedidos() {
     const contenedor = document.getElementById('pedidos-lista');
-    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Cargando...</p></div>';
+    contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Cargando pedidos...</p></div>';
     
     try {
         const response = await fetch(`${API_URL}pedidos.php`);
         const data = await response.json();
         
         if (!data.success || !data.pedidos || data.pedidos.length === 0) {
-            contenedor.innerHTML = '<p>No hay pedidos.</p>';
+            contenedor.innerHTML = '<p style="text-align:center;padding:40px;">No hay pedidos registrados.</p>';
             return;
         }
         
         let html = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Número</th>
-                        <th>Cliente</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
-                        <th>Estado</th>
-                        <th>Items</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
         `;
         
         data.pedidos.forEach(pedido => {
@@ -515,7 +607,7 @@ async function cargarPedidos() {
             
             html += `
                 <tr>
-                    <td>${pedido.numero_pedido}</td>
+                    <td><strong>${pedido.numero_pedido}</strong></td>
                     <td>${pedido.nombre_cliente || pedido.username || '-'}</td>
                     <td>${new Date(pedido.fecha_pedido).toLocaleDateString('es-AR')}</td>
                     <td>$${parseFloat(pedido.total).toLocaleString('es-AR')}</td>
@@ -527,7 +619,12 @@ async function cargarPedidos() {
             `;
         });
         
-        html += '</tbody></table>';
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
         contenedor.innerHTML = html;
         
     } catch (error) {
@@ -535,7 +632,6 @@ async function cargarPedidos() {
         contenedor.innerHTML = '<p class="error">Error al cargar pedidos</p>';
     }
 }
-
 // ===========================================
 // UTILIDADES
 // ===========================================
@@ -543,12 +639,23 @@ function mostrarNotificacion(mensaje, esError = false) {
     const notif = document.createElement('div');
     notif.className = `notification ${esError ? 'error' : ''}`;
     notif.textContent = mensaje;
+    notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${esError ? '#e74c3c' : '#27ae60'};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    
     document.body.appendChild(notif);
     
-    setTimeout(() => notif.classList.add('show'), 10);
-    
     setTimeout(() => {
-        notif.classList.remove('show');
+        notif.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => notif.remove(), 300);
     }, 3000);
 }
@@ -558,8 +665,22 @@ async function cerrarSesion() {
     
     try {
         await fetch(`${API_URL}logout.php`, { method: 'POST' });
-        window.location.href = '../index.html';
+        window.location.href = 'index.html';
     } catch (error) {
         console.error('Error cerrando sesión:', error);
     }
 }
+
+// Animaciones CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);

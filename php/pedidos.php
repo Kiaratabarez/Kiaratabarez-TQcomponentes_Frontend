@@ -1,7 +1,11 @@
 <?php
+/**
+ * API REST para gestión de pedidos
+ * CON guardado de direcciones e información de pago
+ */
+
 require_once 'conexion.php';
 
-// Configurar cabeceras
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -11,73 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 /**
- * Crear tabla de pedidos si no existe
- */
-function createPedidosTable() {
-    try {
-        $db = getDB();
-        
-        // Tabla de pedidos
-        $sql1 = "CREATE TABLE IF NOT EXISTS pedidos (
-            id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-            id_usuario INT,
-            numero_pedido VARCHAR(50) UNIQUE NOT NULL,
-            fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            estado ENUM('pendiente', 'procesando', 'enviado', 'entregado', 'cancelado') DEFAULT 'pendiente',
-            subtotal DECIMAL(10, 2) NOT NULL,
-            costo_envio DECIMAL(10, 2) DEFAULT 0,
-            total DECIMAL(10, 2) NOT NULL,
-            
-            -- Datos del cliente
-            nombre_cliente VARCHAR(150) NOT NULL,
-            email_cliente VARCHAR(100) NOT NULL,
-            telefono_cliente VARCHAR(20),
-            
-            -- Dirección de envío
-            direccion VARCHAR(255) NOT NULL,
-            ciudad VARCHAR(100) NOT NULL,
-            codigo_postal VARCHAR(20),
-            pais VARCHAR(100),
-            
-            -- Método de pago
-            metodo_pago VARCHAR(50),
-            
-            notas TEXT,
-            fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            
-            FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE SET NULL,
-            INDEX idx_numero_pedido (numero_pedido),
-            INDEX idx_estado (estado),
-            INDEX idx_fecha (fecha_pedido)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        $db->exec($sql1);
-        
-        // Tabla de detalle de pedidos
-        $sql2 = "CREATE TABLE IF NOT EXISTS detalle_pedidos (
-            id_detalle INT AUTO_INCREMENT PRIMARY KEY,
-            id_pedido INT NOT NULL,
-            id_producto INT NOT NULL,
-            nombre_producto VARCHAR(255) NOT NULL,
-            precio_unitario DECIMAL(10, 2) NOT NULL,
-            cantidad INT NOT NULL,
-            subtotal DECIMAL(10, 2) NOT NULL,
-            
-            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
-            FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE RESTRICT
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        $db->exec($sql2);
-        
-    } catch(Exception $e) {
-        error_log("Error creando tablas de pedidos: " . $e->getMessage());
-    }
-}
-
-// Crear tablas al cargar el archivo
-createPedidosTable();
-
-/**
  * Generar número de pedido único
  */
 function generateOrderNumber() {
@@ -85,7 +22,118 @@ function generateOrderNumber() {
 }
 
 /**
- * Crear nuevo pedido
+ * Detectar tipo de tarjeta por número
+ */
+function detectarTipoTarjeta($numero) {
+    $numero = preg_replace('/\s+/', '', $numero);
+    
+    if (preg_match('/^4/', $numero)) return 'Visa';
+    if (preg_match('/^5[1-5]/', $numero)) return 'Mastercard';
+    if (preg_match('/^3[47]/', $numero)) return 'American Express';
+    if (preg_match('/^6(?:011|5)/', $numero)) return 'Discover';
+    
+    return 'Desconocida';
+}
+
+/**
+ * NUEVA: Guardar dirección de envío del usuario
+ */
+function guardarDireccionEnvio($idUsuario, $datos) {
+    try {
+        if (!$idUsuario) return false; // No guardar si no hay usuario
+        
+        $db = getDB();
+        
+        // Verificar si ya existe esta dirección
+        $checkSql = "SELECT id_direccion FROM direcciones_envio 
+                     WHERE id_usuario = :id_usuario 
+                     AND direccion = :direccion 
+                     AND ciudad = :ciudad";
+        
+        $checkStmt = $db->prepare($checkSql);
+        $checkStmt->execute([
+            'id_usuario' => $idUsuario,
+            'direccion' => $datos['direccion'],
+            'ciudad' => $datos['ciudad']
+        ]);
+        
+        // Si ya existe, no duplicar
+        if ($checkStmt->fetch()) {
+            return true;
+        }
+        
+        // Insertar nueva dirección
+        $sql = "INSERT INTO direcciones_envio 
+                (id_usuario, direccion, ciudad, codigo_postal, pais, predeterminada, fecha_creacion)
+                VALUES (:id_usuario, :direccion, :ciudad, :codigo_postal, :pais, :predeterminada, NOW())";
+        
+        $stmt = $db->prepare($sql);
+        $result = $stmt->execute([
+            'id_usuario' => $idUsuario,
+            'direccion' => sanitizeInput($datos['direccion']),
+            'ciudad' => sanitizeInput($datos['ciudad']),
+            'codigo_postal' => sanitizeInput($datos['codigo_postal'] ?? ''),
+            'pais' => sanitizeInput($datos['pais'] ?? 'Argentina'),
+            'predeterminada' => true // Marcar como predeterminada
+        ]);
+        
+        return $result;
+        
+    } catch(Exception $e) {
+        error_log("Error guardando dirección: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * NUEVA: Guardar información de pago (enmascarada)
+ */
+function guardarInfoPago($idPedido, $datosPago) {
+    try {
+        // Solo guardar si hay datos de tarjeta
+        if (empty($datosPago['numero_tarjeta']) || empty($datosPago['metodo_pago'])) {
+            return true; // No es error, simplemente no hay datos para guardar
+        }
+        
+        // Solo guardar para tarjetas (no para PayPal, transferencia, etc.)
+        if (!in_array($datosPago['metodo_pago'], ['tarjeta', 'debito'])) {
+            return true;
+        }
+        
+        $db = getDB();
+        
+        // Limpiar número de tarjeta
+        $numeroLimpio = preg_replace('/\s+/', '', $datosPago['numero_tarjeta']);
+        
+        // Enmascarar número (solo últimos 4 dígitos)
+        $numeroEnmascarado = '**** **** **** ' . substr($numeroLimpio, -4);
+        
+        // Detectar tipo de tarjeta
+        $tipoTarjeta = detectarTipoTarjeta($numeroLimpio);
+        
+        $sql = "INSERT INTO informacion_pago 
+                (id_pedido, numero_tarjeta_enmascarado, nombre_tarjeta, fecha_expiracion, tipo_tarjeta, fecha_registro)
+                VALUES (:id_pedido, :numero_enmascarado, :nombre, :fecha_exp, :tipo, NOW())";
+        
+        $stmt = $db->prepare($sql);
+        $result = $stmt->execute([
+            'id_pedido' => $idPedido,
+            'numero_enmascarado' => $numeroEnmascarado,
+            'nombre' => sanitizeInput($datosPago['nombre_tarjeta'] ?? ''),
+            'fecha_exp' => sanitizeInput($datosPago['fecha_expiracion'] ?? ''),
+            'tipo' => $tipoTarjeta
+        ]);
+        
+        return $result;
+        
+    } catch(Exception $e) {
+        error_log("Error guardando info de pago: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Crear nuevo pedido (ACTUALIZADO con guardado de dirección y pago)
  */
 function createPedido($data) {
     try {
@@ -112,26 +160,29 @@ function createPedido($data) {
         
         try {
             // Calcular totales
-            $subtotal = 0;
-            foreach ($data['productos'] as $producto) {
-                $subtotal += floatval($producto['precio']) * intval($producto['cantidad']);
-            }
-            
-            $costoEnvio = $subtotal > 5000 ? 0 : 500;
-            $total = $subtotal + $costoEnvio;
+            $subtotal = floatval($data['subtotal']);
+            $costoEnvio = floatval($data['envio']);
+            $total = floatval($data['total']);
             
             $numeroPedido = generateOrderNumber();
-            $idUsuario = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            
+            // Obtener ID de usuario
+            $idUsuario = null;
+            if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
+                $idUsuario = $_SESSION['user_id'];
+            } elseif (!empty($data['id_usuario'])) {
+                $idUsuario = intval($data['id_usuario']);
+            }
             
             // Insertar pedido
             $sqlPedido = "INSERT INTO pedidos 
-                         (id_usuario, numero_pedido, estado, subtotal, costo_envio, total,
-                          nombre_cliente, email_cliente, telefono_cliente,
-                          direccion, ciudad, codigo_postal, pais, metodo_pago, notas)
+                         (id_usuario, numero_pedido, estado_pedido, estado_pago, subtotal, costo_envio, total,
+                          nombre_cliente, apellido_cliente, email_cliente, telefono_cliente,
+                          direccion_envio, ciudad, codigo_postal, pais, metodo_pago, notas, fecha_pedido)
                          VALUES 
-                         (:id_usuario, :numero_pedido, 'pendiente', :subtotal, :costo_envio, :total,
-                          :nombre_cliente, :email_cliente, :telefono_cliente,
-                          :direccion, :ciudad, :codigo_postal, :pais, :metodo_pago, :notas)";
+                         (:id_usuario, :numero_pedido, 'pendiente', 'pendiente', :subtotal, :costo_envio, :total,
+                          :nombre_cliente, :apellido_cliente, :email_cliente, :telefono_cliente,
+                          :direccion_envio, :ciudad, :codigo_postal, :pais, :metodo_pago, :notas, NOW())";
             
             $stmtPedido = $db->prepare($sqlPedido);
             $stmtPedido->execute([
@@ -141,9 +192,10 @@ function createPedido($data) {
                 'costo_envio' => $costoEnvio,
                 'total' => $total,
                 'nombre_cliente' => sanitizeInput($data['nombre_cliente']),
+                'apellido_cliente' => sanitizeInput($data['apellido_cliente'] ?? ''),
                 'email_cliente' => sanitizeInput($data['email_cliente']),
                 'telefono_cliente' => sanitizeInput($data['telefono_cliente'] ?? ''),
-                'direccion' => sanitizeInput($data['direccion']),
+                'direccion_envio' => sanitizeInput($data['direccion']),
                 'ciudad' => sanitizeInput($data['ciudad']),
                 'codigo_postal' => sanitizeInput($data['codigo_postal'] ?? ''),
                 'pais' => sanitizeInput($data['pais'] ?? 'Argentina'),
@@ -154,7 +206,7 @@ function createPedido($data) {
             $idPedido = $db->lastInsertId();
             
             // Insertar detalles del pedido
-            $sqlDetalle = "INSERT INTO detalle_pedidos 
+            $sqlDetalle = "INSERT INTO detalles_pedido 
                           (id_pedido, id_producto, nombre_producto, precio_unitario, cantidad, subtotal)
                           VALUES 
                           (:id_pedido, :id_producto, :nombre_producto, :precio_unitario, :cantidad, :subtotal)";
@@ -175,13 +227,40 @@ function createPedido($data) {
                     'subtotal' => $subtotalProducto
                 ]);
                 
-                // Opcional: Actualizar stock del producto
+                // Actualizar stock
                 $sqlStock = "UPDATE productos SET stock = stock - :cantidad WHERE id_producto = :id";
                 $stmtStock = $db->prepare($sqlStock);
                 $stmtStock->execute([
                     'cantidad' => $cantidad,
                     'id' => intval($producto['id'])
                 ]);
+            }
+            
+            // ✅ NUEVO: Guardar dirección de envío
+            if ($idUsuario) {
+                guardarDireccionEnvio($idUsuario, [
+                    'direccion' => $data['direccion'],
+                    'ciudad' => $data['ciudad'],
+                    'codigo_postal' => $data['codigo_postal'] ?? '',
+                    'pais' => $data['pais'] ?? 'Argentina'
+                ]);
+            }
+            
+            // ✅ NUEVO: Guardar información de pago (enmascarada)
+            if (!empty($data['numero_tarjeta'])) {
+                guardarInfoPago($idPedido, [
+                    'numero_tarjeta' => $data['numero_tarjeta'],
+                    'nombre_tarjeta' => $data['nombre_tarjeta'] ?? '',
+                    'fecha_expiracion' => $data['fecha_expiracion'] ?? '',
+                    'metodo_pago' => $data['metodo_pago']
+                ]);
+            }
+            
+            // Vaciar carrito
+            if ($idUsuario) {
+                $sqlVaciar = "DELETE FROM carrito WHERE id_usuario = :id_usuario";
+                $stmtVaciar = $db->prepare($sqlVaciar);
+                $stmtVaciar->execute(['id_usuario' => $idUsuario]);
             }
             
             $db->commit();
@@ -222,24 +301,21 @@ function getPedidos($filters = []) {
                 COUNT(dp.id_detalle) as total_items
                 FROM pedidos p
                 LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
-                LEFT JOIN detalle_pedidos dp ON p.id_pedido = dp.id_pedido
+                LEFT JOIN detalles_pedido dp ON p.id_pedido = dp.id_pedido
                 WHERE 1=1";
         
         $params = [];
         
-        // Filtro por usuario (si no es admin)
         if (!empty($filters['id_usuario'])) {
             $sql .= " AND p.id_usuario = :id_usuario";
             $params['id_usuario'] = $filters['id_usuario'];
         }
         
-        // Filtro por estado
         if (!empty($filters['estado'])) {
-            $sql .= " AND p.estado = :estado";
+            $sql .= " AND p.estado_pedido = :estado";
             $params['estado'] = $filters['estado'];
         }
         
-        // Filtro por fecha
         if (!empty($filters['fecha_desde'])) {
             $sql .= " AND p.fecha_pedido >= :fecha_desde";
             $params['fecha_desde'] = $filters['fecha_desde'];
@@ -252,7 +328,6 @@ function getPedidos($filters = []) {
         
         $sql .= " GROUP BY p.id_pedido ORDER BY p.fecha_pedido DESC";
         
-        // Paginación
         if (!empty($filters['limit'])) {
             $sql .= " LIMIT :limit";
             if (!empty($filters['offset'])) {
@@ -295,7 +370,6 @@ function getPedido($id) {
     try {
         $db = getDB();
         
-        // Obtener pedido
         $sqlPedido = "SELECT p.*, u.username
                       FROM pedidos p
                       LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
@@ -313,8 +387,7 @@ function getPedido($id) {
             ];
         }
         
-        // Obtener detalles del pedido
-        $sqlDetalles = "SELECT * FROM detalle_pedidos WHERE id_pedido = :id";
+        $sqlDetalles = "SELECT * FROM detalles_pedido WHERE id_pedido = :id";
         $stmtDetalles = $db->prepare($sqlDetalles);
         $stmtDetalles->execute(['id' => $id]);
         $detalles = $stmtDetalles->fetchAll();
@@ -351,7 +424,7 @@ function updatePedidoEstado($id, $estado) {
         
         $db = getDB();
         
-        $sql = "UPDATE pedidos SET estado = :estado, fecha_actualizacion = NOW() 
+        $sql = "UPDATE pedidos SET estado_pedido = :estado, fecha_actualizacion = NOW() 
                 WHERE id_pedido = :id";
         
         $stmt = $db->prepare($sql);
@@ -381,7 +454,10 @@ function updatePedidoEstado($id, $estado) {
     }
 }
 
-// Procesar peticiones
+// ============================================
+// PROCESAR PETICIONES
+// ============================================
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch($method) {
@@ -390,7 +466,7 @@ switch($method) {
             $result = getPedido($_GET['id']);
         } else {
             $filters = [
-                'id_usuario' => isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null,
+                'id_usuario' => $_GET['id_usuario'] ?? null,
                 'estado' => $_GET['estado'] ?? null,
                 'fecha_desde' => $_GET['fecha_desde'] ?? null,
                 'fecha_hasta' => $_GET['fecha_hasta'] ?? null,
@@ -425,3 +501,4 @@ switch($method) {
     default:
         jsonResponse(['success' => false, 'message' => 'Método no permitido'], 405);
 }
+?>

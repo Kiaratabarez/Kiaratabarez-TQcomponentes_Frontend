@@ -1,17 +1,16 @@
 <?php
 /**
- * PROBLEMAS ENCONTRADOS Y CORREGIDOS:
- * 1. session_start() se llamaba antes de require conexion.php que ya inicia sesión
- * 2. No se validaba correctamente el formato del email
- * 3. No se manejaban campos opcionales (telefono) correctamente
+ * REGISTRO.PHP - Sistema de Registro de Usuarios
+ * Versión corregida y funcional
  */
 
 require_once 'conexion.php';
 
-// Configurar cabeceras
+// Configurar cabeceras CORS
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
@@ -34,7 +33,7 @@ function validateRegistrationData($data) {
         $errors[] = 'El nombre de usuario solo puede contener letras, números y guiones bajos';
     }
     
-    // Validar email - CORREGIDO
+    // Validar email
     if (empty($data['email'])) {
         $errors[] = 'El email es obligatorio';
     } elseif (!isValidEmail($data['email'])) {
@@ -64,7 +63,7 @@ function validateRegistrationData($data) {
         $errors[] = 'El nombre completo no puede tener más de 150 caracteres';
     }
     
-    // Validar teléfono (opcional) - CORREGIDO
+    // Validar teléfono (opcional)
     if (!empty($data['telefono'])) {
         if (strlen($data['telefono']) > 20) {
             $errors[] = 'El teléfono no puede tener más de 20 caracteres';
@@ -84,24 +83,26 @@ function checkUserExists($username, $email) {
     try {
         $db = getDB();
         
-        $sql = "SELECT 
-                    COUNT(*) as total,
-                    SUM(CASE WHEN username = :username THEN 1 ELSE 0 END) as username_exists,
-                    SUM(CASE WHEN email = :email THEN 1 ELSE 0 END) as email_exists
-                FROM usuarios 
-                WHERE (username = :username OR email = :email) AND activo = TRUE";
+        // Primero verificar username
+        $sqlUsername = "SELECT COUNT(*) as total FROM usuarios WHERE username = :username AND activo = TRUE";
+        $stmtUsername = $db->prepare($sqlUsername);
+        $stmtUsername->execute(['username' => $username]);
+        $resultUsername = $stmtUsername->fetch();
         
-        $stmt = $db->prepare($sql);
-        $stmt->execute([
-            'username' => $username,
-            'email' => $email
-        ]);
+        // Luego verificar email
+        $sqlEmail = "SELECT COUNT(*) as total FROM usuarios WHERE email = :email AND activo = TRUE";
+        $stmtEmail = $db->prepare($sqlEmail);
+        $stmtEmail->execute(['email' => $email]);
+        $resultEmail = $stmtEmail->fetch();
         
-        return $stmt->fetch();
+        return [
+            'username_exists' => $resultUsername['total'] > 0,
+            'email_exists' => $resultEmail['total'] > 0
+        ];
         
     } catch(Exception $e) {
         error_log("Error verificando usuario: " . $e->getMessage());
-        return null;
+        throw $e;
     }
 }
 
@@ -129,21 +130,14 @@ function registerUser($data) {
         // Verificar si el usuario ya existe
         $exists = checkUserExists($username, $email);
         
-        if ($exists === null) {
-            return [
-                'success' => false,
-                'message' => 'Error al verificar la disponibilidad del usuario'
-            ];
-        }
-        
-        if ($exists['username_exists'] > 0) {
+        if ($exists['username_exists']) {
             return [
                 'success' => false,
                 'message' => 'El nombre de usuario ya está registrado'
             ];
         }
         
-        if ($exists['email_exists'] > 0) {
+        if ($exists['email_exists']) {
             return [
                 'success' => false,
                 'message' => 'El email ya está registrado'
@@ -155,8 +149,8 @@ function registerUser($data) {
         
         // Insertar nuevo usuario
         $db = getDB();
-        $sql = "INSERT INTO usuarios (username, email, password, nombre_completo, telefono, fecha_registro, activo) 
-                VALUES (:username, :email, :password, :nombre_completo, :telefono, NOW(), TRUE)";
+        $sql = "INSERT INTO usuarios (username, email, password, nombre_completo, telefono, is_admin, activo, fecha_registro) 
+                VALUES (:username, :email, :password, :nombre_completo, :telefono, 0, TRUE, NOW())";
         
         $stmt = $db->prepare($sql);
         $result = $stmt->execute([
@@ -171,10 +165,15 @@ function registerUser($data) {
             $userId = $db->lastInsertId();
             
             // Iniciar sesión automáticamente
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            
             $_SESSION['user_id'] = $userId;
             $_SESSION['username'] = $username;
             $_SESSION['email'] = $email;
             $_SESSION['nombre_completo'] = $nombre_completo;
+            $_SESSION['is_admin'] = false;
             $_SESSION['logged_in'] = true;
             $_SESSION['login_time'] = time();
             
@@ -185,7 +184,8 @@ function registerUser($data) {
                     'id' => $userId,
                     'username' => $username,
                     'email' => $email,
-                    'nombre_completo' => $nombre_completo
+                    'nombre_completo' => $nombre_completo,
+                    'is_admin' => false
                 ]
             ];
         } else {
@@ -204,7 +204,10 @@ function registerUser($data) {
     }
 }
 
-// Procesar peticiones POST
+// ============================================
+// PROCESAR PETICIONES
+// ============================================
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $input = file_get_contents('php://input');
@@ -215,7 +218,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = $_POST;
     }
     
+    // Log para debug
+    error_log("Datos recibidos para registro: " . print_r($data, true));
+    
     $result = registerUser($data);
+    
+    error_log("Resultado del registro: " . print_r($result, true));
+    
     jsonResponse($result, $result['success'] ? 201 : 400);
     
 } else {

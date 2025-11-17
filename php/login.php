@@ -1,10 +1,14 @@
 <?php
-session_start(); 
+/**
+ * LOGIN.PHP - VERSIÓN FINAL CORREGIDA
+ * Maneja login, verificación de sesión y roles de usuario
+ */
 require_once 'conexion.php';
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
@@ -13,17 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 /**
  * Procesar login de usuario
  */
-function jsonResponse($data, $status = 200) {
-    http_response_code($status);
-    echo json_encode($data);
-    exit;
-}
-
 function processLogin($username, $password) {
     try {
         $db = getDB();
         
-        // CORREGIDO: Consulta sin ambigüedad en parámetros
         $sql = "SELECT id_usuario, username, email, password, nombre_completo, is_admin, activo 
                 FROM usuarios 
                 WHERE (username = ? OR email = ?) 
@@ -31,49 +28,50 @@ function processLogin($username, $password) {
                 LIMIT 1";
         
         $stmt = $db->prepare($sql);
-        $stmt->execute([
-            sanitizeInput($username),
-            sanitizeInput($username)
-        ]);
+        $stmt->execute([trim($username), trim($username)]);
         $user = $stmt->fetch();
         
         if (!$user) {
             return [
                 'success' => false,
-                'message' => 'Usuario o contraseña incorrectos'
+                'message' => 'Usuario no encontrado o inactivo'
             ];
         }
         
         // Verificar contraseña
-        if (!verifyPassword($password, $user['password'])) {
+        if (!password_verify($password, $user['password'])) {
             return [
                 'success' => false,
-                'message' => 'Usuario o contraseña incorrectos'
+                'message' => 'Contraseña incorrecta'
             ];
         }
         
         // Actualizar último login
         $updateSql = "UPDATE usuarios SET ultimo_login = NOW() WHERE id_usuario = ?";
-        $db->prepare($updateSql)->execute([$user['id_usuario']]);
+        $updateStmt = $db->prepare($updateSql);
+        $updateStmt->execute([$user['id_usuario']]);
+        
+        // Convertir is_admin a boolean estricto
+        $isAdmin = ($user['is_admin'] == 1 || $user['is_admin'] === true || $user['is_admin'] === '1');
         
         // Crear sesión
         $_SESSION['user_id'] = $user['id_usuario'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['nombre_completo'] = $user['nombre_completo'];
-        $_SESSION['is_admin'] = (bool)$user['is_admin'];
+        $_SESSION['is_admin'] = $isAdmin;
         $_SESSION['logged_in'] = true;
         $_SESSION['login_time'] = time();
         
         return [
             'success' => true,
-            'message' => 'Inicio de sesión exitoso',
+            'message' => 'Login exitoso',
             'user' => [
                 'id' => $user['id_usuario'],
                 'username' => $user['username'],
                 'email' => $user['email'],
                 'nombre_completo' => $user['nombre_completo'],
-                'is_admin' => (bool)$user['is_admin']
+                'is_admin' => $isAdmin
             ]
         ];
         
@@ -81,7 +79,7 @@ function processLogin($username, $password) {
         error_log("Error en login: " . $e->getMessage());
         return [
             'success' => false,
-            'message' => 'Error al procesar el login: ' . $e->getMessage()
+            'message' => 'Error en el servidor'
         ];
     }
 }
@@ -102,9 +100,7 @@ function checkSession() {
     if (isset($_SESSION['login_time'])) {
         $sessionDuration = time() - $_SESSION['login_time'];
         if ($sessionDuration > 86400) {
-            $_SESSION = [];
             session_destroy();
-            
             return [
                 'success' => false,
                 'message' => 'Sesión expirada',
@@ -112,6 +108,8 @@ function checkSession() {
             ];
         }
     }
+    
+    $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true;
     
     return [
         'success' => true,
@@ -121,7 +119,7 @@ function checkSession() {
             'username' => $_SESSION['username'],
             'email' => $_SESSION['email'] ?? '',
             'nombre_completo' => $_SESSION['nombre_completo'] ?? '',
-            'is_admin' => $_SESSION['is_admin'] ?? false
+            'is_admin' => $isAdmin
         ]
     ];
 }
@@ -143,14 +141,21 @@ function checkAdmin() {
     $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true;
     
     return [
-        'success' => true,
+        'success' => $isAdmin,
         'is_admin' => $isAdmin,
-        'user' => $sessionCheck['user']
+        'user' => $sessionCheck['user'],
+        'message' => $isAdmin ? 'Usuario administrador' : 'Usuario sin permisos de administrador'
     ];
 }
 
-// Procesar peticiones
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// ============================================
+// PROCESAR PETICIONES
+// ============================================
+
+$method = $_SERVER['REQUEST_METHOD'];
+$action = $_GET['action'] ?? '';
+
+if ($method === 'POST') {
     
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
@@ -159,7 +164,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = $_POST;
     }
     
-    $action = $data['action'] ?? $_GET['action'] ?? '';
+    if (empty($action)) {
+        $action = $data['action'] ?? '';
+    }
     
     switch($action) {
         case 'login':
@@ -170,11 +177,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 jsonResponse([
                     'success' => false,
                     'message' => 'Usuario y contraseña son obligatorios'
-                ], 400);
+                ]);
             }
             
             $result = processLogin($username, $password);
-            jsonResponse($result, $result['success'] ? 200 : 401);
+            jsonResponse($result);
             break;
             
         case 'check_session':
@@ -192,12 +199,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             jsonResponse([
                 'success' => false,
                 'message' => 'Acción no válida'
-            ], 400);
+            ]);
     }
     
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    
-    $action = $_GET['action'] ?? '';
+} elseif ($method === 'GET') {
     
     switch($action) {
         case 'check_session':
@@ -214,14 +219,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         default:
             jsonResponse([
                 'success' => false,
-                'message' => 'Acción no especificada'
-            ], 400);
+                'message' => 'Acción GET no especificada'
+            ]);
     }
     
 } else {
     jsonResponse([
         'success' => false,
         'message' => 'Método no permitido'
-    ], 405);
+    ]);
 }
-?>

@@ -363,6 +363,27 @@ document.addEventListener('DOMContentLoaded', async function() {
             total: total
         };
         
+        const metodoPago = document.getElementById('metodo-pago').value;
+        
+        if (metodoPago === 'tarjeta' || metodoPago === 'debito') {
+            const numeroTarjeta = document.getElementById('numero-tarjeta');
+            const nombreTarjeta = document.getElementById('nombre-tarjeta');
+            const fechaExpiracion = document.getElementById('fecha-expiracion');
+            
+            // Solo agregar si los campos existen y tienen valor
+            if (numeroTarjeta && numeroTarjeta.value.trim()) {
+                datosCompra.numero_tarjeta = numeroTarjeta.value.trim();
+            }
+            
+            if (nombreTarjeta && nombreTarjeta.value.trim()) {
+                datosCompra.nombre_tarjeta = nombreTarjeta.value.trim();
+            }
+            
+            if (fechaExpiracion && fechaExpiracion.value.trim()) {
+                datosCompra.fecha_expiracion = fechaExpiracion.value.trim();
+            }
+        }
+
         // Enviar pedido al backend
         const resultado = await crearPedido(datosCompra);
         
@@ -406,20 +427,31 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     function isValidExpiryDate(date) {
-        const re = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
-        if (!re.test(date)) return false;
-        
-        const [month, year] = date.split('/');
-        const now = new Date();
-        const currentYear = now.getFullYear() % 100;
-        const currentMonth = now.getMonth() + 1;
-        
-        if (parseInt(year) < currentYear) return false;
-        if (parseInt(year) === currentYear && parseInt(month) < currentMonth) return false;
-        
-        return true;
-    }
+    // Formato: MM/YY
+    const re = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+    if (!re.test(date)) return false;
     
+    const [month, year] = date.split('/');
+    const now = new Date();
+    const currentYear = now.getFullYear(); // 2025
+    const currentMonth = now.getMonth() + 1; // 11 (Noviembre)
+    
+    // Convertir YY a YYYY
+    const fullYear = 2000 + parseInt(year);
+    const cardMonth = parseInt(month);
+    
+    // Año anterior al actual → Expirada
+    if (fullYear < currentYear) return false;
+    
+    // Mismo año, mes anterior al actual → Expirada
+    if (fullYear === currentYear && cardMonth < currentMonth) return false;
+    
+    // Máximo 20 años en el futuro
+    if (fullYear > currentYear + 20) return false;
+    
+    return true;
+}
+
     function isValidCVV(cvv) {
         const re = /^[0-9]{3,4}$/;
         return re.test(cvv);

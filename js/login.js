@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginModeBtn = document.getElementById('login-mode-btn');
     const registerModeBtn = document.getElementById('register-mode-btn');
     
+    // Verificar si ya hay sesión activa
     checkExistingSession();
     
     // Cambiar entre login y registro
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('password').value.trim();
         
         if (!username || !password) {
-            alert('Por favor completa todos los campos');
+            mostrarError('Por favor completa todos los campos');
             return;
         }
         
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSubmit.textContent = 'Iniciando sesión...';
         
         try {
-            console.log('🔄 Enviando petición de login...');
+            console.log('📤 Enviando petición de login...');
             
             const response = await fetch(`${API_URL}login.php?action=login`, {
                 method: 'POST',
@@ -62,25 +63,107 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.success) {
                 console.log('✅ Login exitoso');
+                mostrarExito('¡Bienvenido! Redirigiendo...');
                 await handleSuccessfulLogin(data.user);
             } else {
                 console.log('❌ Login fallido:', data.message);
-                alert(data.message || 'Usuario o contraseña incorrectos');
+                mostrarError(data.message || 'Usuario o contraseña incorrectos');
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = originalText;
             }
         } catch (error) {
             console.error('💥 Error en login:', error);
-            alert('Error al conectar con el servidor');
+            mostrarError('Error al conectar con el servidor');
             btnSubmit.disabled = false;
             btnSubmit.textContent = originalText;
         }
     });
     
-    // REGISTRO (mantener funcionalidad básica)
+    // REGISTRO
     registerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        alert('Funcionalidad de registro en desarrollo');
+        
+        const username = document.getElementById('reg-username').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value.trim();
+        const confirmPassword = document.getElementById('reg-confirm-password').value.trim();
+        const fullname = document.getElementById('reg-fullname').value.trim();
+        const terms = document.getElementById('terms').checked;
+        
+        // Validaciones básicas
+        if (!username || !email || !password || !confirmPassword) {
+            mostrarError('Por favor completa todos los campos obligatorios');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            mostrarError('Las contraseñas no coinciden');
+            return;
+        }
+        
+        if (password.length < 6) {
+            mostrarError('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+        
+        if (!terms) {
+            mostrarError('Debes aceptar los términos y condiciones');
+            return;
+        }
+        
+        const btnSubmit = registerForm.querySelector('button[type="submit"]');
+        const originalText = btnSubmit.textContent;
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Registrando...';
+        
+        try {
+            console.log('📤 Enviando datos de registro:', {
+                username,
+                email,
+                nombre_completo: fullname
+            });
+            
+            const response = await fetch(`${API_URL}registro.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password,
+                    confirm_password: confirmPassword,
+                    nombre_completo: fullname
+                })
+            });
+            
+            console.log('📥 Respuesta del servidor:', response.status);
+            
+            const data = await response.json();
+            console.log('📦 Datos recibidos:', data);
+            
+            if (data.success) {
+                mostrarExito('¡Registro exitoso! Redirigiendo...');
+                // Registrar y loguear automáticamente
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } else {
+                // Mostrar errores específicos
+                let errorMsg = data.message || 'Error en el registro';
+                if (data.errors && data.errors.length > 0) {
+                    errorMsg += ':\n' + data.errors.join('\n');
+                }
+                mostrarError(errorMsg);
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = originalText;
+            }
+        } catch (error) {
+            console.error('💥 Error en registro:', error);
+            mostrarError('Error al conectar con el servidor. Verifica la consola.');
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = originalText;
+        }
     });
 });
 
@@ -95,7 +178,10 @@ async function handleSuccessfulLogin(user) {
     
     // Redirigir según tipo de usuario
     setTimeout(() => {
-        if (user.is_admin === true || user.is_admin === 1 || user.is_admin === '1') {
+        // Verificar explícitamente si es admin
+        const esAdmin = user.is_admin === true || user.is_admin === 1 || user.is_admin === '1';
+        
+        if (esAdmin) {
             console.log('🔐 Usuario ADMINISTRADOR detectado');
             console.log('➡️ Redirigiendo a admin.html...');
             window.location.href = 'admin.html';
@@ -146,13 +232,71 @@ async function checkExistingSession() {
         const data = await response.json();
         
         if (data.success && data.authenticated) {
-            if (data.user.is_admin === true || data.user.is_admin === 1) {
+            console.log('✅ Sesión activa detectada:', data.user);
+            
+            // Verificar si es admin
+            const esAdmin = data.user.is_admin === true || data.user.is_admin === 1;
+            
+            if (esAdmin) {
+                console.log('🔐 Redirigiendo a panel admin...');
                 window.location.href = 'admin.html';
             } else {
+                console.log('👤 Redirigiendo a inicio...');
                 window.location.href = 'index.html';
             }
         }
     } catch (error) {
         console.error('Error verificando sesión:', error);
     }
+}
+
+/**
+ * FUNCIONES DE UI
+ */
+function mostrarError(mensaje) {
+    const notificacion = document.createElement('div');
+    notificacion.className = 'notificacion error';
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #e74c3c;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    notificacion.textContent = mensaje;
+    
+    document.body.appendChild(notificacion);
+    
+    setTimeout(() => {
+        notificacion.remove();
+    }, 4000);
+}
+
+function mostrarExito(mensaje) {
+    const notificacion = document.createElement('div');
+    notificacion.className = 'notificacion exito';
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #27ae60;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    notificacion.textContent = mensaje;
+    
+    document.body.appendChild(notificacion);
+    
+    setTimeout(() => {
+        notificacion.remove();
+    }, 3000);
 }
