@@ -1,15 +1,5 @@
 <?php
-/**
- * PROBLEMAS ENCONTRADOS Y CORREGIDOS:
- * 1. El ordenamiento con prefijo 'p.' no funcionaba correctamente
- * 2. Faltaba validación de campos NULL en imagen
- * 3. El filtro destacado no manejaba valores booleanos correctamente
- * 4. No se validaba la existencia de la categoría antes de crear producto
- */
-
 require_once 'conexion.php';
-
-// Configurar cabeceras
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -18,9 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-/**
- * Obtener todos los productos con filtros opcionales
- */
 function getProductos($filters = []) {
     try {
         $db = getDB();
@@ -44,7 +31,7 @@ function getProductos($filters = []) {
             $params['id_categoria'] = $filters['id_categoria'];
         }
         
-        // Filtro por destacado - CORREGIDO
+        // Filtro por destacado
         if (isset($filters['destacado'])) {
             $sql .= " AND p.destacado = :destacado";
             $params['destacado'] = ($filters['destacado'] === 'true' || $filters['destacado'] === true || $filters['destacado'] === 1) ? 1 : 0;
@@ -67,7 +54,6 @@ function getProductos($filters = []) {
             $params['search'] = '%' . $filters['search'] . '%';
         }
         
-        // Ordenamiento - CORREGIDO
         $orderBy = $filters['order_by'] ?? 'id_producto';
         $orderDir = strtoupper($filters['order_dir'] ?? 'ASC');
         
@@ -82,8 +68,6 @@ function getProductos($filters = []) {
         } else {
             $sql .= " ORDER BY p.id_producto ASC";
         }
-        
-        // Límite y paginación
         if (!empty($filters['limit'])) {
             $sql .= " LIMIT :limit";
             $params['limit'] = intval($filters['limit']);
@@ -95,8 +79,6 @@ function getProductos($filters = []) {
         }
         
         $stmt = $db->prepare($sql);
-        
-        // Bind de parámetros con tipos específicos para LIMIT y OFFSET
         foreach ($params as $key => $value) {
             if ($key === 'limit' || $key === 'offset') {
                 $stmt->bindValue(':' . $key, $value, PDO::PARAM_INT);
@@ -123,9 +105,7 @@ function getProductos($filters = []) {
     }
 }
 
-/**
- * Obtener un producto por ID
- */
+/*Obtener un producto por ID*/
 function getProducto($id) {
     try {
         $db = getDB();
@@ -161,12 +141,9 @@ function getProducto($id) {
     }
 }
 
-/**
- * Crear nuevo producto (requiere autenticación admin)
- */
+/*Crear nuevo producto*/
 function createProducto($data) {
     try {
-        // Validar datos
         if (empty($data['nombre']) || empty($data['precio']) || empty($data['id_categoria'])) {
             return [
                 'success' => false,
@@ -176,7 +153,6 @@ function createProducto($data) {
         
         $db = getDB();
         
-        // CORREGIDO: Verificar que la categoría existe
         $checkCat = $db->prepare("SELECT id_categoria FROM categorias WHERE id_categoria = :id AND activo = TRUE");
         $checkCat->execute(['id' => $data['id_categoria']]);
         if (!$checkCat->fetch()) {
@@ -224,9 +200,7 @@ function createProducto($data) {
     }
 }
 
-/**
- * Actualizar producto (requiere autenticación admin)
- */
+/*Actualizar producto*/
 function updateProducto($id, $data) {
     try {
         $db = getDB();
@@ -241,7 +215,6 @@ function updateProducto($id, $data) {
             ];
         }
         
-        // Construir SQL dinámicamente
         $fields = [];
         $params = ['id' => $id];
         
@@ -297,9 +270,7 @@ function updateProducto($id, $data) {
     }
 }
 
-/**
- * Eliminar producto (soft delete)
- */
+/*Eliminar producto*/
 function deleteProducto($id) {
     try {
         $db = getDB();

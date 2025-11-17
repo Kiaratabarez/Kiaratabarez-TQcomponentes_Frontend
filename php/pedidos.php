@@ -1,9 +1,4 @@
 <?php
-/**
- * API REST para gestión de pedidos
- * CON guardado de direcciones e información de pago
- */
-
 require_once 'conexion.php';
 
 header('Access-Control-Allow-Origin: *');
@@ -14,16 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-/**
- * Generar número de pedido único
- */
+/*Generar número de pedido único*/
 function generateOrderNumber() {
     return 'PED-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
 }
 
-/**
- * Detectar tipo de tarjeta por número
- */
+/*Detectar tipo de tarjeta por número*/
 function detectarTipoTarjeta($numero) {
     $numero = preg_replace('/\s+/', '', $numero);
     
@@ -34,21 +25,16 @@ function detectarTipoTarjeta($numero) {
     
     return 'Desconocida';
 }
-
-/**
- * NUEVA: Guardar dirección de envío del usuario
- */
 function guardarDireccionEnvio($idUsuario, $datos) {
     try {
-        if (!$idUsuario) return false; // No guardar si no hay usuario
+        if (!$idUsuario) return false; 
         
         $db = getDB();
         
-        // Verificar si ya existe esta dirección
         $checkSql = "SELECT id_direccion FROM direcciones_envio 
-                     WHERE id_usuario = :id_usuario 
-                     AND direccion = :direccion 
-                     AND ciudad = :ciudad";
+                    WHERE id_usuario = :id_usuario 
+                    AND direccion = :direccion 
+                    AND ciudad = :ciudad";
         
         $checkStmt = $db->prepare($checkSql);
         $checkStmt->execute([
@@ -56,8 +42,6 @@ function guardarDireccionEnvio($idUsuario, $datos) {
             'direccion' => $datos['direccion'],
             'ciudad' => $datos['ciudad']
         ]);
-        
-        // Si ya existe, no duplicar
         if ($checkStmt->fetch()) {
             return true;
         }
@@ -74,7 +58,7 @@ function guardarDireccionEnvio($idUsuario, $datos) {
             'ciudad' => sanitizeInput($datos['ciudad']),
             'codigo_postal' => sanitizeInput($datos['codigo_postal'] ?? ''),
             'pais' => sanitizeInput($datos['pais'] ?? 'Argentina'),
-            'predeterminada' => true // Marcar como predeterminada
+            'predeterminada' => true 
         ]);
         
         return $result;
@@ -85,17 +69,14 @@ function guardarDireccionEnvio($idUsuario, $datos) {
     }
 }
 
-/**
- * NUEVA: Guardar información de pago (enmascarada)
- */
 function guardarInfoPago($idPedido, $datosPago) {
     try {
         // Solo guardar si hay datos de tarjeta
         if (empty($datosPago['numero_tarjeta']) || empty($datosPago['metodo_pago'])) {
-            return true; // No es error, simplemente no hay datos para guardar
+            return true; 
         }
         
-        // Solo guardar para tarjetas (no para PayPal, transferencia, etc.)
+        // Solo guardar para tarjetas (no para PayPal, transferencia)
         if (!in_array($datosPago['metodo_pago'], ['tarjeta', 'debito'])) {
             return true;
         }
@@ -107,8 +88,6 @@ function guardarInfoPago($idPedido, $datosPago) {
         
         // Enmascarar número (solo últimos 4 dígitos)
         $numeroEnmascarado = '**** **** **** ' . substr($numeroLimpio, -4);
-        
-        // Detectar tipo de tarjeta
         $tipoTarjeta = detectarTipoTarjeta($numeroLimpio);
         
         $sql = "INSERT INTO informacion_pago 
@@ -132,9 +111,7 @@ function guardarInfoPago($idPedido, $datosPago) {
     }
 }
 
-/**
- * Crear nuevo pedido (ACTUALIZADO con guardado de dirección y pago)
- */
+/*Crear nuevo pedido */
 function createPedido($data) {
     try {
         // Validar datos obligatorios
@@ -176,13 +153,13 @@ function createPedido($data) {
             
             // Insertar pedido
             $sqlPedido = "INSERT INTO pedidos 
-                         (id_usuario, numero_pedido, estado_pedido, estado_pago, subtotal, costo_envio, total,
-                          nombre_cliente, apellido_cliente, email_cliente, telefono_cliente,
-                          direccion_envio, ciudad, codigo_postal, pais, metodo_pago, notas, fecha_pedido)
-                         VALUES 
-                         (:id_usuario, :numero_pedido, 'pendiente', 'pendiente', :subtotal, :costo_envio, :total,
-                          :nombre_cliente, :apellido_cliente, :email_cliente, :telefono_cliente,
-                          :direccion_envio, :ciudad, :codigo_postal, :pais, :metodo_pago, :notas, NOW())";
+                        (id_usuario, numero_pedido, estado_pedido, estado_pago, subtotal, costo_envio, total,
+                        nombre_cliente, apellido_cliente, email_cliente, telefono_cliente,
+                        direccion_envio, ciudad, codigo_postal, pais, metodo_pago, notas, fecha_pedido)
+                        VALUES 
+                        (:id_usuario, :numero_pedido, 'pendiente', 'pendiente', :subtotal, :costo_envio, :total,
+                        :nombre_cliente, :apellido_cliente, :email_cliente, :telefono_cliente,
+                        :direccion_envio, :ciudad, :codigo_postal, :pais, :metodo_pago, :notas, NOW())";
             
             $stmtPedido = $db->prepare($sqlPedido);
             $stmtPedido->execute([
@@ -207,9 +184,9 @@ function createPedido($data) {
             
             // Insertar detalles del pedido
             $sqlDetalle = "INSERT INTO detalles_pedido 
-                          (id_pedido, id_producto, nombre_producto, precio_unitario, cantidad, subtotal)
-                          VALUES 
-                          (:id_pedido, :id_producto, :nombre_producto, :precio_unitario, :cantidad, :subtotal)";
+                        (id_pedido, id_producto, nombre_producto, precio_unitario, cantidad, subtotal)
+                        VALUES 
+                        (:id_pedido, :id_producto, :nombre_producto, :precio_unitario, :cantidad, :subtotal)";
             
             $stmtDetalle = $db->prepare($sqlDetalle);
             
@@ -236,7 +213,6 @@ function createPedido($data) {
                 ]);
             }
             
-            // ✅ NUEVO: Guardar dirección de envío
             if ($idUsuario) {
                 guardarDireccionEnvio($idUsuario, [
                     'direccion' => $data['direccion'],
@@ -246,7 +222,6 @@ function createPedido($data) {
                 ]);
             }
             
-            // ✅ NUEVO: Guardar información de pago (enmascarada)
             if (!empty($data['numero_tarjeta'])) {
                 guardarInfoPago($idPedido, [
                     'numero_tarjeta' => $data['numero_tarjeta'],
@@ -289,9 +264,7 @@ function createPedido($data) {
     }
 }
 
-/**
- * Obtener pedidos con filtros
- */
+/*Obtener pedidos con filtros*/
 function getPedidos($filters = []) {
     try {
         $db = getDB();
@@ -363,18 +336,16 @@ function getPedidos($filters = []) {
     }
 }
 
-/**
- * Obtener un pedido por ID
- */
+/*Obtener un pedido por ID*/
 function getPedido($id) {
     try {
         $db = getDB();
         
         $sqlPedido = "SELECT p.*, u.username
-                      FROM pedidos p
-                      LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
-                      WHERE p.id_pedido = :id
-                      LIMIT 1";
+                    FROM pedidos p
+                    LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+                    WHERE p.id_pedido = :id
+                    LIMIT 1";
         
         $stmtPedido = $db->prepare($sqlPedido);
         $stmtPedido->execute(['id' => $id]);
@@ -408,9 +379,7 @@ function getPedido($id) {
     }
 }
 
-/**
- * Actualizar estado del pedido
- */
+/*Actualizar estado del pedid*/
 function updatePedidoEstado($id, $estado) {
     try {
         $estadosValidos = ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'];
@@ -453,11 +422,6 @@ function updatePedidoEstado($id, $estado) {
         ];
     }
 }
-
-// ============================================
-// PROCESAR PETICIONES
-// ============================================
-
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch($method) {

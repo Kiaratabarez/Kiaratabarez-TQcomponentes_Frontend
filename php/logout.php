@@ -1,8 +1,4 @@
 <?php
-/**
- * PROBLEMA: session_start() duplicado
- */
-
 require_once 'conexion.php';
 
 header('Access-Control-Allow-Origin: *');

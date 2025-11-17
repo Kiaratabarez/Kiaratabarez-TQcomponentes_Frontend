@@ -2,7 +2,6 @@
     padding: 30px 0;
     min-height: 70vh;
 }
-
 .comprar-titulo {
     text-align: center;
     margin-bottom: 30px;
@@ -11,7 +10,6 @@
     position: relative;
     padding-bottom: 15px;
 }
-
 .comprar-titulo::after {
     content: '';
     position: absolute;
@@ -22,7 +20,6 @@
     height: 3px;
     background: var(--color-secondary);
 }
-
 .comprar-contenido {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
@@ -38,7 +35,6 @@
     position: sticky;
     top: 20px;
 }
-
 .resumen-pedido h3 {
     margin-top: 0;
     padding-bottom: 10px;
@@ -52,18 +48,15 @@
     overflow-y: auto;
     margin-bottom: 20px;
 }
-
 .producto-resumen {
     display: flex;
     padding: 10px 0;
     border-bottom: 1px solid #f5f5f5;
     align-items: center;
 }
-
 .producto-resumen:last-child {
     border-bottom: none;
 }
-
 .producto-resumen img {
     width: 50px;
     height: 50px;
@@ -71,23 +64,19 @@
     margin-right: 10px;
     border-radius: 4px;
 }
-
 .producto-resumen-info {
     flex-grow: 1;
 }
-
 .producto-resumen-info h4 {
     margin: 0 0 5px 0;
     font-size: 0.9rem;
     color: var(--color-dark);
 }
-
 .producto-resumen-info p {
     margin: 0;
     font-size: 0.8rem;
     color: #666;
 }
-
 .producto-resumen-total {
     font-weight: bold;
     color: var(--color-secondary);
@@ -104,19 +93,16 @@
     box-shadow: var(--shadow);
     padding: 25px;
 }
-
 .form-seccion {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #f5f5f5;
 }
-
 .form-seccion:last-child {
     border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
 }
-
 .form-seccion h3 {
     margin-top: 0;
     margin-bottom: 20px;
@@ -125,15 +111,12 @@
     align-items: center;
     gap: 10px;
 }
-
 .form-seccion h3 i {
     color: var(--color-accent);
 }
-
 .form-group {
     margin-bottom: 20px;
 }
-
 .form-group.doble {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -147,7 +130,6 @@
     color: var(--color-dark);
     font-size: 0.9rem;
 }
-
 .form-group input,
 .form-group select {
     width: 100%;
@@ -158,19 +140,16 @@
     transition: var(--transition);
     font-family: 'Poppins', sans-serif;
 }
-
 .form-group input:focus,
 .form-group select:focus {
     border-color: var(--color-accent);
     outline: none;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
-
 .form-group input.input-error,
 .form-group select.input-error {
     border-color: var(--color-danger);
 }
-
 .form-group input.input-error:focus,
 .form-group select.input-error:focus {
     box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.2);
@@ -183,7 +162,6 @@
     min-height: 16px;
     display: none;
 }
-
 .error-message.show {
     display: block;
 }
@@ -219,7 +197,6 @@
     align-items: center;
     padding: 20px;
 }
-
 .modal-contenido {
     background: white;
     padding: 30px;
@@ -241,17 +218,14 @@
     color: var(--color-success);
     margin-bottom: 15px;
 }
-
 .modal-contenido h3 {
     margin: 0 0 15px 0;
     color: var(--color-dark);
 }
-
 .modal-contenido p {
     margin-bottom: 25px;
     color: #666;
 }
-
 .modal-acciones {
     display: flex;
     justify-content: center;
@@ -310,14 +284,14 @@
     .resumen-pedido {
         position: static;
         margin-bottom: 20px;
-        order: -1; /* Mover resumen arriba en móviles */
+        order: -1; 
     }
 }
 
 /* Mejorar formulario en móviles pequeños */
 @media (max-width: 480px) {
     .comprar-container {
-        padding: 15px 5px; /* Reducir padding lateral */
+        padding: 15px 5px; 
     }
     
     .formulario-compra,
@@ -342,7 +316,7 @@
     }
 }
 
-/* Mejorar modal en móviles */
+/* Mejorar modal en celu*/
 @media (max-width: 480px) {
     .modal {
         padding: 10px;

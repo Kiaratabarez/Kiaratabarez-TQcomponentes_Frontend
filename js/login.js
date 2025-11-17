@@ -1,6 +1,4 @@
-// ===========================================
-// CONFIGURACIÓN
-// ===========================================
+//CONFIGURACIÓN
 const API_URL = 'php/';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -8,8 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('register-form');
     const loginModeBtn = document.getElementById('login-mode-btn');
     const registerModeBtn = document.getElementById('register-mode-btn');
-    
-    // Verificar si ya hay sesión activa
+    // Verifica si ya hay sesión activa
     checkExistingSession();
     
     // Cambiar entre login y registro
@@ -45,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSubmit.textContent = 'Iniciando sesión...';
         
         try {
-            console.log('📤 Enviando petición de login...');
+            console.log('Enviando petición de login...');
             
             const response = await fetch(`${API_URL}login.php?action=login`, {
                 method: 'POST',
@@ -59,20 +56,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const data = await response.json();
-            console.log('📥 Respuesta recibida:', data);
+            console.log('Respuesta recibida:', data);
             
             if (data.success) {
-                console.log('✅ Login exitoso');
+                console.log('Login exitoso');
                 mostrarExito('¡Bienvenido! Redirigiendo...');
                 await handleSuccessfulLogin(data.user);
             } else {
-                console.log('❌ Login fallido:', data.message);
+                console.log('Login fallido:', data.message);
                 mostrarError(data.message || 'Usuario o contraseña incorrectos');
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = originalText;
             }
         } catch (error) {
-            console.error('💥 Error en login:', error);
+            console.error('Error en login:', error);
             mostrarError('Error al conectar con el servidor');
             btnSubmit.disabled = false;
             btnSubmit.textContent = originalText;
@@ -90,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fullname = document.getElementById('reg-fullname').value.trim();
         const terms = document.getElementById('terms').checked;
         
-        // Validaciones básicas
+        // Validacions
         if (!username || !email || !password || !confirmPassword) {
             mostrarError('Por favor completa todos los campos obligatorios');
             return;
@@ -117,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btnSubmit.textContent = 'Registrando...';
         
         try {
-            console.log('📤 Enviando datos de registro:', {
+            console.log('Enviando datos de registro:', {
                 username,
                 email,
                 nombre_completo: fullname
@@ -137,10 +134,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
             
-            console.log('📥 Respuesta del servidor:', response.status);
+            console.log('Respuesta del servidor:', response.status);
             
             const data = await response.json();
-            console.log('📦 Datos recibidos:', data);
+            console.log('Datos recibidos:', data);
             
             if (data.success) {
                 mostrarExito('¡Registro exitoso! Redirigiendo...');
@@ -167,35 +164,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-/**
- * MANEJAR LOGIN EXITOSO
- */
+/*MANEJAR LOGIN EXITOSO*/
 async function handleSuccessfulLogin(user) {
     console.log('🎉 Manejando login exitoso para:', user);
-    
     // Sincronizar carrito si existe
     await sincronizarCarritoLocal(user.id);
-    
     // Redirigir según tipo de usuario
     setTimeout(() => {
         // Verificar explícitamente si es admin
         const esAdmin = user.is_admin === true || user.is_admin === 1 || user.is_admin === '1';
         
         if (esAdmin) {
-            console.log('🔐 Usuario ADMINISTRADOR detectado');
-            console.log('➡️ Redirigiendo a admin.html...');
+            console.log('Usuario ADMINISTRADOR detectado');
+            console.log('Redirigiendo a admin.html...');
             window.location.href = 'admin.html';
         } else {
-            console.log('👤 Usuario NORMAL detectado');
-            console.log('➡️ Redirigiendo a index.html...');
+            console.log('Usuario NORMAL detectado');
+            console.log('Redirigiendo a index.html...');
             window.location.href = 'index.html?login=success';
         }
     }, 1000);
 }
 
-/**
- * SINCRONIZAR CARRITO
- */
+/*SINCRONIZAR CARRITO*/
 async function sincronizarCarritoLocal(idUsuario) {
     try {
         const carritoLocal = localStorage.getItem('carrito');
@@ -223,9 +214,7 @@ async function sincronizarCarritoLocal(idUsuario) {
     }
 }
 
-/**
- * VERIFICAR SESIÓN EXISTENTE
- */
+/*VERIFICAR SESIÓN EXISTENTE*/
 async function checkExistingSession() {
     try {
         const response = await fetch(`${API_URL}login.php?action=check_session`);
@@ -238,10 +227,10 @@ async function checkExistingSession() {
             const esAdmin = data.user.is_admin === true || data.user.is_admin === 1;
             
             if (esAdmin) {
-                console.log('🔐 Redirigiendo a panel admin...');
+                console.log('Redirigiendo a panel admin...');
                 window.location.href = 'admin.html';
             } else {
-                console.log('👤 Redirigiendo a inicio...');
+                console.log('Redirigiendo a inicio...');
                 window.location.href = 'index.html';
             }
         }
@@ -250,9 +239,6 @@ async function checkExistingSession() {
     }
 }
 
-/**
- * FUNCIONES DE UI
- */
 function mostrarError(mensaje) {
     const notificacion = document.createElement('div');
     notificacion.className = 'notificacion error';

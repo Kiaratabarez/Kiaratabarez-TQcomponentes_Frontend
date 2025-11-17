@@ -1,12 +1,5 @@
 <?php
-/**
- * REGISTRO.PHP - Sistema de Registro de Usuarios
- * Versión corregida y funcional
- */
-
 require_once 'conexion.php';
-
-// Configurar cabeceras CORS
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -16,9 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-/**
- * Validar datos de registro
- */
+/*Validar datos de registro*/
 function validateRegistrationData($data) {
     $errors = [];
     
@@ -58,12 +49,12 @@ function validateRegistrationData($data) {
         $errors[] = 'Las contraseñas no coinciden';
     }
     
-    // Validar nombre completo (opcional)
+    // Validar nombre completo 
     if (!empty($data['nombre_completo']) && strlen($data['nombre_completo']) > 150) {
         $errors[] = 'El nombre completo no puede tener más de 150 caracteres';
     }
     
-    // Validar teléfono (opcional)
+    // Validar teléfono
     if (!empty($data['telefono'])) {
         if (strlen($data['telefono']) > 20) {
             $errors[] = 'El teléfono no puede tener más de 20 caracteres';
@@ -76,9 +67,7 @@ function validateRegistrationData($data) {
     return $errors;
 }
 
-/**
- * Verificar si el usuario o email ya existe
- */
+/* Verificar si el usuario o email ya existe*/
 function checkUserExists($username, $email) {
     try {
         $db = getDB();
@@ -106,9 +95,7 @@ function checkUserExists($username, $email) {
     }
 }
 
-/**
- * Registrar nuevo usuario
- */
+/*Registrar nuevo usuario*/
 function registerUser($data) {
     try {
         // Validar datos
@@ -204,21 +191,13 @@ function registerUser($data) {
     }
 }
 
-// ============================================
-// PROCESAR PETICIONES
-// ============================================
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
-    
-    // Si no hay JSON, intentar con POST normal
     if ($data === null) {
         $data = $_POST;
     }
-    
-    // Log para debug
     error_log("Datos recibidos para registro: " . print_r($data, true));
     
     $result = registerUser($data);

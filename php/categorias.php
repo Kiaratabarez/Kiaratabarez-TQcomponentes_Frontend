@@ -1,11 +1,4 @@
 <?php
-/**
- * PROBLEMAS ENCONTRADOS Y CORREGIDOS:
- * 1. No se validaba si la categoría existe antes de actualizar/eliminar
- * 2. La verificación de productos asociados no consideraba soft-delete
- * 3. Faltaba manejo de errores más específico
- */
-
 require_once 'conexion.php';
 
 // Configurar cabeceras
@@ -17,9 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-/**
- * Obtener todas las categorías
- */
+/*Obtener todas las categorías*/
 function getCategorias($includeInactive = false) {
     try {
         $db = getDB();
@@ -54,9 +45,7 @@ function getCategorias($includeInactive = false) {
     }
 }
 
-/**
- * Obtener una categoría por ID
- */
+/*Obtener una categoría por ID*/
 function getCategoria($id) {
     try {
         $db = getDB();
@@ -94,9 +83,7 @@ function getCategoria($id) {
     }
 }
 
-/**
- * Crear nueva categoría
- */
+/*Crear nueva categoría*/
 function createCategoria($data) {
     try {
         // Validar datos
@@ -109,7 +96,6 @@ function createCategoria($data) {
         
         $db = getDB();
         
-        // Verificar si ya existe - CORREGIDO: considerar solo activas
         $checkSql = "SELECT COUNT(*) FROM categorias WHERE nombre_categoria = :nombre AND activo = TRUE";
         $checkStmt = $db->prepare($checkSql);
         $checkStmt->execute(['nombre' => $data['nombre_categoria']]);
@@ -154,14 +140,11 @@ function createCategoria($data) {
     }
 }
 
-/**
- * Actualizar categoría
- */
+/*Actualizar categoría*/
 function updateCategoria($id, $data) {
     try {
         $db = getDB();
         
-        // CORREGIDO: Verificar que la categoría existe
         $check = $db->prepare("SELECT id_categoria FROM categorias WHERE id_categoria = :id");
         $check->execute(['id' => $id]);
         if (!$check->fetch()) {
@@ -171,7 +154,7 @@ function updateCategoria($id, $data) {
             ];
         }
         
-        // Construir SQL dinámicamente
+        // Construir SQL 
         $fields = [];
         $params = ['id' => $id];
         
@@ -234,14 +217,12 @@ function updateCategoria($id, $data) {
     }
 }
 
-/**
- * Eliminar categoría (soft delete)
- */
+/*Eliminar categoría*/
 function deleteCategoria($id) {
     try {
         $db = getDB();
         
-        // Verificar si tiene productos activos - CORREGIDO
+        // Verificar si tiene productos activos
         $checkSql = "SELECT COUNT(*) FROM productos WHERE id_categoria = :id AND activo = TRUE";
         $checkStmt = $db->prepare($checkSql);
         $checkStmt->execute(['id' => $id]);

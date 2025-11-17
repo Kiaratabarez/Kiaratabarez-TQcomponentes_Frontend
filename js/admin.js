@@ -1,20 +1,14 @@
-// ===========================================
-// PANEL DE ADMINISTRACIÓN TQCOMPONENTS
-// Sistema completo de gestión
-// ===========================================
+// PANEL ADMINISTRACIÓN TQCOMPONENTS
 
-const API_URL = 'php/';
+const API_URL = 'php/'; // Ruta base API
 let categoriasCache = [];
 let productoActualId = null;
 let categoriaActualId = null;
 
-// ===========================================
-// INICIALIZACIÓN
-// ===========================================
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🔧 Iniciando Panel de Administración...');
     
-    // CRÍTICO: Verificar acceso de administrador ANTES de cargar
+    //Verificar el acceso de administrador ANTES de cargar
     const tieneAcceso = await verificarAccesoAdmin();
     if (!tieneAcceso) {
         alert('Acceso denegado. Solo administradores pueden acceder.');
@@ -22,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
     
-    // Cargar datos iniciales
+    // Cargar los datos iniciales
     await cargarEstadisticas();
     await cargarCategorias();
     await cargarProductos();
@@ -31,7 +25,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('form-producto').addEventListener('submit', guardarProducto);
     document.getElementById('form-categoria').addEventListener('submit', guardarCategoria);
     
-    // Cerrar modales al hacer clic fuera
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
@@ -41,9 +34,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('✅ Panel iniciado correctamente');
 });
 
-// ===========================================
 // VERIFICACIÓN DE ACCESO
-// ===========================================
 async function verificarAccesoAdmin() {
     try {
         const response = await fetch(`${API_URL}login.php?action=check_admin`);
@@ -65,14 +56,11 @@ async function verificarAccesoAdmin() {
     }
 }
 
-// ===========================================
 // NAVEGACIÓN TABS
-// ===========================================
 function cambiarTab(tab) {
     // Actualizar botones
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
-    
     // Actualizar contenido
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.add('active');
@@ -94,9 +82,7 @@ function cambiarTab(tab) {
     }
 }
 
-// ===========================================
 // ESTADÍSTICAS
-// ===========================================
 async function cargarEstadisticas() {
     try {
         const response = await fetch(`${API_URL}admin.php?action=stats`);
@@ -113,12 +99,7 @@ async function cargarEstadisticas() {
     }
 }
 
-// ===========================================
 // GESTIÓN DE PRODUCTOS
-// ===========================================
-/**
- * PRODUCTOS - Tabla corregida
- */
 async function cargarProductos() {
     const contenedor = document.getElementById('productos-lista');
     contenedor.innerHTML = '<div class="loading"><img src="imagenes/iconos/loading.svg" alt="" class="loading-icon"><p>Cargando productos...</p></div>';
@@ -132,7 +113,6 @@ async function cargarProductos() {
             return;
         }
         
-        // ✅ SOLUCIÓN: Envolver tabla en wrapper
         let html = `
             <div class="table-wrapper">
                 <table class="data-table">
@@ -326,9 +306,7 @@ async function eliminarProducto(id, nombre) {
     }
 }
 
-// ===========================================
 // GESTIÓN DE CATEGORÍAS
-// ===========================================
 async function cargarCategorias() {
     const contenedor = document.getElementById('categorias-lista');
     contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Cargando categorías...</p></div>';
@@ -504,9 +482,7 @@ async function eliminarCategoria(id, nombre) {
     }
 }
 
-// ===========================================
 // GESTIÓN DE USUARIOS
-// ===========================================
 async function cargarUsuarios() {
     const contenedor = document.getElementById('usuarios-lista');
     contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Cargando usuarios...</p></div>';
@@ -563,10 +539,7 @@ async function cargarUsuarios() {
     }
 }
 
-
-// ===========================================
 // GESTIÓN DE PEDIDOS
-// ===========================================
 async function cargarPedidos() {
     const contenedor = document.getElementById('pedidos-lista');
     contenedor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Cargando pedidos...</p></div>';
@@ -632,9 +605,7 @@ async function cargarPedidos() {
         contenedor.innerHTML = '<p class="error">Error al cargar pedidos</p>';
     }
 }
-// ===========================================
-// UTILIDADES
-// ===========================================
+
 function mostrarNotificacion(mensaje, esError = false) {
     const notif = document.createElement('div');
     notif.className = `notification ${esError ? 'error' : ''}`;
@@ -671,7 +642,7 @@ async function cerrarSesion() {
     }
 }
 
-// Animaciones CSS
+// Animacion
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {

@@ -1,8 +1,4 @@
 <?php
-/**
- * LOGIN.PHP - VERSIÓN FINAL CORREGIDA
- * Maneja login, verificación de sesión y roles de usuario
- */
 require_once 'conexion.php';
 
 header('Access-Control-Allow-Origin: *');
@@ -14,9 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-/**
- * Procesar login de usuario
- */
+/*Procesar login de usuario*/
 function processLogin($username, $password) {
     try {
         $db = getDB();
@@ -84,9 +78,7 @@ function processLogin($username, $password) {
     }
 }
 
-/**
- * Verificar sesión activa
- */
+/*Verificar sesión activa*/
 function checkSession() {
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['logged_in'])) {
         return [
@@ -96,7 +88,7 @@ function checkSession() {
         ];
     }
     
-    // Verificar tiempo de sesión (24 horas)
+    // Verificar tiempo de sesión 
     if (isset($_SESSION['login_time'])) {
         $sessionDuration = time() - $_SESSION['login_time'];
         if ($sessionDuration > 86400) {
@@ -124,9 +116,7 @@ function checkSession() {
     ];
 }
 
-/**
- * Verificar si es administrador
- */
+/*Verifica si es administrador*/
 function checkAdmin() {
     $sessionCheck = checkSession();
     
@@ -147,10 +137,6 @@ function checkAdmin() {
         'message' => $isAdmin ? 'Usuario administrador' : 'Usuario sin permisos de administrador'
     ];
 }
-
-// ============================================
-// PROCESAR PETICIONES
-// ============================================
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';

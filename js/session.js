@@ -1,4 +1,3 @@
-// session.js - Manejo del estado de sesión del usuario
 document.addEventListener('DOMContentLoaded', function() {
 
     if (!localStorage.getItem('carrito')) {

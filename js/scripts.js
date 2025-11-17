@@ -1,18 +1,7 @@
-// ===========================================
-// CONFIGURACIÓN DE LA API
-// ===========================================
-const API_URL = 'php/'; // Ajusta según tu estructura de carpetas
+const API_URL = 'php/'; 
 
-// Variable global para productos (se carga desde BD)
 let productos = [];
-
-// ===========================================
-// FUNCIONES DE API
-// ===========================================
-
-/**
- * Cargar productos desde el backend
- */
+/*Cargar productos desde el back*/
 async function cargarProductosDesdeAPI(filtros = {}) {
     try {
         let url = `${API_URL}productos.php`;
@@ -50,9 +39,7 @@ async function cargarProductosDesdeAPI(filtros = {}) {
     }
 }
 
-/**
- * PRODUCTOS DE RESPALDO (hardcoded) - SE USA SI LA API FALLA
- */
+/*PRODUCTOS DE RESPALDO (hardcoded) - SE USA SI LA API FALLA MOSTRANDO LOS PRODUCTOS PRINCIPALES DE LA TIENDA*/
 function obtenerProductosDeRespaldo() {
     return [
         {
@@ -124,9 +111,7 @@ function obtenerProductosDeRespaldo() {
     ];
 }
 
-/**
- * Obtener usuario actual de la sesión
- */
+/*Obtener usuario actual de la sesión*/
 async function obtenerUsuarioActual() {
     try {
         const response = await fetch(`${API_URL}login.php?action=check_session`);
@@ -141,35 +126,31 @@ async function obtenerUsuarioActual() {
         return null;
     }
 }
-
-// ===========================================
-// INICIALIZACIÓN
-// ===========================================
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('🚀 Inicializando TQComponents...');
+    console.log('Inicializando TQComponents...');
     
-    // Limpiar parámetros de URL si viene desde login
+    // Limpia parámetros de URL si viene desde login
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('login') === 'success') {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
-    // Verificar sesión del usuario
+    // Verifica sesión del usuario
     const usuario = await obtenerUsuarioActual();
     
-    // Actualizar estado de sesión en el header
+    // Actualiza estado de sesión en el header
     actualizarEstadoSesion(usuario);
     
-    // Verificar en qué página estamos
+    // Verifica en qué página estamos
     const paginaActual = window.location.pathname.split("/").pop();
     
     // Cargar productos según la página
     if (paginaActual === "" || paginaActual === "index.html") {
-        console.log('📄 Página: Index - Cargando productos destacados...');
+        console.log('Página: Index - Cargando productos destacados...');
         // Página de inicio - Cargar productos destacados en carousel
         await cargarProductosDestacadosCarousel();
     } else if (document.querySelector('.productos-grid')) {
-        console.log('📄 Página: Productos - Cargando catálogo...');
+        console.log('Página: Productos - Cargando catálogo...');
         // Página de productos - Cargar productos con filtro
         const categoria = obtenerCategoriaDeURL();
         await cargarProductosPorCategoria(categoria || "todos");
@@ -179,23 +160,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupMobileDropdown();
     setupVerProductosBtn();
     
-    // Actualizar contador del carrito
+    // Actualiza contador del carrito
     if (usuario) {
         await actualizarContadorCarritoDesdeAPI(usuario.id);
     } else {
-        actualizarContadorCarrito(); // Usar localStorage como fallback
+        actualizarContadorCarrito(); 
     }
     
     console.log('✅ Inicialización completa');
 });
 
-// ===========================================
 // FUNCIONES DE PRODUCTOS
-// ===========================================
-
-/**
- * Cargar productos por categoría
- */
+/*Cargar productos por categoría*/
 async function cargarProductosPorCategoria(categoria) {
     const productosGrid = document.querySelector('.productos-grid');
     
@@ -242,23 +218,21 @@ async function cargarProductosPorCategoria(categoria) {
     setupBotonesAgregarCarrito();
 }
 
-/**
- * Cargar productos destacados en carousel (página inicio)
- */
+/*Cargar productos destacados en carousel*/
 async function cargarProductosDestacadosCarousel() {
     const carousel = $('.productos-carousel');
     
     if (!carousel.length) {
-        console.log('⚠️ No se encontró .productos-carousel (¿jQuery cargado?)');
+        console.log('No se encontró .productos-carousel');
         return;
     }
     
-    console.log('🎠 Inicializando carousel...');
+    console.log('Inicializando carousel...');
     carousel.html('<p style="text-align:center;width:100%;padding:40px;">Cargando productos...</p>');
     
     // Cargar productos destacados desde API
     const productosDestacados = await cargarProductosDesdeAPI({ destacado: true });
-    console.log('⭐ Productos destacados:', productosDestacados.length);
+    console.log('Productos destacados:', productosDestacados.length);
     
     carousel.html('');
     
@@ -284,7 +258,7 @@ async function cargarProductosDestacadosCarousel() {
     });
     
     // Inicializar Owl Carousel
-    console.log('🦉 Inicializando Owl Carousel...');
+    console.log('Inicializando Owl Carousel...');
     carousel.owlCarousel({
         loop: true,
         margin: 25,
@@ -305,14 +279,7 @@ async function cargarProductosDestacadosCarousel() {
     setupBotonesAgregarCarrito();
     console.log('✅ Carousel inicializado');
 }
-
-// ===========================================
-// CARRITO - AGREGAR PRODUCTOS
-// ===========================================
-
-/**
- * Configurar botones de agregar al carrito
- */
+// CARRITO - Agregar PRODUCTOS
 function setupBotonesAgregarCarrito() {
     const botones = document.querySelectorAll('.btn-agregar');
     console.log('🛒 Configurando', botones.length, 'botones de carrito');
@@ -327,10 +294,6 @@ function setupBotonesAgregarCarrito() {
         });
     });
 }
-
-/**
- * Agregar producto al carrito (conectado con backend)
- */
 async function agregarAlCarrito(idProducto) {
     // Verificar si el usuario está logueado
     const usuario = await obtenerUsuarioActual();
@@ -344,7 +307,7 @@ async function agregarAlCarrito(idProducto) {
     }
 
     try {
-        // Agregar al carrito en el backend
+        // Agregar al carrito en el back
         const response = await fetch(`${API_URL}carrito.php?action=agregar`, {
             method: 'POST',
             headers: {
@@ -371,9 +334,6 @@ async function agregarAlCarrito(idProducto) {
     }
 }
 
-/**
- * Actualizar contador del carrito desde API
- */
 async function actualizarContadorCarritoDesdeAPI(idUsuario) {
     try {
         const response = await fetch(`${API_URL}carrito.php?id_usuario=${idUsuario}`);
@@ -393,9 +353,6 @@ async function actualizarContadorCarritoDesdeAPI(idUsuario) {
     }
 }
 
-/**
- * Actualizar contador del carrito desde localStorage (fallback)
- */
 function actualizarContadorCarrito() {
     const carritoGuardado = localStorage.getItem('carrito');
     let totalItems = 0;
@@ -412,13 +369,8 @@ function actualizarContadorCarrito() {
     });
 }
 
-// ===========================================
-// GESTIÓN DE SESIÓN
-// ===========================================
-
-/**
- * Actualizar estado de sesión en el header
- */
+//GESTIÓN SESIÓN
+/*Actualiza estado de sesión en el header*/
 function actualizarEstadoSesion(usuario) {
     const loginBtn = document.querySelector('.login-btn');
     if (!loginBtn) return;
@@ -447,9 +399,7 @@ function actualizarEstadoSesion(usuario) {
     }
 }
 
-/**
- * Cerrar sesión
- */
+/*Cerrar sesión*/
 async function cerrarSesion() {
     try {
         await fetch(`${API_URL}logout.php`, { method: 'POST' });
@@ -463,13 +413,7 @@ async function cerrarSesion() {
     }
 }
 
-// ===========================================
-// UTILIDADES
-// ===========================================
-
-/**
- * Mostrar notificación
- */
+//UTILIDADES
 function mostrarNotificacion(mensaje, esError = false) {
     const notificacionExistente = document.querySelector('.notificacion');
     if (notificacionExistente) {
@@ -493,17 +437,12 @@ function mostrarNotificacion(mensaje, esError = false) {
         }, 300);
     }, 3000);
 }
-
-/**
- * Obtener categoría de la URL
- */
 function obtenerCategoriaDeURL() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('categoria');
 }
 
 function setupFiltrosCategoria() {
-    // Implementar si es necesario
 }
 
 function setupMobileDropdown() {
@@ -539,6 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 });
+
 
 // Debug: Función para borrar usuarios (solo desarrollo)
 window.borrarUsuarios = function() {

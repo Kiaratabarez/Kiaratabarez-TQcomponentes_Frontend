@@ -16,7 +16,7 @@ filas.forEach(fila => {
 });
 });
 
-// Ordena alfabéticamente por nombre
+// Ordena alfabéticamente por nombre.
 orden.addEventListener("change", () => {
 const tipo = orden.value;
 const ordenadas = [...filas].sort((a, b) => {

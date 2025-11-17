@@ -1,11 +1,5 @@
 <?php
-/**
- * API REST para gestión del carrito de compras
- * Conecta el frontend con la tabla 'carrito' de la base de datos
- */
-
 require_once 'conexion.php';
-
 // Configurar cabeceras CORS
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
@@ -14,10 +8,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
-
-/**
- * Obtener carrito del usuario actual
- */
+/*Obtener carrito del usuario actual*/
 function obtenerCarrito($idUsuario = null) {
     try {
         $db = getDB();
@@ -81,12 +72,9 @@ function obtenerCarrito($idUsuario = null) {
     }
 }
 
-/**
- * Agregar producto al carrito o actualizar cantidad
- */
+/*Agregar producto al carrito o actualizar cantidad*/
 function agregarAlCarrito($data) {
     try {
-        // Validaciones
         if (empty($data['id_usuario']) || empty($data['id_producto'])) {
             return [
                 'success' => false,
@@ -109,7 +97,7 @@ function agregarAlCarrito($data) {
         
         // Verificar que el producto existe y está activo
         $sqlProducto = "SELECT id_producto, nombre, stock FROM productos 
-                       WHERE id_producto = :id AND activo = TRUE";
+                    WHERE id_producto = :id AND activo = TRUE";
         $stmtProducto = $db->prepare($sqlProducto);
         $stmtProducto->execute(['id' => $idProducto]);
         $producto = $stmtProducto->fetch();
@@ -152,9 +140,9 @@ function agregarAlCarrito($data) {
             }
             
             $sqlUpdate = "UPDATE carrito 
-                         SET cantidad = :cantidad, 
-                             fecha_actualizacion = NOW() 
-                         WHERE id_carrito = :id_carrito";
+                        SET cantidad = :cantidad, 
+                            fecha_actualizacion = NOW() 
+                        WHERE id_carrito = :id_carrito";
             $stmtUpdate = $db->prepare($sqlUpdate);
             $stmtUpdate->execute([
                 'cantidad' => $nuevaCantidad,
@@ -168,9 +156,8 @@ function agregarAlCarrito($data) {
                 'producto' => $producto['nombre']
             ];
         } else {
-            // Insertar nuevo item
             $sqlInsert = "INSERT INTO carrito (id_usuario, id_producto, cantidad, fecha_agregado) 
-                         VALUES (:id_usuario, :id_producto, :cantidad, NOW())";
+                        VALUES (:id_usuario, :id_producto, :cantidad, NOW())";
             $stmtInsert = $db->prepare($sqlInsert);
             $stmtInsert->execute([
                 'id_usuario' => $idUsuario,
@@ -196,9 +183,7 @@ function agregarAlCarrito($data) {
     }
 }
 
-/**
- * Actualizar cantidad de un producto en el carrito
- */
+/*Actualizar cantidad de un producto en el carrito*/
 function actualizarCantidad($data) {
     try {
         if (empty($data['id_usuario']) || empty($data['id_producto'])) {
@@ -269,9 +254,7 @@ function actualizarCantidad($data) {
     }
 }
 
-/**
- * Eliminar producto del carrito
- */
+/*Elimina producto del carrito*/
 function eliminarDelCarrito($data) {
     try {
         if (empty($data['id_usuario']) || empty($data['id_producto'])) {
@@ -314,9 +297,7 @@ function eliminarDelCarrito($data) {
     }
 }
 
-/**
- * Vaciar todo el carrito del usuario
- */
+/*Vaciar todo el carrito del usuario*/
 function vaciarCarrito($idUsuario) {
     try {
         if (empty($idUsuario)) {
@@ -347,9 +328,7 @@ function vaciarCarrito($idUsuario) {
     }
 }
 
-/**
- * Sincronizar carrito desde localStorage al iniciar sesión
- */
+/*Sincronizar carrito desde localStorage al iniciar sesión*/
 function sincronizarCarrito($data) {
     try {
         if (empty($data['id_usuario']) || empty($data['productos'])) {
@@ -402,9 +381,7 @@ function sincronizarCarrito($data) {
     }
 }
 
-// ========================================
-// PROCESAR PETICIONES
-// ========================================
+// PROCESO PETICIONES
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
@@ -435,7 +412,6 @@ switch($method) {
                 break;
                 
             default:
-                // Por defecto, agregar producto
                 $result = agregarAlCarrito($data);
         }
         
@@ -465,7 +441,6 @@ switch($method) {
         $data = json_decode(file_get_contents('php://input'), true);
         
         if (!$data) {
-            // Si no hay body, intentar con query params
             $data = [
                 'id_usuario' => $_GET['id_usuario'] ?? null,
                 'id_producto' => $_GET['id_producto'] ?? null

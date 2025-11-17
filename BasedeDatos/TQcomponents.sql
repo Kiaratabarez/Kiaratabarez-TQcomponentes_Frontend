@@ -1,25 +1,13 @@
--- ============================================================================
---  BASE DE DATOS TQCOMPONENTS
--- ============================================================================
-
 CREATE DATABASE IF NOT EXISTS tqcomponents_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
-
 USE tqcomponents_db;
 
--- ============================================================================
---  TABLA ROLES
--- ============================================================================
 CREATE TABLE IF NOT EXISTS roles (
     id_rol INT PRIMARY KEY,
     nombre_rol VARCHAR(50) NOT NULL UNIQUE,
     descripcion TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================================================
---  TABLA CATEGORÍAS
--- ============================================================================
 CREATE TABLE IF NOT EXISTS categorias (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre_categoria VARCHAR(50) NOT NULL UNIQUE,
@@ -29,10 +17,6 @@ CREATE TABLE IF NOT EXISTS categorias (
     fecha_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================================================
---  TABLA USUARIOS
--- ============================================================================
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -48,13 +32,10 @@ CREATE TABLE IF NOT EXISTS usuarios (
     FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE INDEX idx_username ON usuarios(username);
+CREATE INDEX idx_username ON usuarios(username); /*index para encontrar mas rapido la informacion que estoy bucando mas como un filtro.*/
 CREATE INDEX idx_email ON usuarios(email);
 CREATE INDEX idx_is_admin ON usuarios(is_admin);
 
--- ============================================================================
---  TABLA PRODUCTOS
--- ============================================================================
 CREATE TABLE IF NOT EXISTS productos (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
@@ -76,9 +57,6 @@ CREATE INDEX idx_destacado ON productos(destacado);
 CREATE INDEX idx_precio ON productos(precio);
 CREATE INDEX idx_productos_nombre ON productos(nombre);
 
--- ============================================================================
---  TABLA DIRECCIONES DE ENVÍO
--- ============================================================================
 CREATE TABLE IF NOT EXISTS direcciones_envio (
     id_direccion INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -92,9 +70,6 @@ CREATE TABLE IF NOT EXISTS direcciones_envio (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ============================================================================
---  TABLAS PEDIDOS, DETALLES, CARRITO, PAGO
--- ============================================================================
 CREATE TABLE IF NOT EXISTS pedidos (
     id_pedido INT AUTO_INCREMENT PRIMARY KEY,
     numero_pedido VARCHAR(20) NOT NULL UNIQUE,
@@ -152,29 +127,13 @@ CREATE TABLE IF NOT EXISTS carrito (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS informacion_pago (
-    id_pago INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    numero_tarjeta_enmascarado VARCHAR(20),
-    nombre_tarjeta VARCHAR(150),
-    fecha_expiracion VARCHAR(7),
-    tipo_tarjeta VARCHAR(20),
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
-        ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================================================
---  INSERTAR ROLES
--- ============================================================================
+--INSERTAR ROLES
 INSERT INTO roles (id_rol, nombre_rol, descripcion) VALUES
 (1,'Administrador','Acceso completo al sistema'),
 (2,'Usuario','Usuario regular de la tienda')
 ON DUPLICATE KEY UPDATE descripcion = VALUES(descripcion);
 
--- ============================================================================
---  INSERTAR USUARIO ADMIN
--- ============================================================================
+--USUARIO ADMIN
 INSERT INTO usuarios (username, email, password, nombre_completo, id_rol, is_admin, activo) VALUES
 ('admin','admin@tqcomponents.com',
 '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
@@ -185,9 +144,7 @@ id_rol = 1,
 is_admin = TRUE,
 activo = TRUE;
 
--- ============================================================================
---  CARGA DE 58 PRODUCTOS
--- ============================================================================
+--PRODUCTOS
 INSERT INTO productos (nombre, descripcion, precio, imagen, id_categoria, stock, destacado, activo) VALUES
 ('Arduino Uno R3','',36003,'imagenes/Placas/PlacaUNO-R3.jpg',1,50,TRUE,TRUE),
 ('Servo motor MG995 180 grados','',8509,'imagenes/Actuadores/Servomotor-MG995-180grados.jpg',4,50,TRUE,TRUE),
@@ -249,9 +206,7 @@ INSERT INTO productos (nombre, descripcion, precio, imagen, id_categoria, stock,
 ('Nano ESP32','',17000,'imagenes/Placas/NanoESP32.png',1,50,FALSE,TRUE)
 ON DUPLICATE KEY UPDATE activo = TRUE;
 
--- ============================================================================
---  VERIFICACIÓN FINAL
--- ============================================================================
+--VERIFICACIÓN
 SELECT 'ROLES' AS Tabla, COUNT(*) AS Total FROM roles
 UNION ALL
 SELECT 'CATEGORÍAS', COUNT(*) FROM categorias WHERE activo = TRUE

@@ -1,15 +1,10 @@
-// ===========================================
 // CONFIGURACIÓN
-// ===========================================
 const API_URL = 'php/';
 
 let carrito = [];
 let total = 0;
 let usuarioActual = null;
 
-// ===========================================
-// INICIALIZACIÓN
-// ===========================================
 document.addEventListener('DOMContentLoaded', async function() {
     // Verificar sesión del usuario
     usuarioActual = await obtenerUsuarioActual();
@@ -40,13 +35,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     actualizarInterfazCarrito();
 });
 
-// ===========================================
 // FUNCIONES DE API
-// ===========================================
 
-/**
- * Obtener usuario actual
- */
+/*Obtener usuario actual*/
 async function obtenerUsuarioActual() {
     try {
         const response = await fetch(`${API_URL}login.php?action=check_session`);
@@ -62,9 +53,7 @@ async function obtenerUsuarioActual() {
     }
 }
 
-/**
- * Cargar carrito desde el backend
- */
+/*Cargar carrito desde el backend*/
 async function cargarCarritoDesdeAPI() {
     try {
         const response = await fetch(`${API_URL}carrito.php?id_usuario=${usuarioActual.id}`);
@@ -93,9 +82,7 @@ async function cargarCarritoDesdeAPI() {
     }
 }
 
-/**
- * Actualizar cantidad de un producto en el backend
- */
+/*Actualizar cantidad de un producto en el backend*/
 async function actualizarCantidadAPI(idProducto, cantidad) {
     try {
         const response = await fetch(`${API_URL}carrito.php?action=actualizar`, {
@@ -125,9 +112,7 @@ async function actualizarCantidadAPI(idProducto, cantidad) {
     }
 }
 
-/**
- * Eliminar producto del backend
- */
+/*Eliminar producto del backend*/
 async function eliminarProductoAPI(idProducto) {
     try {
         const response = await fetch(`${API_URL}carrito.php`, {
@@ -156,9 +141,7 @@ async function eliminarProductoAPI(idProducto) {
     }
 }
 
-/**
- * Vaciar carrito en el backend
- */
+/*Vaciar carrito en el backend*/
 async function vaciarCarritoAPI() {
     try {
         const response = await fetch(`${API_URL}carrito.php?action=vaciar`, {
@@ -186,22 +169,15 @@ async function vaciarCarritoAPI() {
     }
 }
 
-// ===========================================
 // FUNCIONES DE CARRITO
-// ===========================================
-
-/**
- * Calcular total del carrito
- */
+/*Calcular total del carrito*/
 function calcularTotal() {
     total = carrito.reduce((sum, producto) => {
         return sum + (producto.precio * producto.cantidad);
     }, 0);
 }
 
-/**
- * Actualizar interfaz del carrito
- */
+/*Actualizar interfaz del carrito*/
 function actualizarInterfazCarrito() {
     const carritoVacio = document.getElementById('carrito-vacio');
     const carritoContenido = document.getElementById('carrito-contenido');
@@ -257,9 +233,7 @@ function actualizarInterfazCarrito() {
     actualizarContadorCarrito();
 }
 
-/**
- * Agregar event listeners a los productos
- */
+/*Agrega event listeners a los productos*/
 function agregarEventListenersProductos() {
     document.querySelectorAll('.aumentar').forEach(btn => {
         btn.addEventListener('click', async function() {
@@ -303,9 +277,7 @@ function agregarEventListenersProductos() {
     });
 }
 
-/**
- * Aumentar cantidad de un producto
- */
+/*Aumentar cantidad de un producto*/
 async function aumentarCantidad(index, idProducto) {
     const producto = carrito[index];
     
@@ -325,9 +297,7 @@ async function aumentarCantidad(index, idProducto) {
     }
 }
 
-/**
- * Disminuir cantidad de un producto
- */
+/*Disminuir cantidad de un producto*/
 async function disminuirCantidad(index, idProducto) {
     if (carrito[index].cantidad > 1) {
         const nuevaCantidad = carrito[index].cantidad - 1;
@@ -342,9 +312,7 @@ async function disminuirCantidad(index, idProducto) {
     }
 }
 
-/**
- * Cambiar cantidad de un producto
- */
+/*Cambiar cantidad de un producto*/
 async function cambiarCantidad(index, idProducto, nuevaCantidad) {
     const success = await actualizarCantidadAPI(idProducto, nuevaCantidad);
     
@@ -356,9 +324,7 @@ async function cambiarCantidad(index, idProducto, nuevaCantidad) {
     }
 }
 
-/**
- * Eliminar producto del carrito
- */
+/*Eliminar producto del carrito*/
 async function eliminarProducto(index, idProducto) {
     const productoEliminado = carrito[index].nombre;
     const success = await eliminarProductoAPI(idProducto);
@@ -371,9 +337,7 @@ async function eliminarProducto(index, idProducto) {
     }
 }
 
-/**
- * Mostrar modal para vaciar carrito
- */
+/*Mostrar modal para vaciar carrito*/
 function mostrarModalVaciarCarrito() {
     if (!document.getElementById('modal-vaciar-carrito')) {
         const modal = document.createElement('div');
@@ -400,9 +364,7 @@ function mostrarModalVaciarCarrito() {
     document.getElementById('modal-vaciar-carrito').style.display = 'flex';
 }
 
-/**
- * Vaciar carrito
- */
+/*Vaciar carrito*/
 async function vaciarCarrito() {
     const success = await vaciarCarritoAPI();
     
@@ -416,9 +378,7 @@ async function vaciarCarrito() {
     }
 }
 
-/**
- * Finalizar compra
- */
+/*Finalizar compra*/
 function finalizarCompra(e) {
     if (carrito.length === 0) {
         e.preventDefault();
@@ -430,9 +390,7 @@ function finalizarCompra(e) {
     window.location.href = 'comprar.html';
 }
 
-/**
- * Actualizar contador de carrito
- */
+/*Actualizar contador de carrito*/
 function actualizarContadorCarrito() {
     const contador = document.querySelector('.carrito-count');
     const totalItems = carrito.reduce((sum, producto) => sum + producto.cantidad, 0);
@@ -443,9 +401,7 @@ function actualizarContadorCarrito() {
     }
 }
 
-/**
- * Mostrar notificación
- */
+/*Mostrar la notificación*/
 function mostrarNotificacion(mensaje, esError = false) {
     const notificacionExistente = document.querySelector('.notificacion');
     if (notificacionExistente) {

@@ -1,11 +1,4 @@
 <?php
-/**
- * PROBLEMAS ENCONTRADOS Y CORREGIDOS:
- * 1. session_start() duplicado
- * 2. Las tablas detalle_pedidos vs detalles_pedido (inconsistencia con SQL)
- * 3. El backup con mysqldump no funciona en todos los entornos
- */
-
 require_once 'conexion.php';
 
 header('Access-Control-Allow-Origin: *');
@@ -37,7 +30,7 @@ function getDashboardStats() {
         $pedidosStats = ['total' => 0, 'pendientes' => 0, 'completados' => 0, 'total_ventas' => 0];
         
         try {
-            // CORREGIDO: estado_pedido en lugar de estado
+            
             $stmtPedidos = $db->query("SELECT 
                                         COUNT(*) as total,
                                         SUM(CASE WHEN estado_pedido = 'pendiente' THEN 1 ELSE 0 END) as pendientes,
@@ -46,12 +39,10 @@ function getDashboardStats() {
                                         FROM pedidos");
             $pedidosStats = $stmtPedidos->fetch();
         } catch(Exception $e) {
-            // Tabla no existe aún
         }
         
         $productosMasVendidos = [];
         try {
-            // CORREGIDO: detalles_pedido en lugar de detalle_pedidos
             $stmtTop = $db->query("SELECT p.nombre, SUM(dp.cantidad) as total_vendido
                                 FROM detalles_pedido dp
                                 JOIN productos p ON dp.id_producto = p.id_producto
@@ -60,7 +51,6 @@ function getDashboardStats() {
                                 LIMIT 5");
             $productosMasVendidos = $stmtTop->fetchAll();
         } catch(Exception $e) {
-            // Sin datos
         }
         
         $stmtStockBajo = $db->query("SELECT id_producto, nombre, stock 
@@ -72,14 +62,12 @@ function getDashboardStats() {
         
         $ultimosPedidos = [];
         try {
-            // CORREGIDO: estado_pedido
             $stmtUltimosPedidos = $db->query("SELECT id_pedido, numero_pedido, fecha_pedido, estado_pedido, total
                                             FROM pedidos
                                             ORDER BY fecha_pedido DESC
                                             LIMIT 10");
             $ultimosPedidos = $stmtUltimosPedidos->fetchAll();
         } catch(Exception $e) {
-            // Sin datos
         }
         
         return [

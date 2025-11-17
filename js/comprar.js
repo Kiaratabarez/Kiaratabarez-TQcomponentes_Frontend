@@ -1,6 +1,3 @@
-// ===========================================
-// CONFIGURACIÓN
-// ===========================================
 const API_URL = 'php/';
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -23,10 +20,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     await inicializarCompra();
     configurarEventos();
-    
-    // ===========================================
-    // INICIALIZACIÓN
-    // ===========================================
     
     async function inicializarCompra() {
         // Verificar usuario logueado
@@ -55,11 +48,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         calcularTotales();
         cargarDatosUsuario();
     }
-    
-    // ===========================================
     // FUNCIONES DE API
-    // ===========================================
-    
     async function obtenerUsuarioActual() {
         try {
             const response = await fetch(`${API_URL}login.php?action=check_session`);
@@ -115,13 +104,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             };
         }
     }
-    
-    // ===========================================
     // CONFIGURACIÓN DE EVENTOS
-    // ===========================================
-    
     function configurarEventos() {
-        // Cambiar visibilidad de información de tarjeta
         if (metodoPagoSelect) {
             metodoPagoSelect.addEventListener('change', function() {
                 if (this.value === 'tarjeta' || this.value === 'debito') {
@@ -181,10 +165,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
-    // ===========================================
     // MOSTRAR RESUMEN
-    // ===========================================
-    
+
     function mostrarResumenProductos() {
         if (!productosResumen) return;
         
@@ -245,10 +227,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
-    // ===========================================
     // VALIDACIONES
-    // ===========================================
-    
     function validarFormulario() {
         let isValid = true;
         resetErrors();
@@ -335,10 +314,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return isValid;
     }
     
-    // ===========================================
     // FINALIZAR COMPRA
-    // ===========================================
-    
     async function finalizarCompra() {
         if (!btnFinalizarCompra) return;
         
@@ -384,7 +360,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
 
-        // Enviar pedido al backend
+        // Enviar pedido al back
         const resultado = await crearPedido(datosCompra);
         
         if (resultado.success) {
@@ -406,11 +382,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             modalConfirmacion.style.display = 'flex';
         }
     }
-    
-    // ===========================================
+
     // FUNCIONES DE UTILIDAD
-    // ===========================================
-    
     function isValidEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);

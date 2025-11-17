@@ -1,12 +1,4 @@
-// ============= usuarios.php (CORREGIDO) =============
 <?php
-/**
- * PROBLEMAS ENCONTRADOS Y CORREGIDOS:
- * 1. session_start() duplicado
- * 2. No se validaba correctamente el email al actualizar
- * 3. Faltaba verificar que no se pueda desactivar el propio usuario
- */
-
 require_once 'conexion.php';
 
 header('Access-Control-Allow-Origin: *');
