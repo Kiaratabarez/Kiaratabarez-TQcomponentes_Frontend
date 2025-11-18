@@ -1,11 +1,12 @@
 <?php
+//Acesos a la bd
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'tqcomponents_db');
 define('DB_USER', 'root');
 define('DB_PASS', '');  
 define('DB_CHARSET', 'utf8mb4');
 date_default_timezone_set('America/Argentina/Buenos_Aires');
-define('DEBUG_MODE', true);
+define('DEBUG_MODE', true); //mostrar errores en desarrollo
 
 if (DEBUG_MODE) {
     error_reporting(E_ALL);
@@ -15,9 +16,9 @@ if (DEBUG_MODE) {
     ini_set('display_errors', 0);
 }
 
-class Database {
+class Database { //singleton para conexión a la bd 
     private static $instance = null;
-    private $conn;
+    private $conn; //inicia conexión
     
     private function __construct() {
         try {
@@ -40,8 +41,7 @@ class Database {
         }
     }
     
-    /*Obtener instancia única de la conexión*/
-    public static function getInstance() {
+    public static function getInstance() {/*Obtiene instancia única de la conexión*/
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -60,13 +60,12 @@ class Database {
     }
 }
 
-/*Función helper para obtener la conexión*/
+/*Función para obtener la conexión*/
 function getDB() {
     return Database::getInstance()->getConnection();
 }
 
-/*Función para ejecutar consultas preparadas de forma segura*/
-function executeQuery($sql, $params = []) {
+function executeQuery($sql, $params = []) {/*Ejecuta consultas de forma segura. */
     try {
         $db = getDB();
         $stmt = $db->prepare($sql);
@@ -82,7 +81,7 @@ function executeQuery($sql, $params = []) {
     }
 }
 
-/*Función para sanitizar datos de entrada*/
+/*Limpiar datos entrada*/
 function sanitizeInput($data) {
     if ($data === null) return null;
     $data = trim($data);
@@ -101,17 +100,15 @@ function hashPassword($password) {
     return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 }
 
-/*Función para verificar contraseña*/
+/*verificar contraseña*/
 function verifyPassword($password, $hash) {
     return password_verify($password, $hash);
 }
-
-/*Función para generar token de sesión seguro*/
 function generateToken($length = 32) {
     return bin2hex(random_bytes($length));
 }
 
-/*Función para responder con JSON*/
+/*responder JSON*/
 function jsonResponse($data, $statusCode = 200) {
     http_response_code($statusCode);
     header('Content-Type: application/json; charset=utf-8');
@@ -119,7 +116,7 @@ function jsonResponse($data, $statusCode = 200) {
     exit;
 }
 
-/*Función para verificar si el usuario está autenticado */
+/*verificar si el usuario está autenticado */
 function isAuthenticated() {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -127,7 +124,7 @@ function isAuthenticated() {
     return isset($_SESSION['user_id']) && isset($_SESSION['username']);
 }
 
-/*Función para verificar si el usuario es administrador*/
+/*verificar si el usuario es administrador*/
 function isAdmin() {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();

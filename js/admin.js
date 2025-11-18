@@ -1,13 +1,11 @@
-// PANEL ADMINISTRACIÓN TQCOMPONENTS
-
+// PANEL ADMINISTRACIÓN 
 const API_URL = 'php/'; // Ruta base API
 let categoriasCache = [];
 let productoActualId = null;
 let categoriaActualId = null;
 
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('🔧 Iniciando Panel de Administración...');
-    
+    console.log('Iniciando Panel de Administración...');
     //Verificar el acceso de administrador ANTES de cargar
     const tieneAcceso = await verificarAccesoAdmin();
     if (!tieneAcceso) {
@@ -15,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         window.location.href = 'login.html';
         return;
     }
-    
     // Cargar los datos iniciales
     await cargarEstadisticas();
     await cargarCategorias();

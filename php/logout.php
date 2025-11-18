@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
+/*cierre de sesión*/
 function logoutUser() {
     try {
         $_SESSION = [];
@@ -18,15 +19,13 @@ function logoutUser() {
                 session_name(), 
                 '', 
                 time() - 3600, 
-                '/',
+                '/',           
                 '',
                 false,
-                true
+                true         
             );
         }
-        
         session_destroy();
-        
         return [
             'success' => true,
             'message' => 'Sesión cerrada exitosamente'
@@ -40,10 +39,10 @@ function logoutUser() {
         ];
     }
 }
-
+// Permite cerrar sesión 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $result = logoutUser();
-    jsonResponse($result);
+    $result = logoutUser(); // Ejecuta la función de cierre de sesión.
+    jsonResponse($result);  // Envía el resultado (éxito o fallo) como JSON.
 } else {
     jsonResponse([
         'success' => false,

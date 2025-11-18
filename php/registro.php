@@ -9,11 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-/*Validar datos de registro*/
+/*Valida datos de registro*/
 function validateRegistrationData($data) {
     $errors = [];
     
-    // Validar username
+    // Valida username
     if (empty($data['username'])) {
         $errors[] = 'El nombre de usuario es obligatorio';
     } elseif (strlen($data['username']) < 3) {
@@ -24,7 +24,7 @@ function validateRegistrationData($data) {
         $errors[] = 'El nombre de usuario solo puede contener letras, números y guiones bajos';
     }
     
-    // Validar email
+    // Valida email
     if (empty($data['email'])) {
         $errors[] = 'El email es obligatorio';
     } elseif (!isValidEmail($data['email'])) {
@@ -33,7 +33,7 @@ function validateRegistrationData($data) {
         $errors[] = 'El email no puede tener más de 100 caracteres';
     }
     
-    // Validar contraseña
+    // Valida contraseña
     if (empty($data['password'])) {
         $errors[] = 'La contraseña es obligatoria';
     } elseif (strlen($data['password']) < 6) {
@@ -42,19 +42,19 @@ function validateRegistrationData($data) {
         $errors[] = 'La contraseña no puede tener más de 100 caracteres';
     }
     
-    // Validar confirmación de contraseña
+    // Valida confirmación de contraseña
     if (empty($data['confirm_password'])) {
         $errors[] = 'Debe confirmar la contraseña';
     } elseif ($data['password'] !== $data['confirm_password']) {
         $errors[] = 'Las contraseñas no coinciden';
     }
     
-    // Validar nombre completo 
+    // Valida nombre completo 
     if (!empty($data['nombre_completo']) && strlen($data['nombre_completo']) > 150) {
         $errors[] = 'El nombre completo no puede tener más de 150 caracteres';
     }
     
-    // Validar teléfono
+    // Valida teléfono
     if (!empty($data['telefono'])) {
         if (strlen($data['telefono']) > 20) {
             $errors[] = 'El teléfono no puede tener más de 20 caracteres';
@@ -67,7 +67,7 @@ function validateRegistrationData($data) {
     return $errors;
 }
 
-/* Verificar si el usuario o email ya existe*/
+/* Verifica si el usuario o email ya existe*/
 function checkUserExists($username, $email) {
     try {
         $db = getDB();

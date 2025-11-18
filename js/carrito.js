@@ -1,4 +1,3 @@
-// CONFIGURACIÓN
 const API_URL = 'php/';
 
 let carrito = [];
@@ -60,7 +59,7 @@ async function cargarCarritoDesdeAPI() {
         const data = await response.json();
         
         if (data.success) {
-            // Convertir formato de API a formato del frontend
+            // Convertir formato de API a formato del front
             carrito = data.carrito.map(item => ({
                 id: item.id_producto,
                 nombre: item.nombre,
@@ -82,7 +81,7 @@ async function cargarCarritoDesdeAPI() {
     }
 }
 
-/*Actualizar cantidad de un producto en el backend*/
+/*Actualizar cantidad de un producto en el back*/
 async function actualizarCantidadAPI(idProducto, cantidad) {
     try {
         const response = await fetch(`${API_URL}carrito.php?action=actualizar`, {
