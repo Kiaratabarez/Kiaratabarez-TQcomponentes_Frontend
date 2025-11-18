@@ -329,6 +329,13 @@ body {
     margin: 0;
     padding: 0;
 }
+.action-btn img {
+    width: 18px;    /* tamaño pequeño */
+    height: 18px;
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+}
 .action-btn.edit {
     background: var(--color-accent);
     color: white;

@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS tqcomponents_db;
 CREATE DATABASE IF NOT EXISTS tqcomponents_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
@@ -127,13 +128,13 @@ CREATE TABLE IF NOT EXISTS carrito (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---INSERTAR ROLES
+-- INSERTAR ROLES
 INSERT INTO roles (id_rol, nombre_rol, descripcion) VALUES
 (1,'Administrador','Acceso completo al sistema'),
 (2,'Usuario','Usuario regular de la tienda')
 ON DUPLICATE KEY UPDATE descripcion = VALUES(descripcion);
 
---USUARIO ADMIN
+-- USUARIO ADMIN
 INSERT INTO usuarios (username, email, password, nombre_completo, id_rol, is_admin, activo) VALUES
 ('admin','admin@tqcomponents.com',
 '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
@@ -144,11 +145,20 @@ id_rol = 1,
 is_admin = TRUE,
 activo = TRUE;
 
---PRODUCTOS
+-- CATEGORÍAS
+INSERT INTO categorias (id_categoria, nombre_categoria, descripcion) VALUES
+(1, 'Placas', 'Placas de desarrollo como Arduino, ESP, etc.'),
+(2, 'Sensores', 'Sensores de luz, humedad, ultrasonido, etc.'),
+(3, 'Módulos', 'Módulos electrónicos adicionales'),
+(4, 'Actuadores', 'Servos, motores y dispositivos de salida'),
+(5, 'Accesorios', 'Cables, herramientas, LEDs, protoboards, etc.')
+ON DUPLICATE KEY UPDATE descripcion = VALUES(descripcion);
+
+-- PRODUCTOS
 INSERT INTO productos (nombre, descripcion, precio, imagen, id_categoria, stock, destacado, activo) VALUES
 ('Arduino Uno R3','',36003,'imagenes/Placas/PlacaUNO-R3.jpg',1,50,TRUE,TRUE),
 ('Servo motor MG995 180 grados','',8509,'imagenes/Actuadores/Servomotor-MG995-180grados.jpg',4,50,TRUE,TRUE),
-('Módulo Bluetooth HC-05','',2500,'imagenes/Modulos/MóduloBluetooth_HC-05.jpg',3,50,TRUE,TRUE),
+('Módulo Bluetooth HC-05','',2500,'imagenes/Modulos/ModuloBluetooth_HC-05.jpg',3,50,TRUE,TRUE),
 ('Cables Dupont H-H 40 und','',1000,'imagenes/Accesorios/CablesDupont_H-H40und.jpg',5,50,TRUE,TRUE),
 ('Sensor Ultrasonido','',2000,'imagenes/Sensores/sensordistanciaUltrasonico-HcSr04.png',2,50,TRUE,TRUE),
 ('Arduino Mega 2560','',15000,'imagenes/Placas/Arduino-mega2560.jpg',1,50,TRUE,TRUE),
@@ -156,23 +166,23 @@ INSERT INTO productos (nombre, descripcion, precio, imagen, id_categoria, stock,
 ('Joystick Shield','',15000,'imagenes/Actuadores/joystickshield-7Pulsadores.png',4,50,FALSE,TRUE),
 ('Pantalla LCD','',5000,'imagenes/Modulos/DisplayLCD-azul-1602.jpg',3,50,FALSE,TRUE),
 ('Cables Dupont M-H 40 und','',1500,'imagenes/Accesorios/CablesDupontM-H40und.jpg',5,50,FALSE,TRUE),
-('Sensor Infrarojo','',7000,'imagenes/Sensores/sensorinfrarrojo.png',2,50,FALSE,TRUE),
+('Sensor Infrarojo','',7000,'imagenes/Sensores/sensorinfrarojo.png',2,50,FALSE,TRUE),
 ('Arduino Nano','',8000,'imagenes/Placas/PlacaNano.jpg',1,50,TRUE,TRUE),
 ('Shield L298','',25262,'imagenes/Placas/shieldparamotoresL298p.png',1,50,FALSE,TRUE),
-('Servo metálico MG90S Pro 180°','',4200,'imagenes/Actuadores/Servodeengranajemetálico-MG90SPro-180grados.jpg',4,50,FALSE,TRUE),
+('Servo metálico MG90S Pro 180°','',4200,'imagenes/Actuadores/Servodeengranajemetalico-MG90SPro-180grados.jpg',4,50,FALSE,TRUE),
 ('Módulo relé óptoacoplado 4 canales','',3800,'imagenes/Modulos/modulo-releOptoacoplado-4Canales.png',3,50,FALSE,TRUE),
 ('Sensor de luz (LDR / fotoresistor)','',1200,'imagenes/Sensores/sensordeluz-conLdrFotoresistor.png',2,50,FALSE,TRUE),
 ('Batería LiPo 22,2 V 6S 5000 mAh','',32000,'imagenes/Accesorios/BateriaLipo-Turnigy22.2v6s5000Mah.png',5,50,FALSE,TRUE),
 ('Motor Shield / driver L293D (Arduino)','',14500,'imagenes/Placas/Placaontrolador-L293D.jpg',1,50,FALSE,TRUE),
-('Módulo Bluetooth HC-06 / RF','',2800,'imagenes/Modulos/MóduloRF Bluetooth_HC-06.jpg',3,50,FALSE,TRUE),
+('Módulo Bluetooth HC-06 / RF','',2800,'imagenes/Modulos/ModuloRFBluetooth_HC-06.jpg',3,50,FALSE,TRUE),
 ('Sensor infrarrojo detector de flama','',4500,'imagenes/Sensores/sensorinfrarrojo-Detectorflama.png',2,50,FALSE,TRUE),
 ('Batería LiPo 4000 mAh 4S','',19000,'imagenes/Accesorios/BateriaLipo-Turnigy4000mah4s30c.png',5,50,FALSE,TRUE),
 ('Controlador de motor L298N','',9900,'imagenes/Placas/ControladordeMotor-L298NDriver.jpg',1,50,FALSE,TRUE),
-('Servo metálico MG90S 360°','',5000,'imagenes/Actuadores/Servometálico-MG90S-360°.jpg',4,50,FALSE,TRUE),
+('Servo metálico MG90S 360°','',5000,'imagenes/Actuadores/Servometalico-MG90S-360.jpg',4,50,FALSE,TRUE),
 ('Sensor PIR (detector de movimiento) SR501','',5300,'imagenes/Sensores/SensorDetectorMovimineto-PirSr501.png',2,50,FALSE,TRUE),
 ('Cables Dupont M-M 40 und','',1100,'imagenes/Accesorios/CablesDupontM-M_40und.jpg',5,50,FALSE,TRUE),
 ('Placa microcontrolador genérica','',6000,'imagenes/Placas/placademicrocontrolador.png',1,50,FALSE,TRUE),
-('Módulo Ethernet ENC28J60','',8800,'imagenes/Modulos/modulodeRedEthernetLan-Enc28j60 .png',3,50,FALSE,TRUE),
+('Módulo Ethernet ENC28J60','',8800,'imagenes/Modulos/modulodeRedEthernetLan-Enc28j60.png',3,50,FALSE,TRUE),
 ('Sensor de sonido KY-037','',1500,'imagenes/Sensores/Arduino-Ky037.png',2,50,FALSE,TRUE),
 ('Cable USB A-B 30 cm','',900,'imagenes/Accesorios/CableUsbAUsbB_30cm.jpg',5,50,FALSE,TRUE),
 ('Placa Mega compatible 2560 R3','',14000,'imagenes/Placas/PlacaMega-Compatible-2560R3.jpg',1,50,FALSE,TRUE),
@@ -188,25 +198,25 @@ INSERT INTO productos (nombre, descripcion, precio, imagen, id_categoria, stock,
 ('Sensor de tierra / humedad de suelo','',2200,'imagenes/Sensores/sensorarduino-Tierra.png',2,50,FALSE,TRUE),
 ('LEDs azules (pack)','',1200,'imagenes/Accesorios/LedsAzul.png',5,50,FALSE,TRUE),
 ('Placa Pro Mini ATmega328','',7000,'imagenes/Placas/placapromini-Atmega328.png',1,50,FALSE,TRUE),
-('Módulo RFID / NFC PN532','',8500,'imagenes/Modulos/modulolector-RfidNfcPn532 .png',3,50,FALSE,TRUE),
+('Módulo RFID / NFC PN532','',8500,'imagenes/Modulos/modulolector-RfidNfcPn532.png',3,50,FALSE,TRUE),
 ('LEDs verdes (pack)','',1200,'imagenes/Accesorios/LedsVerdes.png',5,50,FALSE,TRUE),
 ('Pinzas de prueba electrónica','',3500,'imagenes/Accesorios/Pinzasdepruebaelectronica.jpg',5,50,FALSE,TRUE),
 ('Motor DC 3 V-6 V caja de cambios 50 rpm','',3800,'imagenes/Accesorios/Motordecajacambiosengranajes-3Va6V50rpmDC.jpg',5,50,FALSE,TRUE),
-('Conector de alimentación / jack 9 V','',800,'imagenes/Accesorios/PlugAlimentacion-JackConectorBatería9v.png',5,50,FALSE,TRUE),
-('Porta pilas 4 × 18650 + cables','',1700,'imagenes/Accesorios/Portapila4Pila-Bateria18650 SalidaCablesArduino.png',5,50,FALSE,TRUE),
+('Conector de alimentación / jack 9 V','',800,'imagenes/Accesorios/PlugAlimentacion-JackConectorBateria9v.png',5,50,FALSE,TRUE),
+('Porta pilas 4 × 18650 + cables','',1700,'imagenes/Accesorios/Portapila4Pila-Bateria18650SalidaCablesArduino.png',5,50,FALSE,TRUE),
 ('Porta 1 pila 18650','',900,'imagenes/Accesorios/PortapilasPortaPilas-1PilaBateria18650.png',5,50,FALSE,TRUE),
 ('Potenciómetro lineal 10 k','',500,'imagenes/Accesorios/potenciometroLineal10k.png',5,50,FALSE,TRUE),
 ('Protoboard 400 puntos','',1400,'imagenes/Accesorios/Protoboard-400Puntos.jpg',5,50,FALSE,TRUE),
 ('Protoboard 830 puntos','',2200,'imagenes/Accesorios/Protoboard-830Puntos.jpg',5,50,FALSE,TRUE),
 ('Resistencias (10k, 220Ω, etc.) pack','',1200,'imagenes/Accesorios/Resistencias-10k-220ohm.png',5,50,FALSE,TRUE),
-('Rueda goma para motor DC','',1800,'imagenes/Accesorios/ruedagoma-MotorDc .png',5,50,FALSE,TRUE),
+('Rueda goma para motor DC','',1800,'imagenes/Accesorios/ruedagoma-MotorDc.png',5,50,FALSE,TRUE),
 ('Arduino MKR GSM 1400','',25000,'imagenes/Placas/ArduinoMKR-GSM1400.png',1,50,FALSE,TRUE),
 ('Arduino MKR Vidor 4000','',28000,'imagenes/Placas/ArduinoMKR-Vidor4000.png',1,50,FALSE,TRUE),
 ('Arduino Nano con Carrier Motor','',15000,'imagenes/Placas/Arduinonano-MotorCarrier.png',1,50,FALSE,TRUE),
 ('Nano ESP32','',17000,'imagenes/Placas/NanoESP32.png',1,50,FALSE,TRUE)
 ON DUPLICATE KEY UPDATE activo = TRUE;
 
---VERIFICACIÓN
+-- VERIFICACIÓN
 SELECT 'ROLES' AS Tabla, COUNT(*) AS Total FROM roles
 UNION ALL
 SELECT 'CATEGORÍAS', COUNT(*) FROM categorias WHERE activo = TRUE

@@ -143,13 +143,13 @@ async function cargarProductos() {
                     <td>${producto.stock}</td>
                     <td>${producto.nombre_categoria || '-'}</td>
                     <td>${producto.destacado ? '⭐ Sí' : 'No'}</td>
-                    <td
-                    <button class="action-btn edit" onclick="editarProducto(${producto.id_producto})" title="Editar">
-                        <img src="imagenes/iconos/editar.svg" alt="Editar">
-                    </button>
-                    <button class="action-btn delete" onclick="eliminarProducto(${producto.id_producto}, '${nombreEscapado}')" title="Eliminar">
-                        <img src="imagenes/iconos/eliminar.svg" alt="Eliminar">
-                    </button>
+                    <td>
+                        <button class="action-btn edit" onclick="editarProducto(${producto.id_producto})" title="Editar">
+                            <img src="imagenes/iconos/editar.svg" alt="Editar">
+                        </button>
+                        <button class="action-btn delete" onclick="eliminarProducto(${producto.id_producto}, '${nombreEscapado}')" title="Eliminar">
+                            <img src="imagenes/iconos/eliminar.svg" alt="Eliminar">
+                        </button>
                     </td>
                 </tr>
             `;
@@ -348,10 +348,10 @@ async function cargarCategorias() {
                     <td>${cat.total_productos || 0}</td>
                     <td class="action-buttons">
                         <button class="action-btn edit" onclick="editarCategoria(${cat.id_categoria})" title="Editar">
-                            <i class="fas fa-edit"></i>
+                            <img src="imagenes/iconos/editar.svg" alt="Editar">
                         </button>
                         <button class="action-btn delete" onclick="eliminarCategoria(${cat.id_categoria}, '${nombreEscapado}')" title="Eliminar">
-                            <i class="fas fa-trash"></i>
+                            <img src="imagenes/iconos/eliminar.svg" alt="Eliminar">
                         </button>
                     </td>
                 </tr>
